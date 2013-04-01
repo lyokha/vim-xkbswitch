@@ -14,10 +14,10 @@ if !exists('g:XkbSwitchLib')
                     \ "/usr/local/lib/libxkbswitch.so"
     elseif has('win32')
         let g:XkbSwitchLib =
-                    \ "C:\\Program Files\\xkb-switch-win\\libdslxw32.dll"
+                    \ "C:\\Program Files\\xkb-switch-win\\libxkbswitch32.dll"
     elseif has('win64')
         let g:XkbSwitchLib =
-                    \ "C:\\Program Files\\xkb-switch-win\\libdslxw64.dll"
+                    \ "C:\\Program Files\\xkb-switch-win\\libxkbswitch64.dll"
     else
         " not supported yet
         finish
