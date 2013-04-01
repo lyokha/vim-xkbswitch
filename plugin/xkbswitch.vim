@@ -33,16 +33,16 @@ let s:XkbSwitchDict = {
             \  'default': 'us'},
             \ 'win32':
             \ {'backend': g:XkbSwitchLib,
-            \  'get':     'dxGetLayout',
-            \  'set':     'dxSetLayout',
-            \  'zero':    0,
-            \  'default': 1033},
+            \  'get':     'Xkb_Switch_getXkbLayout',
+            \  'set':     'Xkb_Switch_setXkbLayout',
+            \  'zero':    '',
+            \  'default': 'us'},
             \ 'win64':
             \ {'backend': g:XkbSwitchLib,
-            \  'get':     'dxGetLayout',
-            \  'set':     'dxSetLayout',
-            \  'zero':    0,
-            \  'default': 1033},
+            \  'get':     'Xkb_Switch_getXkbLayout',
+            \  'set':     'Xkb_Switch_setXkbLayout',
+            \  'zero':    '',
+            \  'default': 'us'},
             \ }
 
 if !exists('g:XkbSwitch')
