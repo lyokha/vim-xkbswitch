@@ -14,7 +14,7 @@ if !exists('g:XkbSwitchLib')
                     \ "/usr/local/lib/libxkbswitch.so"
     elseif has('win32')
         let g:XkbSwitchLib =
-                    \ "C:\\Program Files\\xkb-switch-win\\libdslxw.dll"
+                    \ "C:\\Program Files\\xkb-switch-win\\libdslxw32.dll"
     elseif has('win64')
         let g:XkbSwitchLib =
                     \ "C:\\Program Files\\xkb-switch-win\\libdslxw64.dll"
@@ -108,8 +108,11 @@ fun! <SID>imappings_load()
             endif
             let from = g:XkbSwitchIMappings[lang]['from']
             let to   = g:XkbSwitchIMappings[lang]['to']
-            " protect backslashes before next evaluations
-            let newkey = substitute(data[1], '\', '\\\\', 'g')
+            " protect special symbols before next evaluations
+            let newkey = substitute(substitute(substitute(substitute(
+                        \ substitute(data[1], '\', '\\\\', 'g'),
+                        \ '\x22', '\\\x22', 'g'), '\x27', '\\\x27', 'g'),
+                        \ '\x24', '\\\x24', 'g'), '\x26', '\\\x26', 'g')
             " pre-evaluate the new key
             let newkey = substitute(newkey,
                         \ '\(\%(<[^>]\+>\)*\)\(.\{-}\)\(\%(<[^>]\+>\)*\)$',
