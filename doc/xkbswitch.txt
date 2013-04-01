@@ -33,7 +33,7 @@ switched back!
 XkbSwitch requires OS dependent keyboard layout switcher. Currently it depends
 on xkb-switch (http://github.com/ierton/xkb-switch) for UNIX / X Server and
 xkb-switch-win (http://github.com/DeXP/xkb-switch-win) for Windows. Mac OS X
-keyboard layout switcher is currently unknown and hence not suported.
+keyboard layout switcher is currently unknown and hence not supported.
 
 ==============================================================================
                                             *xkbswitch-features*

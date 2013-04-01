@@ -14,11 +14,15 @@ let g:loaded_XkbSwitch = 1
 
 if !exists('g:XkbSwitchLib')
     if has('unix')
-        let g:XkbSwitchLib = "/usr/local/lib/libxkbswitch.so"
-    elseif has('win32')
-        let g:XkbSwitchLib = "libxkbswitch32.dll"
+        let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
     elseif has('win64')
-        let g:XkbSwitchLib = "libxkbswitch64.dll"
+        if executable('libxkbswitch64.dll') == 1
+            let g:XkbSwitchLib = 'libxkbswitch64.dll'
+        else
+            let g:XkbSwitchLib = 'libxkbswitch32.dll'
+        endif
+    elseif has('win32')
+        let g:XkbSwitchLib = 'libxkbswitch32.dll'
     else
         " not supported yet
         finish
