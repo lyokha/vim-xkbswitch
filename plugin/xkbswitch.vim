@@ -1,6 +1,10 @@
-" ---- Automatic keyboard layout switching upon entering/leaving insert mode
-" ---- using xkb-switch utility
-" ----
+" File:        xkbswitch.vim
+" Author:      Alexey Radkov
+" Version:     0.1
+" Description: Automatic keyboard layout switching upon entering/leaving
+"              insert mode
+
+scriptencoding utf-8
 
 if exists('g:loaded_XkbSwitch') && g:loaded_XkbSwitch
     finish
@@ -62,12 +66,14 @@ endif
 let s:from = 'qwertyuiop[]asdfghjkl;\\x27zxcvbnm,.`/'.
             \ 'QWERTYUIOP{}ASDFGHJKL:\\x22ZXCVBNM<>?~@#\\x24^\\x26|'
 
-let g:XkbSwitchIMappings = {
-            \ 'ru':
-            \ {'from': s:from,
-            \  'to': 'йцукенгшщзхъфывапролджэячсмитьбюё.'.
-            \        'ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё\\x22№;:?/'},
-            \ }
+if !exists('g:XkbSwitchIMappings')
+    let g:XkbSwitchIMappings = {
+                \ 'ru':
+                \ {'from': s:from,
+                \  'to': 'йцукенгшщзхъфывапролджэячсмитьбюё.'.
+                \        'ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё\\x22№;:?/'},
+                \ }
+endif
 
 
 fun! <SID>xkb_mappings_load()
