@@ -1,0 +1,83 @@
+*xkbswitch.txt*   For Vim version 7.2 and above   Last change: 2013 Apr 23
+
+                            ---------------------
+                             Xkb Layout Switcher
+                            ---------------------
+
+                                version 0.1
+
+Author: Alexey Radkov
+
+==============================================================================
+                                            *xkbswitch* *xkbswitch-contents*
+1. Contents~
+
+    1. Contents .............................: |xkbswitch-contents|
+    2. About ................................: |xkbswitch-about|
+    3. Features .............................: |xkbswitch-features|
+    4. Setup ................................: |xkbswitch-setup|
+    5. Configuration ........................: |xkbswitch-configure|
+    A. Change History .......................: |xkbswitch-changes|
+
+==============================================================================
+                                            *xkbswitch-about*
+2. About~
+
+Vim plugin XkbSwitch can be used to easily switch current keyboard layout back
+and forth when entering and leaving Insert mode. Say you are typing some
+document in Russian and have to leave Insert mode: when you press <Esc> your
+keyboard layout switches to US/English automatically. When you further enter
+Insert mode once again the Russian keyboard layout will be automatically
+switched back!
+
+XkbSwitch requires OS dependent keyboard layout switcher. Currently it depends
+on xkb-switch (http://github.com/ierton/xkb-switch) for UNIX / X Server and
+xkb-switch-win (http://github.com/DeXP/xkb-switch-win) for Windows. Mac OS X
+keyboard layout switcher is currently unknown and hence not suported.
+
+==============================================================================
+                                            *xkbswitch-features*
+2. Features~
+
+  - Supported OS: UNIX / X Server, Windows
+  - Switches keyboard layout when entering / leaving Insert and Select mode
+  - Keyboard layouts are stored separately for each buffer
+  - Automatic loading of language-friendly Insert mode mappings. For example
+    when Russuian mappings have loaded then if there was a mapping
+>
+    <C-G>S        <Plug>ISurround
+<
+    a new mapping
+>
+    <C-G>Ы        <Plug>ISurround
+<
+    will be loaded. BEWARE: Currently only Russian Insert mode mappings can be
+    loaded
+
+==============================================================================
+                                            *xkbswitch-setup*
+2. Setup~
+
+Before installation of the plugin the OS dependent keyboard layout switcher
+must be installed (see |xkbswitch-about|). The plugin itself is installed by
+extracting of the distribution in your vim runtime directory.
+
+==============================================================================
+                                            *xkbswitch-configure*
+2. Configuration~
+
+Basic configuration requires only 3 lines in your $HOME/.vimrc:
+>
+    let g:XkbSwitchEnabled = 1
+    let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
+    let g:XkbSwitchIMappingsLangs = ['ru']
+<
+
+==============================================================================
+                                            *xkbswitch-changes*
+A. Change History~
+
+0.1
+    - Initial release
+
+vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
