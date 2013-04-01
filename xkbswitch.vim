@@ -58,9 +58,20 @@ if !exists('g:XkbSwitch')
     endif
 endif
 
-if !exists('g:XkbSwitchLoadRuMappings')
-    let g:XkbSwitchLoadRuMappings = 0
+if !exists('g:XkbSwitchIMappingsLangs')
+    let g:XkbSwitchIMappingsLangs = []
 endif
+
+let s:from = 'qwertyuiop[]asdfghjkl;\\x27zxcvbnm,.`/'.
+            \ 'QWERTYUIOP{}ASDFGHJKL:\\x22ZXCVBNM<>?~@#\\x24^\\x26|'
+
+let g:XkbSwitchIMappings = {
+            \ 'ru':
+            \ {'from': s:from,
+            \  'to': 'йцукенгшщзхъфывапролджэячсмитьбюё.'.
+            \        'ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё\\x22№;:?/'},
+            \ }
+
 
 fun! <SID>xkb_mappings_load()
     for hcmd in ['gh', 'gH', 'g']
@@ -72,48 +83,53 @@ fun! <SID>xkb_mappings_load()
     let b:xkb_mappings_loaded = 1
 endfun
 
-fun! <SID>ru_mappings_load()
-    if !g:XkbSwitchLoadRuMappings
+fun! <SID>imappings_load()
+    if empty(g:XkbSwitchIMappingsLangs)
         return
     endif
     redir => mappings
     silent imap
     redir END
-    for mapping in split(mappings, '\n')
-        let value = substitute(mapping, '\s*\S\+\s\+\S\+\s\+\(.*\)', '\1', '')
-        " do not duplicate <script> mappings (when value contains '&')
-        if match(value, '^[\s*@]*&') != -1
+    for lang in g:XkbSwitchIMappingsLangs
+        if !exists('g:XkbSwitchIMappingsLangs[lang]')
             continue
         endif
-        let data = split(mapping, '\s\+')
-        " do not duplicate <Plug> mappings (when key starts with '<Plug>')
-        if match(data[1], '^\c<Plug>') != -1
-            continue
-        endif
-        let from = 'qwertyuiop[]asdfghjkl;\\x27zxcvbnm,.`/'.
-                    \ 'QWERTYUIOP{}ASDFGHJKL:\\x22ZXCVBNM<>?~@#\\x24^\\x26|'
-        let to   = 'йцукенгшщзхъфывапролджэячсмитьбюё.'.
-                    \ 'ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё\\x22№;:?/'
-        " protect backslashes before next evaluations
-        let newkey = substitute(data[1], '\', '\\\\', 'g')
-        " pre-evaluate the new key
-        let newkey = substitute(newkey,
-                    \ '\(\%(<[^>]\+>\)*\)\(.\{-}\)\(\%(<[^>]\+>\)*\)$',
-                    \ '"\1".tr("\2", "'.from.'", "'.to.'")."\3"', 'i')
-        " evaluate the new key
-        let newkey = eval(newkey)
-        " do not reload existing mapping unnecessarily
-        if newkey == data[1]
-            continue
-        endif
-        let mapcmd = match(value, '^[\s&@]*\*') == -1 ? 'imap' : 'inoremap'
-        " probably the mapping was defined using <expr>
-        let expr = match(value,
-                    \ '^[\s*&@]*[a-zA-Z][a-zA-z0-9_#\-]*(.\{-})$') != -1 ?
-                    \ '<expr>' : ''
-        " new maps are always silent and buffer-local
-        exe mapcmd.' <silent> <buffer> '.expr.' '.newkey.' '.
-                    \ maparg(data[1], 'i')
+        for mapping in split(mappings, '\n')
+            let value = substitute(mapping,
+                        \ '\s*\S\+\s\+\S\+\s\+\(.*\)', '\1', '')
+            " do not duplicate <script> mappings (when value contains '&')
+            if match(value, '^[\s*@]*&') != -1
+                continue
+            endif
+            let data = split(mapping, '\s\+')
+            " do not duplicate <Plug> mappings (when key starts with '<Plug>')
+            if match(data[1], '^\c<Plug>') != -1
+                continue
+            endif
+            let from = g:XkbSwitchIMappings[lang]['from']
+            let to   = g:XkbSwitchIMappings[lang]['to']
+            " protect backslashes before next evaluations
+            let newkey = substitute(data[1], '\', '\\\\', 'g')
+            " pre-evaluate the new key
+            let newkey = substitute(newkey,
+                        \ '\(\%(<[^>]\+>\)*\)\(.\{-}\)\(\%(<[^>]\+>\)*\)$',
+                        \ '"\1".tr("\2", "'.from.'", "'.to.'")."\3"', 'i')
+            " evaluate the new key
+            let newkey = eval(newkey)
+            " do not reload existing mapping unnecessarily
+            if newkey == data[1]
+                continue
+            endif
+            let mapcmd = match(value, '^[\s&@]*\*') == -1 ? 'imap' :
+                        \ 'inoremap'
+            " probably the mapping was defined using <expr>
+            let expr = match(value,
+                        \ '^[\s*&@]*[a-zA-Z][a-zA-z0-9_#\-]*(.\{-})$') != -1 ?
+                        \ '<expr>' : ''
+            " new maps are always silent and buffer-local
+            exe mapcmd.' <silent> <buffer> '.expr.' '.newkey.' '.
+                        \ maparg(data[1], 'i')
+        endfor
     endfor
 endfun
 
@@ -129,7 +145,7 @@ fun! <SID>xkb_switch(mode)
     elseif a:mode == 1
         if !exists('b:xkb_mappings_loaded')
             call <SID>xkb_mappings_load()
-            call <SID>ru_mappings_load()
+            call <SID>imappings_load()
         endif
         if exists('b:xkb_layout')
             if b:xkb_layout != cur_layout
@@ -150,6 +166,7 @@ fun! <SID>enable_xkb_switch(force)
     endif
     let g:XkbSwitchEnabled = 1
 endfun
+
 
 command EnableXkbSwitch call <SID>enable_xkb_switch(0)
 
