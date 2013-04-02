@@ -16,11 +16,7 @@ if !exists('g:XkbSwitchLib')
     if has('unix')
         let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
     elseif has('win64')
-        if executable('libxkbswitch64.dll') == 1
-            let g:XkbSwitchLib = 'libxkbswitch64.dll'
-        else
-            let g:XkbSwitchLib = 'libxkbswitch32.dll'
-        endif
+        let g:XkbSwitchLib = 'libxkbswitch64.dll'
     elseif has('win32')
         let g:XkbSwitchLib = 'libxkbswitch32.dll'
     else
