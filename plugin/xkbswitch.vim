@@ -16,11 +16,7 @@ if !exists('g:XkbSwitchLib')
     if has('unix')
         let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
     elseif has('win64')
-        if executable('libxkbswitch64.dll') == 1
-            let g:XkbSwitchLib = 'libxkbswitch64.dll'
-        else
-            let g:XkbSwitchLib = 'libxkbswitch32.dll'
-        endif
+        let g:XkbSwitchLib = 'libxkbswitch64.dll'
     elseif has('win32')
         let g:XkbSwitchLib = 'libxkbswitch32.dll'
     else
@@ -111,6 +107,19 @@ fun! <SID>tr_load_default()
                 \ }
 endfun
 
+fun! <SID>tr_escape_imappings()
+    for key in keys(g:XkbSwitchIMappingsTr)
+        if exists('g:XkbSwitchIMappingsTr[key]["<"]')
+            let g:XkbSwitchIMappingsTr[key]['<'] =
+                    \ <SID>tr_escape_spec(g:XkbSwitchIMappingsTr[key]['<'])
+        endif
+        if exists('g:XkbSwitchIMappingsTr[key][">"]')
+            let g:XkbSwitchIMappingsTr[key]['>'] =
+                    \ <SID>tr_escape_spec(g:XkbSwitchIMappingsTr[key]['>'])
+        endif
+    endfor
+endfun
+
 if !exists('g:XkbSwitchIMappingsTr')
     if exists('g:XkbSwitchIMappingsTrData') &&
                 \ filereadable(g:XkbSwitchIMappingsTrData)
@@ -118,6 +127,8 @@ if !exists('g:XkbSwitchIMappingsTr')
     else
         call <SID>tr_load_default()
     endif
+else
+    call <SID>tr_escape_imappings()
 endif
 
 
@@ -135,14 +146,19 @@ fun! <SID>imappings_load()
     if empty(g:XkbSwitchIMappings)
         return
     endif
-    redir => mappings
+    redir => mappingsdump
     silent imap
     redir END
+    let mappings = split(mappingsdump, '\n')
+    let mappingskeys = {}
+    for mapping in mappings
+        let mappingskeys[split(mapping)[1]] = 1
+    endfor
     for tr in g:XkbSwitchIMappings
         if !exists('g:XkbSwitchIMappings[tr]')
             continue
         endif
-        for mapping in split(mappings, '\n')
+        for mapping in mappings
             let value = substitute(mapping,
                         \ '\s*\S\+\s\+\S\+\s\+\(.*\)', '\1', '')
             " do not duplicate <script> mappings (when value contains '&')
@@ -168,7 +184,7 @@ fun! <SID>imappings_load()
             " evaluate the new key
             let newkey = eval(newkey)
             " do not reload existing mapping unnecessarily
-            if newkey == data[1]
+            if newkey == data[1] || exists('mappingskeys[newkey]')
                 continue
             endif
             let mapcmd = match(value, '^[\s&@]*\*') == -1 ? 'imap' :
