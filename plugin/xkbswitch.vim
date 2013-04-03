@@ -67,18 +67,22 @@ if !exists('g:XkbSwitchIMappings')
     let g:XkbSwitchIMappings = []
 endif
 
-if !exists('g:XkbSwitchIMappingsTrData')
-    let g:XkbSwitchIMappingsTrData = $HOME.'/opt/xkbswitch.map'
-endif
 
+fun! <SID>tr_escape_spec(data)
+    return substitute(substitute(substitute(substitute(substitute(a:data,
+                \ '\', '\\\\\\\\', 'g'), "\x22", '\\\\x22', 'g'),
+                \ "\x27", '\\\\x27', 'g'), "\\$", '\\\\x24', 'g'),
+                \ "\x26", '\\\\x26', 'g')
+endfun
 
-fun! <SID>kbd_maps_load(file)
+fun! <SID>tr_load(file)
+    let g:XkbSwitchIMappingsTr = {}
     let tr = ''
-    for s:line in readfile(a:file, '')
-        if s:line =~ '\(^\s*#\|^\s*$\)'
+    for line in readfile(a:file, '')
+        if line =~ '\(^\s*#\|^\s*$\)'
             continue
         endif
-        let data = split(s:line)
+        let data = split(line)
         if data[0] == '<' || data[0] == '>'
             if tr == ''
                 continue
@@ -86,21 +90,33 @@ fun! <SID>kbd_maps_load(file)
             if !exists('g:XkbSwitchIMappingsTr[tr]')
                 let g:XkbSwitchIMappingsTr[tr] = {}
             endif
-            let g:XkbSwitchIMappingsTr[tr][data[0]] = substitute(substitute(
-                        \ substitute(substitute(
-                        \ substitute(data[1], '\', '\\\\\\\\', 'g'),
-                        \ "\x22", '\\\\x22', 'g'), "\x27", '\\\\x27', 'g'),
-                        \ "\\$", '\\\\x24', 'g'), "\x26", '\\\\x26', 'g')
+            let g:XkbSwitchIMappingsTr[tr][data[0]] =
+                        \ <SID>tr_escape_spec(data[1])
         else
             let tr = data[0]
         endif
     endfor
 endfun
 
+fun! <SID>tr_load_default()
+    let from = <SID>tr_escape_spec(
+                \ 'qwertyuiop[]asdfghjkl;''zxcvbnm,.`/'.
+                \ 'QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?~@#$^&|')
+    let g:XkbSwitchIMappingsTr = {
+                \ 'ru':
+                \ {'<': from,
+                \  '>': <SID>tr_escape_spec(
+                \       'йцукенгшщзхъфывапролджэячсмитьбюё.'.
+                \       'ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё"№;:?/')},
+                \ }
+endfun
+
 if !exists('g:XkbSwitchIMappingsTr')
-    let g:XkbSwitchIMappingsTr = {}
-    if filereadable(g:XkbSwitchIMappingsTrData)
-        call <SID>kbd_maps_load(g:XkbSwitchIMappingsTrData)
+    if exists('g:XkbSwitchIMappingsTrData') &&
+                \ filereadable(g:XkbSwitchIMappingsTrData)
+        call <SID>tr_load(g:XkbSwitchIMappingsTrData)
+    else
+        call <SID>tr_load_default()
     endif
 endif
 
@@ -133,7 +149,7 @@ fun! <SID>imappings_load()
             if match(value, '^[\s*@]*&') != -1
                 continue
             endif
-            let data = split(mapping, '\s\+')
+            let data = split(mapping)
             " do not duplicate <Plug> mappings (when key starts with '<Plug>')
             if match(data[1], '^\c<Plug>') != -1
                 continue
@@ -143,8 +159,8 @@ fun! <SID>imappings_load()
             " protect special symbols before next evaluations
             let newkey = substitute(substitute(substitute(substitute(
                         \ substitute(data[1], '\', '\\\\', 'g'),
-                        \ '\x22', '\\\x22', 'g'), '\x27', '\\\x27', 'g'),
-                        \ '\x24', '\\\x24', 'g'), '\x26', '\\\x26', 'g')
+                        \ "\x22", '\\\x22', 'g'), "\x27", '\\\x27', 'g'),
+                        \ "\\$", '\\\x24', 'g'), "\x26", '\\\x26', 'g')
             " pre-evaluate the new key
             let newkey = substitute(newkey,
                         \ '\(\%(<[^>]\+>\)*\)\(.\{-}\)\(\%(<[^>]\+>\)*\)$',
