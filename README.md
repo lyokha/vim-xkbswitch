@@ -1,7 +1,7 @@
 Vim-xkbswitch
 =============
 
-by Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX
+by Alexey Radkov and Dmitry Hrabrov a.k.a. DeXPeriX
 
 About
 -----
@@ -20,24 +20,24 @@ keyboard layout switcher is currently unknown and hence not supported.
 Features
 --------
 
-  * Supported OS: UNIX / X Server, Windows
-  * Switches keyboard layout when entering / leaving Insert and Select mode
-  * Keyboard layouts are stored separately for each buffer
-  * Automatic loading of language-friendly Insert mode mappings duplicates.
-    For example when Russian mappings have loaded then if there was a mapping
+* Supported OS: UNIX / X Server, Windows
+* Switches keyboard layout when entering / leaving Insert and Select mode
+* Keyboard layouts are stored separately for each buffer
+* Automatic loading of language-friendly Insert mode mappings duplicates.
+  For example when Russian mappings have loaded then if there was a mapping
 
-    ```vim
-    <C-G>S        <Plug>ISurround
-    ```
+  ```vim
+  <C-G>S        <Plug>ISurround
+  ```
 
-    a new mapping
+  a new mapping
 
-    ```vim
-    <C-G>Ы        <Plug>ISurround
-    ```
+  ```vim
+  <C-G>Ы        <Plug>ISurround
+  ```
 
-    will be loaded. Insert mode mappings duplicates make it easy to apply
-    existing maps in Insert mode without switching current keyboard layout.
+  will be loaded. Insert mode mappings duplicates make it easy to apply
+  existing maps in Insert mode without switching current keyboard layout.
 
 Setup
 -----
@@ -80,45 +80,45 @@ but currently only Russian winkeys layout translation map ('ru') is supported
 out of the box. There are 2 ways how a user can provide extra definitions of
 keyboard layout translation maps (or replace existing default 'ru' map):
 
-  * Define variable g:XkbSwitchIMappingsTr:
+* Define variable g:XkbSwitchIMappingsTr:
 
-    ```vim
-    let g:XkbSwitchIMappingsTr = {
-                \ 'ru':
-                \ {'<': 'qwertyuiop[]asdfghjkl;''zxcvbnm,.`/'.
-                \       'QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?~@#$^&|',
-                \  '>': 'йцукенгшщзхъфывапролджэячсмитьбюё.'.
-                \       'ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё"№;:?/'},
-                \ 'de':
-                \ {'<': 'yz-[];''/YZ{}:"<>?~@#^&*_\',
-                \  '>': 'zyßü+öä-ZYÜ*ÖÄ;:_°"§&/(?#'},
-                \ }
-    ```
+  ```vim
+  let g:XkbSwitchIMappingsTr = {
+              \ 'ru':
+              \ {'<': 'qwertyuiop[]asdfghjkl;''zxcvbnm,.`/'.
+              \       'QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?~@#$^&|',
+              \  '>': 'йцукенгшщзхъфывапролджэячсмитьбюё.'.
+              \       'ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё"№;:?/'},
+              \ 'de':
+              \ {'<': 'yz-[];''/YZ{}:"<>?~@#^&*_\',
+              \  '>': 'zyßü+öä-ZYÜ*ÖÄ;:_°"§&/(?#'},
+              \ }
+  ```
 
-  * Create a file with layout translation maps and put its path into variable
-    g:XkbSwitchIMappingsTrData, for example:
+* Create a file with layout translation maps and put its path into variable
+  g:XkbSwitchIMappingsTrData, for example:
 
-    ```vim
-    let g:XkbSwitchIMappingsTrData = $HOME.'/opt/xkbswitch.tr'
-    ```
+  ```vim
+  let g:XkbSwitchIMappingsTrData = $HOME.'/opt/xkbswitch.tr'
+  ```
 
-    File with maps must follow this format:
+  File with maps must follow this format:
 
-    ```
-    ru  Russian winkeys layout
-    < qwertyuiop[]asdfghjkl;'zxcvbnm,.`/QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?~@#$^&|
-    > йцукенгшщзхъфывапролджэячсмитьбюё.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё"№;:?/
+  ```
+  ru  Russian winkeys layout
+  < qwertyuiop[]asdfghjkl;'zxcvbnm,.`/QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?~@#$^&|
+  > йцукенгшщзхъфывапролджэячсмитьбюё.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё"№;:?/
 
-    de
-    < yz-[];'/YZ{}:"<>?~@#^&*(_\
-    > zyßü+öä-ZYÜ*ÖÄ;:_°"§&/()?#
-    ```
+  de
+  < yz-[];'/YZ{}:"<>?~@#^&*(_\
+  > zyßü+öä-ZYÜ*ÖÄ;:_°"§&/()?#
+  ```
 
-    Sample file xkbswitch.tr with exactly this content is shipped with this
-    plugin distribution. It is encoded in UTF-8 and it is important as far as
-    its content is read using |readfile()|! If your locale is not UTF-8 and
-    you want to use this sample file then it seems that you will have to
-    re-encode it in your locale standard encoding
+  Sample file xkbswitch.tr with exactly this content is shipped with this
+  plugin distribution. It is encoded in UTF-8 and it is important as far as
+  its content is read using |readfile()|! If your locale is not UTF-8 and
+  you want to use this sample file then it seems that you will have to
+  re-encode it in your locale standard encoding
 
 Be very careful with mapping duplicates! They won't replace existing Insert
 mode mappings but may define extra mappings that will change normal Insert
