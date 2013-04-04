@@ -27,13 +27,13 @@ Features
     For example when Russian mappings have loaded then if there was a mapping
 
     ```
-    vim<C-G>S        <Plug>ISurround
+    <C-G>S        <Plug>ISurround
     ```
 
     a new mapping
 
     ```
-    vim<C-G>Ы        <Plug>ISurround
+    <C-G>Ы        <Plug>ISurround
     ```
 
     will be loaded. Insert mode mappings duplicates make it easy to apply
@@ -51,20 +51,20 @@ Configuration
 
 Basic configuration requires only 1 line in your .vimrc:
 
-    ```vim
+    ```
     let g:XkbSwitchEnabled = 1
     ```
 
 Additionally path to the backend switcher library can be defined:
 
-    ```vim
+    ```
     let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
     ```
 
 However normally it is not necessary as far as the plugin is able to find it
 automatically. To enable Insert mode mappings duplicates user may want to add
 
-    ```vim
+    ```
     let g:XkbSwitchIMappings = ['ru']
     ```
 
@@ -72,7 +72,7 @@ Here Insert mappings duplicates for Russian winkeys layout will be generated
 whenever Insert mode is started. It is possible to define a list of different
 layouts, for example
 
-    ```vim
+    ```
     let g:XkbSwitchIMappings = ['ru', 'de']
     ```
 
@@ -82,7 +82,7 @@ keyboard layout translation maps (or replace existing default 'ru' map):
 
   * Define variable g:XkbSwitchIMappingsTr:
 
-    ```vim
+    ```
     let g:XkbSwitchIMappingsTr = {
                 \ 'ru':
                 \ {'<': 'qwertyuiop[]asdfghjkl;''zxcvbnm,.`/'.
@@ -98,13 +98,13 @@ keyboard layout translation maps (or replace existing default 'ru' map):
   * Create a file with layout translation maps and put its path into variable
     g:XkbSwitchIMappingsTrData, for example:
 
-   ```vim
+   ```
    let g:XkbSwitchIMappingsTrData = $HOME.'/opt/xkbswitch.tr'
    ```
 
     File with maps must follow this format:
 
-  ```vim
+  ```
   ru  Russian winkeys layout
   < qwertyuiop[]asdfghjkl;'zxcvbnm,.`/QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?~@#$^&|
   > йцукенгшщзхъфывапролджэячсмитьбюё.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё"№;:?/
