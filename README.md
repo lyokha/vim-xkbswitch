@@ -116,7 +116,7 @@ keyboard layout translation maps (or replace existing default 'ru' map):
 
   Sample file xkbswitch.tr with exactly this content is shipped with this
   plugin distribution. It is encoded in UTF-8 and it is important as far as
-  its content is read using |readfile()|! If your locale is not UTF-8 and
+  its content is read using readfile()! If your locale is not UTF-8 and
   you want to use this sample file then it seems that you will have to
   re-encode it in your locale standard encoding
 
