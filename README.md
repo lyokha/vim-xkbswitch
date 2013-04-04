@@ -26,15 +26,15 @@ Features
   * Automatic loading of language-friendly Insert mode mappings duplicates.
     For example when Russian mappings have loaded then if there was a mapping
 
-    ```
+```
     <C-G>S        <Plug>ISurround
-    ```
+```
 
     a new mapping
 
-    ```
+```
     <C-G>Ы        <Plug>ISurround
-    ```
+```
 
     will be loaded. Insert mode mappings duplicates make it easy to apply
     existing maps in Insert mode without switching current keyboard layout.
@@ -51,30 +51,30 @@ Configuration
 
 Basic configuration requires only 1 line in your .vimrc:
 
-    ```
+```
     let g:XkbSwitchEnabled = 1
-    ```
+```
 
 Additionally path to the backend switcher library can be defined:
 
-    ```
+```
     let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
-    ```
+```
 
 However normally it is not necessary as far as the plugin is able to find it
 automatically. To enable Insert mode mappings duplicates user may want to add
 
-    ```
+```
     let g:XkbSwitchIMappings = ['ru']
-    ```
+```
 
 Here Insert mappings duplicates for Russian winkeys layout will be generated
 whenever Insert mode is started. It is possible to define a list of different
 layouts, for example
 
-    ```
+```
     let g:XkbSwitchIMappings = ['ru', 'de']
-    ```
+```
 
 but currently only Russian winkeys layout translation map ('ru') is supported
 out of the box. There are 2 ways how a user can provide extra definitions of
@@ -82,7 +82,7 @@ keyboard layout translation maps (or replace existing default 'ru' map):
 
   * Define variable g:XkbSwitchIMappingsTr:
 
-    ```
+```
     let g:XkbSwitchIMappingsTr = {
                 \ 'ru':
                 \ {'<': 'qwertyuiop[]asdfghjkl;''zxcvbnm,.`/'.
@@ -93,18 +93,18 @@ keyboard layout translation maps (or replace existing default 'ru' map):
                 \ {'<': 'yz-[];''/YZ{}:"<>?~@#^&*_\',
                 \  '>': 'zyßü+öä-ZYÜ*ÖÄ;:_°"§&/(?#'},
                 \ }
-                ```
+```
 
   * Create a file with layout translation maps and put its path into variable
     g:XkbSwitchIMappingsTrData, for example:
 
-   ```
+```
    let g:XkbSwitchIMappingsTrData = $HOME.'/opt/xkbswitch.tr'
-   ```
+```
 
     File with maps must follow this format:
 
-  ```
+```
   ru  Russian winkeys layout
   < qwertyuiop[]asdfghjkl;'zxcvbnm,.`/QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?~@#$^&|
   > йцукенгшщзхъфывапролджэячсмитьбюё.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё"№;:?/
@@ -112,7 +112,7 @@ keyboard layout translation maps (or replace existing default 'ru' map):
   de
   < yz-[];'/YZ{}:"<>?~@#^&*(_\
   > zyßü+öä-ZYÜ*ÖÄ;:_°"§&/()?#
-  ```
+```
 
     Sample file xkbswitch.tr with exactly this content is shipped with this
     plugin distribution. It is encoded in UTF-8 and it is important as far as
