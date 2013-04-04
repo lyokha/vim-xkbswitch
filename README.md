@@ -43,7 +43,7 @@ Setup
 -----
 
 Before installation of the plugin the OS dependent keyboard layout switcher
-must be installed (see [About](About)). The plugin itself is installed by
+must be installed (see #About). The plugin itself is installed by
 extracting of the distribution in your vim runtime directory.
 
 Configuration
