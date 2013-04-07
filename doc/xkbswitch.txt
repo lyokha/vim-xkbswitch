@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.2 and above   Last change: 2013 Apr 03
+*xkbswitch.txt*   For Vim version 7.2 and above   Last change: 2013 Apr 07
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.2
+                                version 0.3
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -149,5 +149,11 @@ A. Change History~
 
 0.2
     - Better treatment of Insert mode mapping duplicates
+
+0.3
+    - Checking for library presence implemented by filereadable() instead
+      executable() - looks like it may have sense for Ubuntu
+    - Fixed error messages upon start if g:XkbSwitchEnabled were not set
+    - Added doc about command EnableXkbSwitch
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
