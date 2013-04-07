@@ -225,10 +225,10 @@ fun! <SID>xkb_switch(mode)
 endfun
 
 fun! <SID>enable_xkb_switch(force)
-    if g:XkbSwitchEnabled && !a:force
+    if exists('g:XkbSwitchEnabled') && g:XkbSwitchEnabled && !a:force
         return
     endif
-    if executable(g:XkbSwitch['backend']) == 1
+    if filereadable(g:XkbSwitch['backend']) == 1
         autocmd InsertEnter * call <SID>xkb_switch(1)
         autocmd InsertLeave * call <SID>xkb_switch(0)
     endif
@@ -238,7 +238,7 @@ endfun
 
 command EnableXkbSwitch call <SID>enable_xkb_switch(0)
 
-if g:XkbSwitchEnabled
+if exists('g:XkbSwitchEnabled') && g:XkbSwitchEnabled
     call <SID>enable_xkb_switch(1)
 endif
 
