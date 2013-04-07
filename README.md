@@ -128,3 +128,13 @@ could be ')' to '=' translation, we would get '=' unusable in any keyboard
 layout (as far as echofunc treats ')' in a very specific way). That is why
 this translation is missing in example above and in file xkbswitch.tr content.
 
+You can enable XkbSwitch in runtime (e.g. when g:XkbSwitchEnabled is not set
+in your .vimrc) by issuing command
+
+```vim
+:EnableXkbSwitch
+```
+
+This command will respect current settings of g:XkbSwitchIMappings etc. Be
+aware that there is no way to disable XkbSwitch after it has been enabled.
+
