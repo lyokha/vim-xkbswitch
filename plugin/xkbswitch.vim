@@ -65,13 +65,6 @@ if !exists('g:XkbSwitchIMappings')
 endif
 
 
-fun! <SID>tr_escape_spec(data)
-    return substitute(substitute(substitute(substitute(substitute(a:data,
-                \ '\', '\\\\\\\\', 'g'), "\x22", '\\\\x22', 'g'),
-                \ "\x27", '\\\\x27', 'g'), "\\$", '\\\\x24', 'g'),
-                \ "\x26", '\\\\x26', 'g')
-endfun
-
 fun! <SID>tr_load(file)
     let g:XkbSwitchIMappingsTr = {}
     let tr = ''
@@ -87,8 +80,7 @@ fun! <SID>tr_load(file)
             if !exists('g:XkbSwitchIMappingsTr[tr]')
                 let g:XkbSwitchIMappingsTr[tr] = {}
             endif
-            let g:XkbSwitchIMappingsTr[tr][data[0]] =
-                        \ <SID>tr_escape_spec(data[1])
+            let g:XkbSwitchIMappingsTr[tr][data[0]] = data[1]
         else
             let tr = data[0]
         endif
@@ -96,15 +88,13 @@ fun! <SID>tr_load(file)
 endfun
 
 fun! <SID>tr_load_default()
-    let from = <SID>tr_escape_spec(
-                \ 'qwertyuiop[]asdfghjkl;''zxcvbnm,.`/'.
-                \ 'QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?~@#$^&|')
+    let from = 'qwertyuiop[]asdfghjkl;''zxcvbnm,.`/'.
+                \ 'QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?~@#$^&|'
     let g:XkbSwitchIMappingsTr = {
                 \ 'ru':
                 \ {'<': from,
-                \  '>': <SID>tr_escape_spec(
-                \       'йцукенгшщзхъфывапролджэячсмитьбюё.'.
-                \       'ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё"№;:?/')},
+                \  '>': 'йцукенгшщзхъфывапролджэячсмитьбюё.'.
+                \       'ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё"№;:?/'},
                 \ }
 endfun
 
@@ -112,11 +102,11 @@ fun! <SID>tr_escape_imappings()
     for key in keys(g:XkbSwitchIMappingsTr)
         if exists('g:XkbSwitchIMappingsTr[key]["<"]')
             let g:XkbSwitchIMappingsTr[key]['<'] =
-                    \ <SID>tr_escape_spec(g:XkbSwitchIMappingsTr[key]['<'])
+                        \ g:XkbSwitchIMappingsTr[key]['<']
         endif
         if exists('g:XkbSwitchIMappingsTr[key][">"]')
             let g:XkbSwitchIMappingsTr[key]['>'] =
-                    \ <SID>tr_escape_spec(g:XkbSwitchIMappingsTr[key]['>'])
+                        \ g:XkbSwitchIMappingsTr[key]['>']
         endif
     endfor
 endfun
@@ -130,6 +120,10 @@ if !exists('g:XkbSwitchIMappingsTr')
     endif
 else
     call <SID>tr_escape_imappings()
+endif
+
+if !exists('g:XkbSwitchIMappingsTrCtrl')
+    let g:XkbSwitchIMappingsTrCtrl = 0
 endif
 
 
@@ -171,19 +165,34 @@ fun! <SID>imappings_load()
             if match(data[1], '^\c<Plug>') != -1
                 continue
             endif
-            let from = g:XkbSwitchIMappingsTr[tr]['<']
-            let to   = g:XkbSwitchIMappingsTr[tr]['>']
-            " protect special symbols before next evaluations
-            let newkey = substitute(substitute(substitute(substitute(
-                        \ substitute(data[1], '\', '\\\\', 'g'),
-                        \ "\x22", '\\\x22', 'g'), "\x27", '\\\x27', 'g'),
-                        \ "\\$", '\\\x24', 'g'), "\x26", '\\\x26', 'g')
-            " pre-evaluate the new key
-            let newkey = substitute(newkey,
-                        \ '\(\%(<[^>]\+>\)*\)\(.\{-}\)\(\%(<[^>]\+>\)*\)$',
-                        \ '"\1".tr("\2", "'.from.'", "'.to.'")."\3"', 'i')
-            " evaluate the new key
-            let newkey = eval(newkey)
+            let from  = g:XkbSwitchIMappingsTr[tr]['<']
+            let to    = g:XkbSwitchIMappingsTr[tr]['>']
+            " replace characters starting control sequences with spaces
+            let clean = ''
+            if g:XkbSwitchIMappingsTrCtrl
+                let clean = substitute(data[1],
+                \ '\(<[^>]\{-}\)\(-\=\)\([^->]\+\)>',
+                \ '\=repeat(" ", strlen(submatch(1)) + strlen(submatch(2))) .
+                \ (strlen(submatch(3)) == 1 ? submatch(3) :
+                \ repeat(" ", strlen(submatch(3)))) . " "', 'g')
+            else
+                let clean = substitute(data[1],
+                \ '<[^>]\+>', '\=repeat(" ", strlen(submatch(0)))', 'g')
+            endif
+            " apply translations
+            let newkey = tr(clean, from, to)
+            " restore control characters from original mapping
+            for i in range(strlen(substitute(clean, ".", "x", "g")))
+                " BEWARE: in principle strlen(clean(...)) and strlen(data[1])
+                " may differ in case if wide characters have been replaced by
+                " spaces, however it should not happen as soon as wide
+                " characters cannot start control character sequences
+                if clean[i] == " "
+                    exe
+                    \ "let newkey = substitute(newkey, '\\(^[^ ]*\\) ', '\\1".
+                    \ data[1][i]."', '')"
+                endif
+            endfor
             " do not reload existing mapping unnecessarily
             if newkey == data[1] || exists('mappingskeys[newkey]')
                 continue
