@@ -150,9 +150,6 @@ fun! <SID>imappings_load()
         let mappingskeys[split(mapping)[1]] = 1
     endfor
     for tr in g:XkbSwitchIMappings
-        if !exists('g:XkbSwitchIMappings[tr]')
-            continue
-        endif
         for mapping in mappings
             let value = substitute(mapping,
                         \ '\s*\S\+\s\+\S\+\s\+\(.*\)', '\1', '')
