@@ -8,9 +8,9 @@ About
 
 Vim plugin XkbSwitch can be used to easily switch current keyboard layout back
 and forth when entering and leaving Insert mode. Say you are typing some
-document in Russian and have to leave Insert mode: when you press <Esc> your
-keyboard layout switches to US/English automatically. When you further enter
-Insert mode once again the Russian keyboard layout will be automatically
+document in Russian and have to leave Insert mode: when you press ```<Esc>```
+your keyboard layout switches to US/English automatically. When you further
+enter Insert mode once again the Russian keyboard layout will be automatically
 switched back!
 
 XkbSwitch requires OS dependent keyboard layout switcher. Currently it depends
