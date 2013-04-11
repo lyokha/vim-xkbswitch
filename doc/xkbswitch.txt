@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.2 and above   Last change: 2013 Apr 07
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 Apr 11
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.3
+                                version 0.4
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -17,6 +17,7 @@ Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
     3. Features .............................: |xkbswitch-features|
     4. Setup ................................: |xkbswitch-setup|
     5. Configuration ........................: |xkbswitch-configure|
+    6. Troubleshooting ......................: |xkbswitch-issues|
     A. Change History .......................: |xkbswitch-changes|
 
 ==============================================================================
@@ -141,6 +142,19 @@ This command will respect current settings of g:XkbSwitchIMappings etc. Be
 aware that there is no way to disable XkbSwitch after it has been enabled.
 
 ==============================================================================
+                                            *xkbswitch-issues*
+6. Troubleshooting~
+
+There is a known issue when vim-latex package is installed. In this case
+entering Russian symbols in Insert mode becomes impossible. The issue arises
+from clashing XkbSwitch Insert mappings duplicates with mappings defined in
+vim-latex. To workaround this issue you can disable XkbSwitch Insert mode
+mappings duplicates for filetype 'tex':
+>
+    let g:XkbSwitchIMappingsSkipFt = ['tex']
+<
+
+==============================================================================
                                             *xkbswitch-changes*
 A. Change History~
 
@@ -155,5 +169,11 @@ A. Change History~
       executable() - looks like it may have sense for Ubuntu
     - Fixed error messages upon start if g:XkbSwitchEnabled were not set
     - Added doc about command EnableXkbSwitch
+
+0.4
+    - Insert mode mappings duplicates factory algorithm reimplemented
+    - New global variable g:XkbSwitchIMappingsSkipFt introduced. It is
+      supposed to be used to disable Insert mode mappings duplicate creation
+    - Docs updated
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:

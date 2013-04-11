@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.3
+" Version:     0.4
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -126,6 +126,10 @@ if !exists('g:XkbSwitchIMappingsTrCtrl')
     let g:XkbSwitchIMappingsTrCtrl = 0
 endif
 
+if !exists('g:XkbSwitchIMappingsSkipFt')
+    let g:XkbSwitchIMappingsSkipFt = []
+endif
+
 
 fun! <SID>xkb_mappings_load()
     for hcmd in ['gh', 'gH', 'g']
@@ -141,6 +145,11 @@ fun! <SID>imappings_load()
     if empty(g:XkbSwitchIMappings)
         return
     endif
+    for ft in g:XkbSwitchIMappingsSkipFt
+        if ft == &ft
+            return
+        endif
+    endfor
     redir => mappingsdump
     silent imap
     redir END
