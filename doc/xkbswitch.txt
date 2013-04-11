@@ -173,7 +173,7 @@ A. Change History~
 0.4
     - Insert mode mappings duplicates factory algorithm reimplemented
     - New global variable g:XkbSwitchIMappingsSkipFt introduced. It is
-      supposed to be used to disable Insert mode mappings duplicate creation
+      supposed to be used to disable Insert mode mappings duplicates creation
     - Docs updated
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
