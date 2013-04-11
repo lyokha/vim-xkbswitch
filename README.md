@@ -144,7 +144,7 @@ Troubleshooting
 There is a known issue when vim-latex package is installed. In this case
 entering Russian symbols in Insert mode becomes impossible. The issue arises
 from clashing XkbSwitch Insert mappings duplicates with mappings defined in
-vim-latex. To workaround this issue you can disable XkbSwitch Insert mode
+vim-latex. To work this issue around you can disable XkbSwitch Insert mode
 mappings duplicates for filetype 'tex':
 ```vim
 let g:XkbSwitchIMappingsSkipFt = ['tex']

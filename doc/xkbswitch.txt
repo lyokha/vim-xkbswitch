@@ -148,7 +148,7 @@ aware that there is no way to disable XkbSwitch after it has been enabled.
 There is a known issue when vim-latex package is installed. In this case
 entering Russian symbols in Insert mode becomes impossible. The issue arises
 from clashing XkbSwitch Insert mappings duplicates with mappings defined in
-vim-latex. To workaround this issue you can disable XkbSwitch Insert mode
+vim-latex. To work this issue around you can disable XkbSwitch Insert mode
 mappings duplicates for filetype 'tex':
 >
     let g:XkbSwitchIMappingsSkipFt = ['tex']
@@ -174,6 +174,7 @@ A. Change History~
     - Insert mode mappings duplicates factory algorithm reimplemented
     - New global variable g:XkbSwitchIMappingsSkipFt introduced. It is
       supposed to be used to disable Insert mode mappings duplicates creation
+      for specific file types
     - Docs updated
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
