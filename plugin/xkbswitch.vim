@@ -17,9 +17,9 @@ if !exists('g:XkbSwitchLib')
     if has('unix')
         let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
     elseif has('win64')
-        let g:XkbSwitchLib = 'libxkbswitch64.dll'
+        let g:XkbSwitchLib = $VIMRUNTIME.'/libxkbswitch64.dll'
     elseif has('win32')
-        let g:XkbSwitchLib = 'libxkbswitch32.dll'
+        let g:XkbSwitchLib = $VIMRUNTIME.'/libxkbswitch32.dll'
     else
         " not supported yet
         finish
