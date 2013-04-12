@@ -141,12 +141,29 @@ aware that there is no way to disable XkbSwitch after it has been enabled.
 Troubleshooting
 ---------------
 
-There is a known issue when vim-latex package is installed. In this case
-entering Russian symbols in Insert mode becomes impossible. The issue arises
-from clashing XkbSwitch Insert mappings duplicates with mappings defined in
-vim-latex. To work this issue around you can disable XkbSwitch Insert mode
-mappings duplicates for filetype 'tex':
-```vim
-let g:XkbSwitchIMappingsSkipFt = ['tex']
-```
+* There is a known issue when vim-latex package is installed. In this case
+  entering Russian symbols in Insert mode when editing tex files becomes
+  impossible. The issue arises from clashing XkbSwitch Insert mappings
+  duplicates with mappings defined in vim-latex. To work this issue around you
+  can disable XkbSwitch Insert mode mappings duplicates for filetype 'tex':
+
+  ```vim
+  let g:XkbSwitchIMappingsSkipFt = ['tex']
+  ```
+
+* *Related to X Server only.* When editing files on a remote host via ssh the
+  ssh -X option must be supplied:
+
+  ```sh
+  ssh -X remote.host
+  ```
+
+  This option will make ssh forward X Server protocol messages between the
+  local host and the remote host thus making it possible to switch the local
+  host keyboard layouts.
+
+* *Related to GTK based gvim only.* In bare X terminals keycodes for ```<C-S>```
+  and ```<C-Ы>``` are the same which makes it possible to leave sequences with
+  control keys in Insert mode mappings duplicates as they are. But this is not
+  the case in GTK based gvim. The issue is still investigated.
 
