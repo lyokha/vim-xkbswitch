@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.5
+" Version:     0.6
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -124,6 +124,10 @@ if !exists('g:XkbSwitchIMappingsSkipFt')
     let g:XkbSwitchIMappingsSkipFt = []
 endif
 
+if !exists('g:XkbSwitchPostIEnterAuto')
+    let g:XkbSwitchPostIEnterAuto = []
+endif
+
 
 fun! <SID>xkb_mappings_load()
     for hcmd in ['gh', 'gH', 'g']
@@ -226,7 +230,7 @@ fun! <SID>xkb_switch(mode)
             call <SID>imappings_load()
         endif
         if exists('b:xkb_ilayout')
-            if b:xkb_ilayout != cur_layout
+            if b:xkb_ilayout != cur_layout && !exists('b:xkb_ilayout_managed')
                 call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
                             \ b:xkb_ilayout)
             endif
@@ -240,8 +244,16 @@ fun! <SID>enable_xkb_switch(force)
         return
     endif
     if filereadable(g:XkbSwitch['backend']) == 1
-        autocmd InsertEnter * call <SID>xkb_switch(1)
-        autocmd InsertLeave * call <SID>xkb_switch(0)
+        augroup XkbSwitch
+            au!
+            autocmd InsertEnter * call <SID>xkb_switch(1)
+            for item in g:XkbSwitchPostIEnterAuto
+                exe "autocmd InsertEnter ".item[0]['pat']." ".item[0]['cmd'].
+                            \ " | if ".item[1].
+                                \ " | let b:xkb_ilayout_managed = 1 | endif"
+            endfor
+            autocmd InsertLeave * call <SID>xkb_switch(0)
+        augroup END
     endif
     let g:XkbSwitchEnabled = 1
 endfun

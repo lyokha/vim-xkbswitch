@@ -138,6 +138,158 @@ in your .vimrc) by issuing command
 This command will respect current settings of g:XkbSwitchIMappings etc. Be
 aware that there is no way to disable XkbSwitch after it has been enabled.
 
+Custom keyboard layout switching rules
+--------------------------------------
+
+Imagine that you are editing a simple dictionary with 2 columns delimited by
+vertical bars. In the first column you are writing down a German word and in
+the second column - its Russian translation. For example:
+
+```
+| Wort         | Übersetzung |
+|--------------|-------------|
+| der Mond     | луна        |
+| humpeln      | хромать     |
+| stark        | сильный     |
+```
+
+You want the keyboard layout to be automatically switched to the corresponding
+language when you are moving between the columns in Insert mode. It is
+feasible! When you start editing switch layouts in the both columns manually
+just once: after that XkbSwitch will learn how to switch them further. It will
+restore layouts after leaving Insert mode and entering it once again.
+
+In this section it will be shown how to achieve this. First of all there
+should exist criteria upon which XkbSwitch will decide when it must switch
+layouts. The simplest criteria are syntactic rules. So the content of the
+columns must be syntactically distinguishable. It means that we need a file
+with syntax rules and some new filetype defined, say 'mdict'. For the sake of
+simplicity let it be not an absolutely new filetype but rather a subclass of
+an existing one, for example vimwiki. Then we should create a new file
+after/syntax/vimwiki.vim:
+
+```vim
+if match(bufname('%'), '\.mdict$') == -1
+    finish
+endif
+
+let s:colors = {'original':   [189, '#d7d7ff'],
+              \ 'translated': [194, '#d7ffd7'],
+              \ 'extra':      [191, '#d7ff5f']}
+
+function! s:set_colors()
+    let colors = deepcopy(s:colors)
+    if exists('g:colors_name') && g:colors_name == 'lucius' &&
+                \ g:lucius_style == 'light'
+        let colors['original']   = [26,  '#005fd7']
+        let colors['translated'] = [22,  '#005f00']
+        let colors['extra']      = [167, '#d75f5f']
+    endif
+    exe 'hi mdictOriginalHl term=standout ctermfg='.colors['original'][0].
+                \ ' guifg='.colors['original'][1]
+    exe 'hi mdictTranslatedHl term=standout ctermfg='.
+                \ colors['translated'][0].' guifg='.colors['translated'][1]
+    exe 'hi mdictExtraHl term=standout ctermfg='.colors['extra'][0].
+                \ ' guifg='.colors['extra'][1]
+endfunction
+
+syntax match mdictOriginal '\%(^\s*|\)\@<=[^|]\+\ze|[^-]'
+            \ containedin=VimwikiTableRow contained contains=mdictExtra
+
+syntax match mdictTranslated '\%([^-]|\)\@<=[^|]\+\ze|$'
+            \ containedin=VimwikiTableRow contained contains=mdictExtra
+
+syntax match mdictExtra '([^()]*)' contained
+
+call s:set_colors()
+autocmd ColorScheme * call s:set_colors()
+
+hi link mdictOriginal   mdictOriginalHl
+hi link mdictTranslated mdictTranslatedHl
+hi link mdictExtra      mdictExtraHl
+```
+
+Here the syntactic criteria have been defined: content of the first column
+will have syntax id 'mdictOriginal' and content of the second column -
+'mdictTranslated'.
+
+In .vimrc following lines must be put:
+
+```vim
+let g:mdict_synroles = ['mdictOriginal', 'mdictTranslated']
+
+fun! MdictCheckLang(force)
+    if !filereadable(g:XkbSwitchLib)
+        return
+    endif
+
+    let cur_synid  = synIDattr(synID(line("."), col("."), 1), "name")
+
+    if !exists('b:saved_cur_synid')
+        let b:saved_cur_synid = cur_synid
+    endif
+    if !exists('b:saved_cur_layout')
+        let b:saved_cur_layout = {}
+    endif
+
+    if cur_synid != b:saved_cur_synid || a:force
+        let cur_layout = ''
+        for role in g:mdict_synroles
+            if b:saved_cur_synid == role
+                let cur_layout =
+                    \ libcall(g:XkbSwitchLib, 'Xkb_Switch_getXkbLayout', '')
+                let b:saved_cur_layout[role] = cur_layout
+                break
+            endif
+        endfor
+        for role in g:mdict_synroles
+            if cur_synid == role
+                if exists('b:saved_cur_layout[role]')
+                    call libcall(g:XkbSwitchLib, 'Xkb_Switch_setXkbLayout',
+                                \ b:saved_cur_layout[role])
+                else
+                    let b:saved_cur_layout[role] = empty(cur_layout) ?
+                                \ libcall(g:XkbSwitchLib,
+                                \ 'Xkb_Switch_getXkbLayout', '') : cur_layout
+                endif
+                break
+            endif
+        endfor
+        let b:saved_cur_synid = cur_synid
+    endif
+endfun
+
+autocmd BufNewFile,BufRead *.mdict setlocal filetype=vimwiki |
+           \ EnableXkbSwitch
+autocmd BufNewFile         *.mdict VimwikiTable 2 2
+autocmd BufNewFile         *.mdict exe "normal dd" | startinsert
+autocmd CursorMovedI       *.mdict call MdictCheckLang(0)
+
+let g:XkbSwitchPostIEnterAuto = [
+            \ [{'pat': '*.mdict', 'cmd': 'call MdictCheckLang(1)'}, 0] ]
+```
+
+Function MdictCheckLang() does all the custom layout switching and can be
+regarded as a plugin to the XkbSwitch. The first three autocommands at the end
+are optional and only make editing mdict files more comfortable. The last
+autocommand (for CursorMovedI events) calls MdictCheckLang() when cursor moves
+into different columns in Insert mode. The next definition
+
+```vim
+let g:XkbSwitchPostIEnterAuto = [
+            \ [{'pat': '*.mdict', 'cmd': 'call MdictCheckLang(1)'}, 0] ]
+```
+
+registers an InsertEnter autocommand in augroup XkbSwitch. If we would have
+instead defined an InsertEnter autocommand here then the command would have
+been put before the standard InsertEnter autocommand in augroup XkbSwitch.
+Using variable g:XkbSwitchPostIEnterAuto ensures that the new command will run
+after the standard InsertEnter autocommand. The second element in an item
+inside g:XkbSwitchPostIEnterAuto can be 0 or 1. If it is 1 then XkbSwitch
+won't switch layout itself when entering Insert mode. In our case it should be
+0 because MdictCheckLang() requires preliminary switching keyboard layout from
+XkbSwitch when entering Insert mode.
+
 Troubleshooting
 ---------------
 
