@@ -270,10 +270,12 @@ let g:XkbSwitchPostIEnterAuto = [
 ```
 
 Function MdictCheckLang() does all the custom layout switching and can be
-regarded as a plugin to the XkbSwitch. The first three autocommands at the end
-are optional and only make editing mdict files more comfortable. The last
-autocommand (for CursorMovedI events) calls MdictCheckLang() when cursor moves
-into different columns in Insert mode. The next definition
+regarded as a plugin to the XkbSwitch. The first autocommand states that if
+file has extension 'mdict' then its filetype must be 'vimwiki' and turns on
+XkbSwitch. The next two autocommands are optional and only make editing mdict
+files more comfortable. The last autocommand (for CursorMovedI events) calls
+MdictCheckLang() when cursor moves into different columns in Insert mode.
+The next definition
 
 ```vim
 let g:XkbSwitchPostIEnterAuto = [
