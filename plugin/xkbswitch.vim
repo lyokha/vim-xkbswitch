@@ -132,10 +132,12 @@ endif
 fun! <SID>xkb_mappings_load()
     for hcmd in ['gh', 'gH', 'g']
         exe "nnoremap <buffer> <silent> ".hcmd.
-                    \ " :call <SID>xkb_switch(1)<CR>".hcmd
+                    \ " :call <SID>xkb_switch(1, 1)<CR>".hcmd
     endfor
-    xnoremap <buffer> <silent> <C-g> :<C-u>call <SID>xkb_switch(1)<CR>gv<C-g>
-    snoremap <buffer> <silent> <C-g> <C-g>:<C-u>call <SID>xkb_switch(0)<CR>gv
+    xnoremap <buffer> <silent> <C-g>
+                \ :<C-u>call <SID>xkb_switch(1, 1)<CR>gv<C-g>
+    snoremap <buffer> <silent> <C-g>
+                \ <C-g>:<C-u>call <SID>xkb_switch(0)<CR>gv
     let b:xkb_mappings_loaded = 1
 endfun
 
@@ -214,7 +216,7 @@ fun! <SID>imappings_load()
     endfor
 endfun
 
-fun! <SID>xkb_switch(mode)
+fun! <SID>xkb_switch(mode,...)
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
     if a:mode == 0
         if exists('b:xkb_nlayout')
@@ -235,7 +237,13 @@ fun! <SID>xkb_switch(mode)
                             \ b:xkb_ilayout)
             endif
         endif
-        let b:xkb_nlayout = cur_layout
+        if !exists('b:xkb_pending_imode')
+            let b:xkb_pending_imode = 0
+        endif
+        if !b:xkb_pending_imode
+            let b:xkb_nlayout = cur_layout
+        endif
+        let b:xkb_pending_imode = a:0 && a:1
     endif
 endfun
 

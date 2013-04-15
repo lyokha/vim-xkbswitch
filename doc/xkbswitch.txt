@@ -342,15 +342,14 @@ A. Change History~
       Insert mode: there is no default keyboard layout in Normal mode any
       more; instead last layout that was actual when entering Insert mode is
       being restored when leaving Insert mode.
-
     - Troubleshooting section in the documentation was extended
 
 0.6
     - Added variable g:XkbSwitchPostIEnterAuto to register InsertEnter
       autocommands that should run after standard XkbSwitch InsertEnter
       autocommand
-
     - Added an example of how custom keyboard layout switching rules inside
       Insert mode can be implemented
+    - Fixed Select mode switching broken in version 0.5
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
