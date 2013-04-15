@@ -213,7 +213,7 @@ Here the syntactic criteria have been defined: content of the first column
 will have syntax id 'mdictOriginal' and content of the second column -
 'mdictTranslated'.
 
-In .vimrc following lines must be put:
+In .vimrc following lines must be added:
 
 ```vim
 let g:mdict_synroles = ['mdictOriginal', 'mdictTranslated']
