@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 Apr 11
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 Apr 15
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.4
+                                version 0.5
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -190,5 +190,13 @@ A. Change History~
       supposed to be used to disable Insert mode mappings duplicates creation
       for specific file types
     - Docs updated
+
+0.5
+    - Cleaner and more generic algorithm for switching layout when leaving
+      Insert mode: there is no default keyboard layout in Normal mode any
+      more; instead last layout that was actual when entering Insert mode is
+      being restored when leaving Insert mode.
+
+    - Troubleshooting section in the documentation was extended
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:

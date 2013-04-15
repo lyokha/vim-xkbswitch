@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.4
+" Version:     0.5
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -30,21 +30,15 @@ let s:XkbSwitchDict = {
             \ 'unix':
             \ {'backend': g:XkbSwitchLib,
             \  'get':     'Xkb_Switch_getXkbLayout',
-            \  'set':     'Xkb_Switch_setXkbLayout',
-            \  'zero':    '',
-            \  'default': 'us'},
+            \  'set':     'Xkb_Switch_setXkbLayout'},
             \ 'win32':
             \ {'backend': g:XkbSwitchLib,
             \  'get':     'Xkb_Switch_getXkbLayout',
-            \  'set':     'Xkb_Switch_setXkbLayout',
-            \  'zero':    '',
-            \  'default': 'us'},
+            \  'set':     'Xkb_Switch_setXkbLayout'},
             \ 'win64':
             \ {'backend': g:XkbSwitchLib,
             \  'get':     'Xkb_Switch_getXkbLayout',
-            \  'set':     'Xkb_Switch_setXkbLayout',
-            \  'zero':    '',
-            \  'default': 'us'},
+            \  'set':     'Xkb_Switch_setXkbLayout'},
             \ }
 
 if !exists('g:XkbSwitch')
@@ -217,25 +211,27 @@ fun! <SID>imappings_load()
 endfun
 
 fun! <SID>xkb_switch(mode)
-    let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'],
-                \ g:XkbSwitch['zero'])
+    let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
     if a:mode == 0
-        if cur_layout != g:XkbSwitch['default']
-            call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
-                        \ g:XkbSwitch['default'])
+        if exists('b:xkb_nlayout')
+            if cur_layout != b:xkb_nlayout
+                call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
+                            \ b:xkb_nlayout)
+            endif
         endif
-        let b:xkb_layout = cur_layout
+        let b:xkb_ilayout = cur_layout
     elseif a:mode == 1
         if !exists('b:xkb_mappings_loaded')
             call <SID>xkb_mappings_load()
             call <SID>imappings_load()
         endif
-        if exists('b:xkb_layout')
-            if b:xkb_layout != cur_layout
+        if exists('b:xkb_ilayout')
+            if b:xkb_ilayout != cur_layout
                 call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
-                            \ b:xkb_layout)
+                            \ b:xkb_ilayout)
             endif
         endif
+        let b:xkb_nlayout = cur_layout
     endif
 endfun
 
