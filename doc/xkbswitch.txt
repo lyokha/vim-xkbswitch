@@ -316,6 +316,15 @@ XkbSwitch when entering Insert mode.
     keys in Insert mode mappings duplicates as they are. But this is not the
     case in GTK based gvim. The issue is still investigated.
 
+  - XkbSwitch supports switching via Select mode too. But there is a case when
+    switching from Select mode to Normal mode will fail to restore Normal mode
+    keyboard layout. This will happen when leaving Select mode without any
+    character having been entered. The reason is simple: vim does not generate
+    events that could be caught by autocommands when switching from Select
+    mode to Normal mode. A workaround could be: when you are leaving Select
+    mode without any character entered do it via Visual mode, e.g. enter
+    <C-G><Esc> instead simply <Esc>.
+
 ==============================================================================
                                             *xkbswitch-changes*
 A. Change History~
