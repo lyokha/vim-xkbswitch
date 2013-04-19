@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.7
+" Version:     0.8
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -60,6 +60,14 @@ endif
 
 if !exists('g:XkbSwitchSkipFt')
     let g:XkbSwitchSkipFt = [ 'tagbar', 'gundo', 'nerdtree', 'fuf' ]
+endif
+
+if !exists('g:XkbSwitchNLayout')
+    let g:XkbSwitchNLayout = ''
+endif
+
+if !exists('g:XkbSwitchILayout')
+    let g:XkbSwitchILayout = ''
 endif
 
 
@@ -227,11 +235,13 @@ fun! <SID>xkb_switch(mode,...)
         endif
     endfor
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+    let nlayout = g:XkbSwitchNLayout != '' ? g:XkbSwitchNLayout :
+                \ ( exists('b:xkb_nlayout') ? b:xkb_nlayout : '' )
     if a:mode == 0
-        if exists('b:xkb_nlayout')
-            if cur_layout != b:xkb_nlayout
+        if nlayout != ''
+            if cur_layout != nlayout
                 call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
-                            \ b:xkb_nlayout)
+                            \ nlayout)
             endif
         endif
         if !a:0 || a:1 != 2
@@ -242,17 +252,21 @@ fun! <SID>xkb_switch(mode,...)
             call <SID>xkb_mappings_load()
             call <SID>imappings_load()
         endif
-        if exists('b:xkb_ilayout')
-            if b:xkb_ilayout != cur_layout && !exists('b:xkb_ilayout_managed')
+        let ilayout = exists('b:xkb_ilayout') ? b:xkb_ilayout :
+                \ ( exists('g:XkbSwitchILayout') ? g:XkbSwitchILayout : '' )
+        if ilayout != ''
+            if ilayout != cur_layout && !exists('b:xkb_ilayout_managed')
                 call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
-                            \ b:xkb_ilayout)
+                            \ ilayout)
             endif
         endif
         if !exists('b:xkb_pending_imode')
             let b:xkb_pending_imode = 0
         endif
-        if !b:xkb_pending_imode && (!a:0 || a:1 != 2)
-            let b:xkb_nlayout = cur_layout
+        if g:XkbSwitchNLayout == ''
+            if !b:xkb_pending_imode && (!a:0 || a:1 != 2)
+                let b:xkb_nlayout = cur_layout
+            endif
         endif
         let b:xkb_pending_imode = a:0 && a:1 == 1
     endif
@@ -274,7 +288,9 @@ fun! <SID>xkb_save()
     if mode() =~ '^[iR]'
         let b:xkb_ilayout = cur_layout
     else
-        let b:xkb_nlayout = cur_layout
+        if g:XkbSwitchNLayout == ''
+            let b:xkb_nlayout = cur_layout
+        endif
     endif
 endfun
 

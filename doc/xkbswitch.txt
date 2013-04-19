@@ -4,7 +4,7 @@
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.7
+                                version 0.8
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -17,6 +17,10 @@ Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
     3. Features ..............................: |xkbswitch-features|
     4. Setup .................................: |xkbswitch-setup|
     5. Configuration .........................: |xkbswitch-configure|
+        5.1 Basic configuration ..............: |xkbswitch-conf-basic|
+        5.2 Default layouts ..................: |xkbswitch-default-layouts|
+        5.3 Disable for specific filetypes ...: |xkbswitch-filetype-disable|
+        5.4 Enable in runtime ................: |xkbswitch-runtime-enable|
     6. Custom keyboard layout switching rules.: |xkbswitch-plugins|
     7. Troubleshooting .......................: |xkbswitch-issues|
     A. Change History ........................: |xkbswitch-changes|
@@ -39,7 +43,7 @@ keyboard layout switcher is currently unknown and hence not supported.
 
 ==============================================================================
                                             *xkbswitch-features*
-2. Features~
+3. Features~
 
   - Supported OS: UNIX / X Server, Windows
   - Switches keyboard layout when entering / leaving Insert and Select modes
@@ -61,7 +65,7 @@ keyboard layout switcher is currently unknown and hence not supported.
 
 ==============================================================================
                                             *xkbswitch-setup*
-2. Setup~
+4. Setup~
 
 Before installation of the plugin the OS dependent keyboard layout switcher
 must be installed (see |xkbswitch-about|). The plugin itself is installed by
@@ -69,7 +73,11 @@ extracting of the distribution in your vim runtime directory.
 
 ==============================================================================
                                             *xkbswitch-configure*
-2. Configuration~
+5. Configuration~
+
+------------------------------------------------------------------------------
+                                            *xkbswitch-conf-basic*
+5.1 Basic configuration~
 
 Basic configuration requires only 1 line in your .vimrc:
 >
@@ -136,6 +144,31 @@ could be ')' to '=' translation, we would get '=' unusable in any keyboard
 layout (as far as echofunc treats ')' in a very specific way). That is why
 this translation is missing in example above and in file xkbswitch.tr content.
 
+------------------------------------------------------------------------------
+                                            *xkbswitch-default-layouts*
+5.2 Default layouts~
+
+By default saved Normal mode keyboard layout is restored when leaving Insert
+mode, but you can specify to use particular layout for that:
+>
+    let g:XkbSwitchNLayout = 'us'
+<
+Also you can specify original Insert mode keyboard layout:
+>
+    let g:XkbSwitchILayout = 'us'
+<
+It seems to be less useful than Normal mode default layout and the only good
+case one could imagine for that is when there are multiple buffers open in
+Normal mode in several windows or tabs and user enters Insert mode in one of
+them and changes layout to some value and then switches to another window or
+tab without leaving Insert mode, then Insert mode layout will switch to the
+value specified in g:XkbSwitchILayout, otherwise it will stay as in the first
+buffer.
+
+------------------------------------------------------------------------------
+                                            *xkbswitch-filetype-disable*
+5.3 Disable for specific filetypes~
+
 It makes sense to disable XkbSwitch for buffers with specific filetypes, for
 example various file system or tag navigators. For example to disable
 XkbSwitch for NerdTree add in your .vimrc line
@@ -144,6 +177,10 @@ XkbSwitch for NerdTree add in your .vimrc line
 <
 By default (e.g. when g:XkbSwitchSkipFt is not defined in .vimrc) following
 filetypes are skipped: 'tagbar', 'gundo', 'nerdtree' and 'fuf' (FuzzyFinder).
+
+------------------------------------------------------------------------------
+                                            *xkbswitch-runtime-enable*
+5.4 Enable in runtime~
 
 You can enable XkbSwitch in runtime (e.g. when g:XkbSwitchEnabled is not set
 in your .vimrc) by issuing command
@@ -379,5 +416,10 @@ A. Change History~
       tabs without leaving Insert mode
     - A new variable g:XkbSwitchSkipFt was introduced to provide ability of
       disabling XkbSwitch for specific filetypes
+
+0.8
+    - Added possibility to specify default Normal mode keyboard layout and
+      original Insert mode keyboard layout
+    - Docs fixed and extended
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:

@@ -51,6 +51,8 @@ extracting of the distribution in your vim runtime directory.
 Configuration
 -------------
 
+### Basic configuration
+
 Basic configuration requires only 1 line in your .vimrc:
 
 ```vim
@@ -130,6 +132,31 @@ could be ')' to '=' translation, we would get '=' unusable in any keyboard
 layout (as far as echofunc treats ')' in a very specific way). That is why
 this translation is missing in example above and in file xkbswitch.tr content.
 
+### Default layouts
+
+By default saved Normal mode keyboard layout is restored when leaving Insert
+mode, but you can specify to use particular layout for that:
+
+```vim
+let g:XkbSwitchNLayout = 'us'
+```
+
+Also you can specify original Insert mode keyboard layout:
+
+```vim
+let g:XkbSwitchILayout = 'us'
+```
+
+It seems to be less useful than Normal mode default layout and the only good
+case one could imagine for that is when there are multiple buffers open in
+Normal mode in several windows or tabs and user enters Insert mode in one of
+them and changes layout to some value and then switches to another window or
+tab without leaving Insert mode, then Insert mode layout will switch to the
+value specified in g:XkbSwitchILayout, otherwise it will stay as in the first
+buffer.
+
+### Disable for specific filetypes
+
 It makes sense to disable XkbSwitch for buffers with specific filetypes, for
 example various file system or tag navigators. For example to disable
 XkbSwitch for NerdTree add in your .vimrc line
@@ -140,6 +167,8 @@ let g:XkbSwitchSkipFt = [ 'nerdtree' ]
 
 By default (e.g. when g:XkbSwitchSkipFt is not defined in .vimrc) following
 filetypes are skipped: 'tagbar', 'gundo', 'nerdtree' and 'fuf' (FuzzyFinder).
+
+### Enable in runtime
 
 You can enable XkbSwitch in runtime (e.g. when g:XkbSwitchEnabled is not set
 in your .vimrc) by issuing command
