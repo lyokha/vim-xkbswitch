@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.6
+" Version:     0.7
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -56,6 +56,10 @@ endif
 
 if !exists('g:XkbSwitchIMappings')
     let g:XkbSwitchIMappings = []
+endif
+
+if !exists('g:XkbSwitchSkipFt')
+    let g:XkbSwitchSkipFt = [ 'tagbar', 'gundo', 'nerdtree', 'fuf' ]
 endif
 
 
@@ -217,6 +221,11 @@ fun! <SID>imappings_load()
 endfun
 
 fun! <SID>xkb_switch(mode,...)
+    for ft in g:XkbSwitchSkipFt
+        if ft == &ft
+            return
+        endif
+    endfor
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
     if a:mode == 0
         if exists('b:xkb_nlayout')
@@ -250,6 +259,11 @@ fun! <SID>xkb_switch(mode,...)
 endfun
 
 fun! <SID>xkb_save()
+    for ft in g:XkbSwitchSkipFt
+        if ft == &ft
+            return
+        endif
+    endfor
     " BEWARE: if buffer has not entered Insert mode yet (i.e.
     " b:xkb_mappings_loaded is not loaded yet) then specific Normal mode
     " keyboard layout for this buffer will be lost

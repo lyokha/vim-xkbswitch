@@ -21,8 +21,10 @@ Features
 --------
 
 * Supported OS: UNIX / X Server, Windows
-* Switches keyboard layout when entering / leaving Insert and Select mode
+* Switches keyboard layout when entering / leaving Insert and Select modes
 * Keyboard layouts are stored separately for each buffer
+* Keyboard layouts are kept intact while navigating between windows or
+  tabs without leaving Insert mode
 * Automatic loading of language-friendly Insert mode mappings duplicates.
   For example when Russian mappings have loaded then if there was a mapping
 
@@ -127,6 +129,17 @@ for '(' and ')', therefore assuming that in Deutsch translation map there
 could be ')' to '=' translation, we would get '=' unusable in any keyboard
 layout (as far as echofunc treats ')' in a very specific way). That is why
 this translation is missing in example above and in file xkbswitch.tr content.
+
+It makes sense to disable XkbSwitch for buffers with specific filetypes, for
+example various file system or tag navigators. For example to disable
+XkbSwitch for NerdTree add in your .vimrc line
+
+```vim
+let g:XkbSwitchSkipFt = [ 'nerdtree' ]
+```
+
+By default (e.g. when g:XkbSwitchSkipFt is not defined in .vimrc) following
+filetypes are skipped: 'tagbar', 'gundo', 'nerdtree' and 'fuf' (FuzzyFinder).
 
 You can enable XkbSwitch in runtime (e.g. when g:XkbSwitchEnabled is not set
 in your .vimrc) by issuing command
