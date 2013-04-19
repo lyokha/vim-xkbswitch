@@ -378,6 +378,6 @@ A. Change History~
     - Keyboard layouts are kept intact while navigating between windows or
       tabs without leaving Insert mode
     - A new variable g:XkbSwitchSkipFt was introduced to provide ability of
-      disabling XkbSwitch for specific filetypes.
+      disabling XkbSwitch for specific filetypes
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
