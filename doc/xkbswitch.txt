@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 Apr 19
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 Apr 20
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.8
+                                version 0.8.1
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -414,5 +414,19 @@ A. Change History~
     - Added possibility to specify default Normal mode and original Insert
       mode keyboard layouts
     - Docs fixed and extended
+
+0.8.1
+    - Fixed a bug when original Insert mode layout could be lost when leaving
+      a buffer in Insert mode for a new tab in gvim. Thanks to zdm for code
+      contribution. The bug was caused by missing BufLeave events in certain
+      cases. It seems that it does not affect all vim flavors (both latest
+      Mercurial snapshot built on my Fedora 18 desktop and standard vim
+      distribution taken from repository seem to be not affected). You can
+      disable the code of the fix by adding in your .vimrc line
+
+        let g:XkbSwitchFixNoBufLeave = 0
+
+      if you know that your vim is good and always generates BufLeave events
+      when jumping to another tab while being in Insert mode
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
