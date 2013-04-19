@@ -225,7 +225,9 @@ fun! <SID>xkb_switch(mode,...)
                             \ b:xkb_nlayout)
             endif
         endif
-        let b:xkb_ilayout = cur_layout
+        if !a:0 || a:1 != 2
+            let b:xkb_ilayout = cur_layout
+        endif
     elseif a:mode == 1
         if !exists('b:xkb_mappings_loaded')
             call <SID>xkb_mappings_load()
@@ -240,10 +242,25 @@ fun! <SID>xkb_switch(mode,...)
         if !exists('b:xkb_pending_imode')
             let b:xkb_pending_imode = 0
         endif
-        if !b:xkb_pending_imode
+        if !b:xkb_pending_imode && (!a:0 || a:1 != 2)
             let b:xkb_nlayout = cur_layout
         endif
-        let b:xkb_pending_imode = a:0 && a:1
+        let b:xkb_pending_imode = a:0 && a:1 == 1
+    endif
+endfun
+
+fun! <SID>xkb_save()
+    " BEWARE: if buffer has not entered Insert mode yet (i.e.
+    " b:xkb_mappings_loaded is not loaded yet) then specific Normal mode
+    " keyboard layout for this buffer will be lost
+    if !exists('b:xkb_mappings_loaded')
+        return
+    endif
+    let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+    if mode() =~ '^[iR]'
+        let b:xkb_ilayout = cur_layout
+    else
+        let b:xkb_nlayout = cur_layout
     endif
 endfun
 
@@ -261,6 +278,10 @@ fun! <SID>enable_xkb_switch(force)
                                 \ " | let b:xkb_ilayout_managed = 1 | endif"
             endfor
             autocmd InsertLeave * call <SID>xkb_switch(0)
+            " BEWARE: Select modes are not supported well when navigating
+            " between windows or tabs due to vim restrictions
+            autocmd BufEnter * call <SID>xkb_switch(mode() =~ '^[iR]', 2)
+            autocmd BufLeave * call <SID>xkb_save()
         augroup END
     endif
     let g:XkbSwitchEnabled = 1
