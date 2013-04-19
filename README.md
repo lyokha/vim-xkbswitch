@@ -147,14 +147,6 @@ Also you can specify original Insert mode keyboard layout:
 let g:XkbSwitchILayout = 'us'
 ```
 
-It seems to be less useful than Normal mode default layout and the only good
-case one could imagine for that is when there are multiple buffers open in
-Normal mode in several windows or tabs and user enters Insert mode in one of
-them and changes layout to some value and then switches to another window or
-tab without leaving Insert mode, then Insert mode layout will switch to the
-value specified in g:XkbSwitchILayout, otherwise it will stay as in the first
-buffer.
-
 ### Disable for specific filetypes
 
 It makes sense to disable XkbSwitch for buffers with specific filetypes, for
