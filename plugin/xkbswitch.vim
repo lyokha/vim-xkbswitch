@@ -140,6 +140,12 @@ if !exists('g:XkbSwitchPostIEnterAuto')
     let g:XkbSwitchPostIEnterAuto = []
 endif
 
+if !exists('g:XkbSwitchFixNoBufLeave')
+    let g:XkbSwitchFixNoBufLeave = 1
+endif
+
+let s:last_ienter_bufnr = 0
+
 
 fun! <SID>xkb_mappings_load()
     for hcmd in ['gh', 'gH', 'g']
@@ -272,7 +278,7 @@ fun! <SID>xkb_switch(mode,...)
     endif
 endfun
 
-fun! <SID>xkb_save()
+fun! <SID>xkb_save(...)
     for ft in g:XkbSwitchSkipFt
         if ft == &ft
             return
@@ -285,11 +291,15 @@ fun! <SID>xkb_save()
         return
     endif
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
-    if mode() =~ '^[iR]'
-        let b:xkb_ilayout = cur_layout
+    if g:XkbSwitchFixNoBufLeave && exists('a:1')
+        call setbufvar(a:1, 'xkb_ilayout', cur_layout)
     else
-        if g:XkbSwitchNLayout == ''
-            let b:xkb_nlayout = cur_layout
+        if mode() =~ '^[iR]'
+            let b:xkb_ilayout = cur_layout
+        else
+            if g:XkbSwitchNLayout == ''
+                let b:xkb_nlayout = cur_layout
+            endif
         endif
     endif
 endfun
@@ -301,7 +311,8 @@ fun! <SID>enable_xkb_switch(force)
     if filereadable(g:XkbSwitch['backend']) == 1
         augroup XkbSwitch
             au!
-            autocmd InsertEnter * call <SID>xkb_switch(1)
+            autocmd InsertEnter * let s:last_ienter_bufnr = bufnr('%') |
+                        \ call <SID>xkb_switch(1)
             for item in g:XkbSwitchPostIEnterAuto
                 exe "autocmd InsertEnter ".item[0]['pat']." ".item[0]['cmd'].
                             \ " | if ".item[1].
@@ -310,8 +321,15 @@ fun! <SID>enable_xkb_switch(force)
             autocmd InsertLeave * call <SID>xkb_switch(0)
             " BEWARE: Select modes are not supported well when navigating
             " between windows or tabs due to vim restrictions
-            autocmd BufEnter * call <SID>xkb_switch(mode() =~ '^[iR]', 2)
-            autocmd BufLeave * call <SID>xkb_save()
+            autocmd BufEnter * let s:last_ienter_bufnr = 0 |
+                        \ call <SID>xkb_switch(mode() =~ '^[iR]', 2)
+            autocmd BufLeave * let s:last_ienter_bufnr = 0 |
+                        \ call <SID>xkb_save()
+            if g:XkbSwitchFixNoBufLeave
+                autocmd TabLeave * if s:last_ienter_bufnr != 0 &&
+                            \ s:last_ienter_bufnr != bufnr('%') |
+                            \ call <SID>xkb_save(s:last_ienter_bufnr) | endif
+            endif
         augroup END
     endif
     let g:XkbSwitchEnabled = 1
