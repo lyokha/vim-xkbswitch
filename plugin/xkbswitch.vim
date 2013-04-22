@@ -145,7 +145,7 @@ endif
 " it if another file is being open from an external program (terminal or file
 " manager) using option --remote-tab (and similar)
 let s:XkbSwitchSaveILayout = has('gui_running') && has('clientserver')
-let s:XkbSwitchFocused = 0
+let s:XkbSwitchFocused = 1
 
 
 fun! <SID>xkb_mappings_load()
