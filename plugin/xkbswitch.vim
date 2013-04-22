@@ -294,7 +294,7 @@ endfun
 
 fun! <SID>xkb_save(...)
     let imode = mode() =~ '^[iR]'
-    let save_ilayout_param = g:XkbSwitchSaveILayout && a:0
+    let save_ilayout_param = s:XkbSwitchSaveILayout && a:0
     if save_ilayout_param && !g:XkbSwitch['local'] &&
                 \ ( !imode || !s:XkbSwitchFocused )
         return
