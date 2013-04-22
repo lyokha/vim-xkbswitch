@@ -304,14 +304,18 @@ fun! <SID>xkb_save(...)
             return
         endif
     endfor
+    let save_ilayout_param_local = save_ilayout_param && g:XkbSwitch['local']
     " BEWARE: if buffer has not entered Insert mode yet (i.e.
     " b:xkb_mappings_loaded is not loaded yet) then specific Normal mode
     " keyboard layout for this buffer will be lost
-    if !exists('b:xkb_mappings_loaded')
+    let xkb_loaded = save_ilayout_param_local ?
+                \ getbufvar(a:1, 'xkb_mappings_loaded') :
+                \ exists('b:xkb_mappings_loaded')
+    if !xkb_loaded
         return
     endif
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
-    if save_ilayout_param && g:XkbSwitch['local']
+    if save_ilayout_param_local
         call setbufvar(a:1, 'xkb_ilayout', cur_layout)
     else
         if imode
