@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 Apr 20
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 Apr 22
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.8.1
+                                version 0.8.2
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -428,5 +428,12 @@ A. Change History~
 
       if you know that your vim is good and always generates BufLeave events
       when jumping to another tab while being in Insert mode
+
+0.8.2
+    - The cause of the issue explained in the 0.8.1 change log discovered. It
+      affects gvim in client-server mode (e.g. when files are open from an
+      external application using options --remote-tab and similar). Variable
+      g:XkbSwitchFixNoBufLeave is not needed any more: the fix is applied
+      automatically in gvim with clientserver feature.
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
