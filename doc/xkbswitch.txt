@@ -434,6 +434,11 @@ A. Change History~
       affects gvim in client-server mode (e.g. when files are open from an
       external application using options --remote-tab and similar). Variable
       g:XkbSwitchFixNoBufLeave is not needed any more: the fix is applied
-      automatically in gvim with clientserver feature.
+      automatically in gvim with clientserver feature. Also this issue
+      investigation revealed that different switcher strategies implemented
+      inside backend libraries must be supported. Currently X server switcher
+      gets and sets keyboard layout globally whereas Windows switcher does it
+      locally in vim window. This difference is reflected in a new field
+      'local' in dictionary g:XkbSwitch
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:

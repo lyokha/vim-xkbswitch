@@ -294,9 +294,9 @@ endfun
 
 fun! <SID>xkb_save(...)
     let imode = mode() =~ '^[iR]'
-    " BEWARE: it is expected that a parameter can be passed only when
-    " s:XkbSwitchSaveILayout is 1!
-    if a:0 && !g:XkbSwitch['local'] && ( !imode || !s:XkbSwitchFocused )
+    let save_ilayout_param = g:XkbSwitchSaveILayout && a:0
+    if save_ilayout_param && !g:XkbSwitch['local'] &&
+                \ ( !imode || !s:XkbSwitchFocused )
         return
     endif
     for ft in g:XkbSwitchSkipFt
@@ -311,7 +311,7 @@ fun! <SID>xkb_save(...)
         return
     endif
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
-    if s:XkbSwitchSaveILayout && a:0 && g:XkbSwitch['local']
+    if save_ilayout_param && g:XkbSwitch['local']
         call setbufvar(a:1, 'xkb_ilayout', cur_layout)
     else
         if imode
