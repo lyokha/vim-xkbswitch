@@ -311,7 +311,7 @@ In .vimrc following lines must be added:
 <
 Function MdictCheckLang() does all the custom layout switching and can be
 regarded as a plugin to the XkbSwitch. The first autocommand states that if
-file has extension 'mdict' then its filetype must be 'vimwiki' and turns on
+file has extension '.mdict' then its filetype must be 'vimwiki' and turns on
 XkbSwitch. The next two autocommands are optional and only make editing mdict
 files more comfortable. The last autocommand (for CursorMovedI events) calls
 MdictCheckLang() when cursor moves into different columns in Insert mode.
