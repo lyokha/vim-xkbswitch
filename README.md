@@ -80,9 +80,9 @@ layouts, for example
 let g:XkbSwitchIMappings = ['ru', 'de']
 ```
 
-but currently only Russian winkeys layout translation map ('ru') is supported
+but currently only Russian winkeys layout translation map (*ru*) is supported
 out of the box. There are 2 ways how a user can provide extra definitions of
-keyboard layout translation maps (or replace existing default 'ru' map):
+keyboard layout translation maps (or replace existing default *ru* map):
 
 * Define variable g:XkbSwitchIMappingsTr:
 
@@ -127,14 +127,14 @@ keyboard layout translation maps (or replace existing default 'ru' map):
 Be very careful with mapping duplicates! They won't replace existing Insert
 mode mappings but may define extra mappings that will change normal Insert
 mode user experience. For example plugin echofunc defines Insert mode mappings
-for '(' and ')', therefore assuming that in Deutsch translation map there
-could be ')' to '=' translation, we would get '=' unusable in any keyboard
-layout (as far as echofunc treats ')' in a very specific way). That is why
+for *(* and *)*, therefore assuming that in Deutsch translation map there
+could be *)* to *=* translation, we would get *=* unusable in any keyboard
+layout (as far as echofunc treats *)* in a very specific way). That is why
 this translation is missing in example above and in file xkbswitch.tr content.
 
 ### Default layouts
 
-By default saved Normal mode keyboard layout is restored when leaving Insert
+By default last Normal mode keyboard layout is restored when leaving Insert
 mode, but you can specify to use particular layout for that:
 
 ```vim
@@ -158,7 +158,7 @@ let g:XkbSwitchSkipFt = [ 'nerdtree' ]
 ```
 
 By default (e.g. when g:XkbSwitchSkipFt is not defined in .vimrc) following
-filetypes are skipped: 'tagbar', 'gundo', 'nerdtree' and 'fuf' (FuzzyFinder).
+filetypes are skipped: *tagbar*, *gundo*, *nerdtree* and *fuf* (FuzzyFinder).
 
 ### Enable in runtime
 
@@ -197,7 +197,7 @@ In this section it will be shown how to achieve this. First of all there
 should exist criteria upon which XkbSwitch will decide when it must switch
 layouts. The simplest criteria are syntactic rules. So the content of the
 columns must be syntactically distinguishable. It means that we need a file
-with syntax rules and some new filetype defined, say 'mdict'. For the sake of
+with syntax rules and some new filetype defined, say *mdict*. For the sake of
 simplicity let it be not an absolutely new filetype but rather a subclass of
 an existing one, for example vimwiki. Then we should create a new file
 after/syntax/vimwiki.vim:
@@ -244,8 +244,8 @@ hi link mdictExtra      mdictExtraHl
 ```
 
 Here the syntactic criteria have been defined: content of the first column
-will have syntax id 'mdictOriginal' and content of the second column -
-'mdictTranslated'.
+will have syntax id *mdictOriginal* and content of the second column -
+*mdictTranslated*.
 
 In .vimrc following lines must be added:
 
@@ -305,7 +305,7 @@ let g:XkbSwitchPostIEnterAuto = [
 
 Function MdictCheckLang() does all the custom layout switching and can be
 regarded as a plugin to the XkbSwitch. The first autocommand states that if
-file has extension 'mdict' then its filetype must be 'vimwiki' and turns on
+file has extension *mdict* then its filetype must be *vimwiki* and turns on
 XkbSwitch. The next two autocommands are optional and only make editing mdict
 files more comfortable. The last autocommand (for CursorMovedI events) calls
 MdictCheckLang() when cursor moves into different columns in Insert mode.
@@ -333,7 +333,7 @@ Troubleshooting
   entering Russian symbols in Insert mode when editing tex files becomes
   impossible. The issue arises from clashing XkbSwitch Insert mappings
   duplicates with mappings defined in vim-latex. To work this issue around you
-  can disable XkbSwitch Insert mode mappings duplicates for filetype 'tex':
+  can disable XkbSwitch Insert mode mappings duplicates for filetype *tex*:
 
   ```vim
   let g:XkbSwitchIMappingsSkipFt = ['tex']

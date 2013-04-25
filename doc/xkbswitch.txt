@@ -148,7 +148,7 @@ this translation is missing in example above and in file xkbswitch.tr content.
                                             *xkbswitch-default-layouts*
 5.2 Default layouts~
 
-By default saved Normal mode keyboard layout is restored when leaving Insert
+By default last Normal mode keyboard layout is restored when leaving Insert
 mode, but you can specify to use particular layout for that:
 >
     let g:XkbSwitchNLayout = 'us'
