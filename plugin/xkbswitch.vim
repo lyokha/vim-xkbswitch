@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.8.2
+" Version:     0.9
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -75,6 +75,10 @@ if !exists('g:XkbSwitchILayout')
     let g:XkbSwitchILayout = ''
 endif
 
+if !exists('g:XkbSwitchEnabled')
+    let g:XkbSwitchEnabled = 0
+endif
+
 
 fun! <SID>tr_load(file)
     let g:XkbSwitchIMappingsTr = {}
@@ -143,6 +147,10 @@ endif
 
 if !exists('g:XkbSwitchPostIEnterAuto')
     let g:XkbSwitchPostIEnterAuto = []
+endif
+
+if !exists('g:XkbSwitchSyntaxRules')
+    let g:XkbSwitchSyntaxRules = []
 endif
 
 " gvim client-server workaround:
@@ -245,6 +253,146 @@ fun! <SID>imappings_load()
     endfor
 endfun
 
+fun! <SID>check_syntax_rules(force)
+    let col = col('.') == col('$') ? col('.') - 1 : col('.')
+    let cur_synid  = synIDattr(synID(line("."), col, 1), "name")
+    if !exists('b:xkb_saved_cur_synid')
+        let b:xkb_saved_cur_synid = cur_synid
+    endif
+    if !exists('b:xkb_saved_cur_layout')
+        let b:xkb_saved_cur_layout = {}
+    endif
+    if cur_synid != b:xkb_saved_cur_synid || a:force
+        let cur_layout = ''
+        let switched = 0
+        for role in b:xkb_syntax_in_roles
+            if index(b:xkb_syntax_out_roles, role) != -1 && a:force
+                continue
+            endif
+            if b:xkb_saved_cur_synid == role
+                let cur_layout =
+                    \ libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+                let b:xkb_saved_cur_layout[role] = cur_layout
+                break
+            endif
+        endfor
+        for role in b:xkb_syntax_in_roles
+            if cur_synid == role
+                if index(b:xkb_syntax_out_roles, b:xkb_saved_cur_synid) == -1
+                    let cur_layout1 = cur_layout != '' ? cur_layout :
+                                \ libcall(g:XkbSwitch['backend'],
+                                \ g:XkbSwitch['get'], '')
+                    let b:xkb_ilayout = cur_layout1
+                endif
+                if exists('b:xkb_saved_cur_layout[role]')
+                    if b:xkb_saved_cur_layout[role] != cur_layout
+                        call libcall(g:XkbSwitch['backend'],
+                                    \ g:XkbSwitch['set'],
+                                    \ b:xkb_saved_cur_layout[role])
+                        let switched = 1
+                    endif
+                else
+                    let b:xkb_saved_cur_layout[role] = empty(cur_layout) ?
+                                \ libcall(g:XkbSwitch['backend'],
+                                \ g:XkbSwitch['get'], '') : cur_layout
+                endif
+                break
+            endif
+        endfor
+        if switched
+            let b:xkb_saved_cur_synid = cur_synid
+            return
+        endif
+        for role in b:xkb_syntax_out_roles
+            if b:xkb_saved_cur_synid == role
+                let ilayout = exists('b:xkb_ilayout') ? b:xkb_ilayout :
+                            \ ( exists('g:XkbSwitchILayout') ?
+                            \ g:XkbSwitchILayout : '' )
+                if ilayout != ''
+                    if ilayout != cur_layout
+                        call libcall(g:XkbSwitch['backend'],
+                                    \ g:XkbSwitch['set'], ilayout)
+                    endif
+                endif
+                break
+            endif
+        endfor
+        let b:xkb_saved_cur_synid = cur_synid
+    endif
+endfun
+
+fun! <SID>syntax_rules_load()
+    for rule in g:XkbSwitchSyntaxRules
+        let in_roles = []
+        let out_roles = []
+        if exists('rule["in"]')
+            let in_roles = rule['in']
+        endif
+        if exists('rule["inout"]')
+            let out_roles = rule['inout']
+            let in_roles += out_roles
+        endif
+        let in_quote = empty(in_roles) ? '' : "'"
+        let out_quote = empty(out_roles) ? '' : "'"
+        augroup XkbSwitch
+            if exists('rule["pat"]')
+                exe "autocmd InsertEnter ".rule['pat'].
+                            \ " if !exists('b:xkb_syntax_in_roles') | ".
+                            \ "let b:xkb_syntax_in_roles = [".in_quote.
+                            \ join(in_roles, "','").in_quote.
+                            \ "] | let b:xkb_syntax_out_roles = [".out_quote.
+                            \ join(out_roles, "','").out_quote.
+                            \ "] | endif | call <SID>check_syntax_rules(1)"
+                exe "autocmd CursorMovedI ".rule['pat'].
+                            \ " if !exists('b:xkb_syntax_in_roles') | ".
+                            \ "let b:xkb_syntax_in_roles = [".in_quote.
+                            \ join(in_roles, "','").in_quote.
+                            \ "] | let b:xkb_syntax_out_roles = [".out_quote.
+                            \ join(out_roles, "','").out_quote.
+                            \ "] | endif | call <SID>check_syntax_rules(0)"
+            endif
+            if exists('rule["ft"]')
+                exe "autocmd InsertEnter * if index(['".
+                            \ join(split(rule['ft'], '\s*,\s*'), "','").
+                            \ "'], &ft) != -1 | ".
+                            \ "if !exists('b:xkb_syntax_in_roles') | ".
+                            \ "let b:xkb_syntax_in_roles = [".in_quote.
+                            \ join(in_roles, "','").in_quote.
+                            \ "] | let b:xkb_syntax_out_roles = [".out_quote.
+                            \ join(out_roles, "','").out_quote.
+                            \ "] | endif | call <SID>check_syntax_rules(1) ".
+                            \ "| endif"
+                exe "autocmd CursorMovedI * if index(['".
+                            \ join(split(rule['ft'], '\s*,\s*'), "','").
+                            \ "'], &ft) != -1 | ".
+                            \ "if !exists('b:xkb_syntax_in_roles') | ".
+                            \ "let b:xkb_syntax_in_roles = [".in_quote.
+                            \ join(in_roles, "','").in_quote.
+                            \ "] | let b:xkb_syntax_out_roles = [".out_quote.
+                            \ join(out_roles, "','").out_quote.
+                            \ "] | endif | call <SID>check_syntax_rules(0) ".
+                            \ "| endif"
+            endif
+        augroup END
+    endfor
+endfun
+
+fun! <SID>save_ilayout(cur_layout)
+    let ilayout_role = 'b:xkb_ilayout'
+    if exists('b:xkb_syntax_out_roles')
+        let col = col('.') == col('$') ? col('.') - 1 : col('.')
+        let cur_synid  = synIDattr(synID(line("."), col, 1), "name")
+        for role in b:xkb_syntax_out_roles
+            if cur_synid == role
+                let ilayout_role = 'b:xkb_saved_cur_layout["'.role.'"]'
+                break
+            endif
+        endfor
+    endif
+    exe "if exists('".ilayout_role."') | let ".ilayout_role." = '".
+                \ a:cur_layout."' | endif"
+endfun
+
 fun! <SID>xkb_switch(mode,...)
     if s:XkbSwitchSaveILayout && !g:XkbSwitch['local'] && !s:XkbSwitchFocused
         return
@@ -265,19 +413,39 @@ fun! <SID>xkb_switch(mode,...)
             endif
         endif
         if !a:0 || a:1 != 2
-            let b:xkb_ilayout = cur_layout
+            call <SID>save_ilayout(cur_layout)
         endif
     elseif a:mode == 1
         if !exists('b:xkb_mappings_loaded')
             call <SID>xkb_mappings_load()
             call <SID>imappings_load()
+            call <SID>syntax_rules_load()
         endif
-        let ilayout = exists('b:xkb_ilayout') ? b:xkb_ilayout :
+        let switched = 0
+        if a:0 && a:1 == 1 && exists('b:xkb_syntax_in_roles')
+            let col = mode() =~ '^[vV]' ? col('v') : col('.')
+            let line = mode() =~ '^[vV]' ? line('v') : line('.')
+            let cur_synid  = synIDattr(synID(line, col, 1), "name")
+            for role in b:xkb_syntax_in_roles
+                if cur_synid == role && exists('b:xkb_saved_cur_layout[role]')
+                    if b:xkb_saved_cur_layout[role] != cur_layout
+                        call libcall(g:XkbSwitch['backend'],
+                                    \ g:XkbSwitch['set'],
+                                    \ b:xkb_saved_cur_layout[role])
+                        let switched = 1
+                    endif
+                    break
+                endif
+            endfor
+        endif
+        if !switched
+            let ilayout = exists('b:xkb_ilayout') ? b:xkb_ilayout :
                 \ ( exists('g:XkbSwitchILayout') ? g:XkbSwitchILayout : '' )
-        if ilayout != ''
-            if ilayout != cur_layout && !exists('b:xkb_ilayout_managed')
-                call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
-                            \ ilayout)
+            if ilayout != ''
+                if ilayout != cur_layout && !exists('b:xkb_ilayout_managed')
+                    call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
+                                \ ilayout)
+                endif
             endif
         endif
         if !exists('b:xkb_pending_imode')
@@ -319,7 +487,7 @@ fun! <SID>xkb_save(...)
         call setbufvar(a:1, 'xkb_ilayout', cur_layout)
     else
         if imode
-            let b:xkb_ilayout = cur_layout
+            call <SID>save_ilayout(cur_layout)
         else
             if g:XkbSwitchNLayout == ''
                 let b:xkb_nlayout = cur_layout
@@ -329,7 +497,7 @@ fun! <SID>xkb_save(...)
 endfun
 
 fun! <SID>enable_xkb_switch(force)
-    if exists('g:XkbSwitchEnabled') && g:XkbSwitchEnabled && !a:force
+    if g:XkbSwitchEnabled && !a:force
         return
     endif
     if filereadable(g:XkbSwitch['backend']) == 1
@@ -339,9 +507,16 @@ fun! <SID>enable_xkb_switch(force)
                         \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
                         \ call <SID>xkb_switch(1)
             for item in g:XkbSwitchPostIEnterAuto
-                exe "autocmd InsertEnter ".item[0]['pat']." ".item[0]['cmd'].
-                            \ " | if ".item[1].
+                if exists('item[0]["pat"]')
+                    exe "autocmd InsertEnter ".item[0]['pat']." ".
+                                \ item[0]['cmd']." | if ".item[1].
                                 \ " | let b:xkb_ilayout_managed = 1 | endif"
+                endif
+                if exists('item[0]["ft"]')
+                    exe "autocmd InsertEnter * if &ft == '".item[0]['ft'].
+                        \ "' | ".item[0]['cmd']." | if ".item[1].
+                        \ " | let b:xkb_ilayout_managed = 1 | endif | endif"
+                endif
             endfor
             autocmd InsertLeave * call <SID>xkb_switch(0)
             " BEWARE: Select modes are not supported well when navigating
@@ -370,7 +545,7 @@ endfun
 
 command EnableXkbSwitch call <SID>enable_xkb_switch(0)
 
-if exists('g:XkbSwitchEnabled') && g:XkbSwitchEnabled
+if g:XkbSwitchEnabled
     call <SID>enable_xkb_switch(1)
 endif
 

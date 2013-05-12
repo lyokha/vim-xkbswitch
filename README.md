@@ -326,6 +326,32 @@ won't switch layout itself when entering Insert mode. In our case it should be
 0 because MdictCheckLang() requires preliminary switching keyboard layout from
 XkbSwitch when entering Insert mode.
 
+Starting from version 0.9 a generic helper for building custom keyboard layout
+switching rules based on syntax was implemented inside the plugin code. Now
+building syntax rules is as simple as defining variable g:XkbSwitchSyntaxRules
+in .vimrc. For example
+
+```vim
+let g:XkbSwitchSyntaxRules = [
+            \ {'pat': '*.mdict', 'in': ['mdictOriginal', 'mdictTranslated']},
+            \ {'ft': 'c,cpp', 'inout': ['cComment', 'cCommentL']} ]
+```
+
+registers syntax rules for files with extension *.mdict* (the first element in
+g:XkbSwitchSyntaxRules: it replaces our old definitions of g:mdict_synroles,
+MdictCheckLang(), autocmd CursorMovedI and g:XkbSwitchPostIEnterAuto) and
+comments rules for C and C++ files (the second element in
+g:XkbSwitchSyntaxRules). The comments rules define that comments areas may
+have their own keyboard layouts in Insert mode and when cursor enters or
+leaves them the corresponding layouts must be restored. It may be useful if
+a user wants to make comments in a language that uses not standard keyboard
+layout without switching layouts back and forth. Notice that the second rule
+lists syntax groups in element *inout* whereas the first rule uses element
+*in*. The difference is that in the case of the comments rule we want to
+restore basic keyboard layout (i.e. layout for code areas) when leaving
+comments areas, but in the mdict rule we do not care about leaving areas
+*mdictOriginal* and *mdictTranslated* and only care about entering them.
+
 Troubleshooting
 ---------------
 
