@@ -389,8 +389,8 @@ fun! <SID>save_ilayout(cur_layout)
             endif
         endfor
     endif
-    exe "if exists('".ilayout_role."') | let ".ilayout_role." = '".
-                \ a:cur_layout."' | endif"
+    exe "if ilayout_role == 'b:xkb_ilayout' || exists('".ilayout_role.
+                \ "') | let ".ilayout_role." = '".a:cur_layout."' | endif"
 endfun
 
 fun! <SID>xkb_switch(mode,...)
