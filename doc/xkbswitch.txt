@@ -4,7 +4,7 @@
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.9
+                                version 0.9.2
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -62,6 +62,8 @@ keyboard layout switcher is currently unknown and hence not supported.
     will be loaded. Insert mode mappings duplicates make it easy to apply
     existing maps in Insert mode without switching current keyboard layout.
     See details in |xkb-configure|
+  - Fast and easy building of custom syntax based keyboard layout switching
+    rules in Insert mode
 
 ==============================================================================
                                             *xkbswitch-setup*
@@ -330,8 +332,8 @@ won't switch layout itself when entering Insert mode. In our case it should be
 0 because MdictCheckLang() requires preliminary switching keyboard layout from
 XkbSwitch when entering Insert mode.
 
-Starting from version 0.9 a generic helper for building custom keyboard layout
-switching rules based on syntax was implemented inside the plugin code. Now
+Starting from version 0.9 a generic helper for building custom syntax based
+keyboard layout switching rules was implemented inside the plugin code. Now
 building syntax rules is as simple as defining variable g:XkbSwitchSyntaxRules
 in .vimrc. For example
 >
@@ -466,7 +468,14 @@ A. Change History~
       'local' in dictionary g:XkbSwitch
 
 0.9
-    - Implemented helpers for building custom keyboard layout switching rules
-      based on syntax inside Insert mode
+    - Implemented helpers for building custom syntax based keyboard layout
+      switching rules inside Insert mode (see updated docs)
+
+0.9.1
+    - Fixed accidentally broken keyboard layout switching
+
+0.9.2
+    - Further fixes related to the custom syntax based switching rules
+      implementation
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:

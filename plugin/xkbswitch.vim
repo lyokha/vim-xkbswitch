@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.9
+" Version:     0.9.2
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -384,16 +384,18 @@ fun! <SID>save_ilayout(cur_layout)
         let cur_synid  = synIDattr(synID(line("."), col, 1), "name")
         for role in b:xkb_syntax_out_roles
             if cur_synid == role
+                if !exists('b:xkb_saved_cur_layout')
+                    let b:xkb_saved_cur_layout = {}
+                endif
                 let ilayout_role = 'b:xkb_saved_cur_layout["'.role.'"]'
                 break
             endif
         endfor
     endif
-    exe "if ilayout_role == 'b:xkb_ilayout' || exists('".ilayout_role.
-                \ "') | let ".ilayout_role." = '".a:cur_layout."' | endif"
+    exe "let ".ilayout_role." = '".a:cur_layout."'"
 endfun
 
-fun! <SID>xkb_switch(mode,...)
+fun! <SID>xkb_switch(mode, ...)
     if s:XkbSwitchSaveILayout && !g:XkbSwitch['local'] && !s:XkbSwitchFocused
         return
     endif
@@ -422,7 +424,7 @@ fun! <SID>xkb_switch(mode,...)
             call <SID>syntax_rules_load()
         endif
         let switched = 0
-        if a:0 && a:1 == 1 && exists('b:xkb_syntax_in_roles')
+        if a:0 && a:1 && exists('b:xkb_syntax_in_roles')
             let col = mode() =~ '^[vV]' ? col('v') : col('.')
             let line = mode() =~ '^[vV]' ? line('v') : line('.')
             let cur_synid  = synIDattr(synID(line, col, 1), "name")
@@ -484,6 +486,10 @@ fun! <SID>xkb_save(...)
     endif
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
     if save_ilayout_param_local
+        " FIXME: is there a way to find cursor position in the abandoned
+        " buffer? If no then we cannot say what syntax role or 'xkb_layout'
+        " must be restored and using syntax rules in this case can break
+        " keyboard layouts when returning to the abandoned buffer
         call setbufvar(a:1, 'xkb_ilayout', cur_layout)
     else
         if imode

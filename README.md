@@ -40,6 +40,8 @@ Features
 
   will be loaded. Insert mode mappings duplicates make it easy to apply
   existing maps in Insert mode without switching current keyboard layout.
+* Fast and easy building of custom syntax based keyboard layout switching
+  rules in Insert mode
 
 Setup
 -----
@@ -326,10 +328,10 @@ won't switch layout itself when entering Insert mode. In our case it should be
 0 because MdictCheckLang() requires preliminary switching keyboard layout from
 XkbSwitch when entering Insert mode.
 
-Starting from version **0.9** a generic helper for building custom keyboard
-layout switching rules based on syntax was implemented inside the plugin code.
-Now building syntax rules is as simple as defining variable
-g:XkbSwitchSyntaxRules in .vimrc. For example
+Starting from **version 0.9** a generic helper for building custom syntax based
+keyboard layout switching rules was implemented inside the plugin code.  Now
+building syntax rules is as simple as defining variable g:XkbSwitchSyntaxRules
+in .vimrc. For example
 
 ```vim
 let g:XkbSwitchSyntaxRules = [
