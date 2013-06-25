@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.9.2
+" Version:     0.9.3
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -77,6 +77,10 @@ endif
 
 if !exists('g:XkbSwitchEnabled')
     let g:XkbSwitchEnabled = 0
+endif
+
+if !exists('g:XkbSwitchLoadOnBufRead')
+    let g:XkbSwitchLoadOnBufRead = 1
 endif
 
 
@@ -166,6 +170,15 @@ let s:XkbSwitchFocused = 1
 let s:XkbSwitchLastIEnterBufnr = 0
 
 
+fun! <SID>load_all()
+    if !exists('b:xkb_mappings_loaded')
+        call <SID>xkb_mappings_load()
+        call <SID>imappings_load()
+        call <SID>syntax_rules_load()
+    endif
+endfun
+
+
 fun! <SID>xkb_mappings_load()
     for hcmd in ['gh', 'gH', 'g']
         exe "nnoremap <buffer> <silent> ".hcmd.
@@ -175,6 +188,11 @@ fun! <SID>xkb_mappings_load()
                 \ :<C-u>call <SID>xkb_switch(1, 1)<CR>gv<C-g>
     snoremap <buffer> <silent> <C-g>
                 \ <C-g>:<C-u>call <SID>xkb_switch(0)<CR>gv
+    if &selectmode =~ 'mouse'
+        smap <buffer> <silent> <LeftRelease> <Esc>gv<C-g>
+        nmap <buffer> <silent> <2-LeftMouse> viw<C-g>
+        nmap <buffer> <silent> <3-LeftMouse> V<C-g>
+    endif
     let b:xkb_mappings_loaded = 1
 endfun
 
@@ -418,12 +436,8 @@ fun! <SID>xkb_switch(mode, ...)
             call <SID>save_ilayout(cur_layout)
         endif
     elseif a:mode == 1
-        if !exists('b:xkb_mappings_loaded')
-            call <SID>xkb_mappings_load()
-            call <SID>imappings_load()
-            call <SID>syntax_rules_load()
-        endif
-        let switched = 0
+        call <SID>load_all()
+        let switched = ''
         if a:0 && a:1 && exists('b:xkb_syntax_in_roles')
             let col = mode() =~ '^[vV]' ? col('v') : col('.')
             let line = mode() =~ '^[vV]' ? line('v') : line('.')
@@ -431,27 +445,32 @@ fun! <SID>xkb_switch(mode, ...)
             for role in b:xkb_syntax_in_roles
                 if cur_synid == role && exists('b:xkb_saved_cur_layout[role]')
                     if b:xkb_saved_cur_layout[role] != cur_layout
+                        let switched = b:xkb_saved_cur_layout[role]
                         call libcall(g:XkbSwitch['backend'],
-                                    \ g:XkbSwitch['set'],
-                                    \ b:xkb_saved_cur_layout[role])
-                        let switched = 1
+                                    \ g:XkbSwitch['set'], switched)
                     endif
                     break
                 endif
             endfor
         endif
-        if !switched
-            let ilayout = exists('b:xkb_ilayout') ? b:xkb_ilayout :
-                \ ( exists('g:XkbSwitchILayout') ? g:XkbSwitchILayout : '' )
-            if ilayout != ''
-                if ilayout != cur_layout && !exists('b:xkb_ilayout_managed')
-                    call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
-                                \ ilayout)
-                endif
-            endif
-        endif
         if !exists('b:xkb_pending_imode')
             let b:xkb_pending_imode = 0
+        endif
+        if switched == ''
+            if b:xkb_pending_imode && b:xkb_pending_ilayout != cur_layout
+                let b:xkb_ilayout = cur_layout
+            else
+                let switched = exists('b:xkb_ilayout') ? b:xkb_ilayout :
+                            \ ( exists('g:XkbSwitchILayout') ?
+                            \ g:XkbSwitchILayout : '' )
+                if switched != ''
+                    if switched != cur_layout &&
+                                \ !exists('b:xkb_ilayout_managed')
+                        call libcall(g:XkbSwitch['backend'],
+                                    \ g:XkbSwitch['set'], switched)
+                    endif
+                endif
+            endif
         endif
         if g:XkbSwitchNLayout == ''
             if !b:xkb_pending_imode && (!a:0 || a:1 != 2)
@@ -459,6 +478,9 @@ fun! <SID>xkb_switch(mode, ...)
             endif
         endif
         let b:xkb_pending_imode = a:0 && a:1 == 1
+        if b:xkb_pending_imode
+            let b:xkb_pending_ilayout = switched != '' ? switched : cur_layout
+        endif
     endif
 endfun
 
@@ -509,6 +531,11 @@ fun! <SID>enable_xkb_switch(force)
     if filereadable(g:XkbSwitch['backend']) == 1
         augroup XkbSwitch
             au!
+            " BEWARE: All mappings and syntax rules should be loaded at
+            " BufRead event for proper support of Select modes
+            if g:XkbSwitchLoadOnBufRead
+                autocmd BufRead * call <SID>load_all()
+            endif
             autocmd InsertEnter *
                         \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
                         \ call <SID>xkb_switch(1)

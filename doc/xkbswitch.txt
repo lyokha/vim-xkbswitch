@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 May 13
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 June 25
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.9.2
+                                version 0.9.3
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -477,5 +477,9 @@ A. Change History~
 0.9.2
     - Further fixes related to the custom syntax based switching rules
       implementation
+
+0.9.3
+    - Fixes related to Select mode support
+    - Proper keyboard layout switching when option selectmode contains 'mouse'
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
