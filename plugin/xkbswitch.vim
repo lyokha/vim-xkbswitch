@@ -171,6 +171,9 @@ let s:XkbSwitchLastIEnterBufnr = 0
 
 
 fun! <SID>load_all()
+    if index(g:XkbSwitchSkipFt, &ft) != -1
+        return
+    endif
     if !exists('b:xkb_mappings_loaded')
         call <SID>xkb_mappings_load()
         call <SID>imappings_load()
@@ -417,11 +420,9 @@ fun! <SID>xkb_switch(mode, ...)
     if s:XkbSwitchSaveILayout && !g:XkbSwitch['local'] && !s:XkbSwitchFocused
         return
     endif
-    for ft in g:XkbSwitchSkipFt
-        if ft == &ft
-            return
-        endif
-    endfor
+    if index(g:XkbSwitchSkipFt, &ft) != -1
+        return
+    endif
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
     let nlayout = g:XkbSwitchNLayout != '' ? g:XkbSwitchNLayout :
                 \ ( exists('b:xkb_nlayout') ? b:xkb_nlayout : '' )
@@ -492,11 +493,9 @@ fun! <SID>xkb_save(...)
                 \ ( !imode || !s:XkbSwitchFocused )
         return
     endif
-    for ft in g:XkbSwitchSkipFt
-        if ft == &ft
-            return
-        endif
-    endfor
+    if index(g:XkbSwitchSkipFt, &ft) != -1
+        return
+    endif
     let save_ilayout_param_local = save_ilayout_param && g:XkbSwitch['local']
     " BEWARE: if buffer has not entered Insert mode yet (i.e.
     " b:xkb_mappings_loaded is not loaded yet) then specific Normal mode
