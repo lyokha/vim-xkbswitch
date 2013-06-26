@@ -435,6 +435,7 @@ fun! <SID>xkb_switch(mode, ...)
         if !a:0 || a:1 != 2
             call <SID>save_ilayout(cur_layout)
         endif
+        let b:xkb_pending_imode = 0
     elseif a:mode == 1
         call <SID>load_all()
         let switched = ''
