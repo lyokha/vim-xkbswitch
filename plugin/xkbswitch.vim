@@ -196,7 +196,7 @@ fun! <SID>xkb_mappings_load()
     snoremap <buffer> <silent> <C-g>
                 \ <C-g>:<C-u>call <SID>xkb_switch(0)<CR>gv
     if &selectmode =~ 'mouse'
-        smap <buffer> <silent> <LeftRelease> <Esc>gv<C-g>
+        smap <buffer> <silent> <LeftRelease> <C-o><C-g>
         nmap <buffer> <silent> <2-LeftMouse> viw<C-g>
         nmap <buffer> <silent> <3-LeftMouse> V<C-g>
     endif
