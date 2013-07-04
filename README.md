@@ -392,3 +392,23 @@ Troubleshooting
   mode without any character entered do it via Visual mode, e.g. enter
   ```<C-G><Esc>``` instead simply ```<Esc>```.
 
+* There is a clash with plugin EnhancedJumps when *bufhidden=delete*. When
+  jumping back to the previous buffer an error message
+
+  ```
+  E121: Undefined variable: mappingsdump
+  ```
+
+  will raise. This is because both autocommand BufRead of this plugin and
+  EnhancedJumps will use *redir* simultaneously which is not permitted.
+  Normally there is very little probability to encounter this because option
+  *bufhidden* is empty by default. To work this around you can add line
+
+  ```vim
+  let g:XkbSwitchLoadOnBufRead = 0
+  ```
+
+  in your .vimrc. However this may break the very first keyboard layout
+  switching from Select mode in a just open buffer if there was no inserting
+  yet.
+

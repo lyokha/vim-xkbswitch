@@ -207,11 +207,9 @@ fun! <SID>imappings_load()
     if empty(g:XkbSwitchIMappings)
         return
     endif
-    for ft in g:XkbSwitchIMappingsSkipFt
-        if ft == &ft
-            return
-        endif
-    endfor
+    if index(g:XkbSwitchIMappingsSkipFt, &ft) != -1
+        return
+    endif
     redir => mappingsdump
     silent imap
     redir END
