@@ -192,13 +192,16 @@ fun! <SID>xkb_mappings_load()
                     \ " :call <SID>xkb_switch(1, 1)<CR>".hcmd
     endfor
     xnoremap <buffer> <silent> <C-g>
-                \ :<C-u>call <SID>xkb_switch(1, 1)<CR>gv<C-g>
+                \ :<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
     snoremap <buffer> <silent> <C-g>
-                \ <C-g>:<C-u>call <SID>xkb_switch(0)<CR>gv
+                \ <C-g>:<C-u>call <SID>xkb_switch(0)<Bar>normal gv<CR>
     if &selectmode =~ 'mouse'
-        smap <buffer> <silent> <LeftRelease> <C-o><C-g>
-        nmap <buffer> <silent> <2-LeftMouse> viw<C-g>
-        nmap <buffer> <silent> <3-LeftMouse> V<C-g>
+        snoremap <buffer> <silent> <LeftRelease>
+                \ <C-g>:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
+        nnoremap <buffer> <silent> <2-LeftMouse>
+                \ viw:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
+        nnoremap <buffer> <silent> <3-LeftMouse>
+                \ V:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
     endif
     let b:xkb_mappings_loaded = 1
 endfun
