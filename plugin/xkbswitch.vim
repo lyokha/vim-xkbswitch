@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.9.4
+" Version:     0.10
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -65,6 +65,10 @@ endif
 
 if !exists('g:XkbSwitchIMappings')
     let g:XkbSwitchIMappings = []
+endif
+
+if !exists('g:XkbSwitchSkipIMappings')
+    let g:XkbSwitchSkipIMappings = {}
 endif
 
 if !exists('g:XkbSwitchSkipFt')
@@ -226,7 +230,7 @@ fun! <SID>imappings_load()
             let value = substitute(mapping,
                         \ '\s*\S\+\s\+\S\+\s\+\(.*\)', '\1', '')
             " do not duplicate <script> mappings (when value contains '&')
-            if match(value, '^[\s*@]*&') != -1
+            if match(value, '^[[:blank:]*@]*&') != -1
                 continue
             endif
             let data = split(mapping)
@@ -263,15 +267,17 @@ fun! <SID>imappings_load()
                 endif
             endfor
             " do not reload existing mapping unnecessarily
-            if newkey == data[1] || exists('mappingskeys[newkey]')
+            if newkey == data[1] || exists('mappingskeys[newkey]') ||
+                        \ (exists('g:XkbSwitchSkipIMappings[&ft]') &&
+                        \ index(g:XkbSwitchSkipIMappings[&ft], data[1]) != -1)
                 continue
             endif
-            let mapcmd = match(value, '^[\s&@]*\*') == -1 ? 'imap' :
+            let mapcmd = match(value, '^[[:blank:]&@]*\*') == -1 ? 'imap' :
                         \ 'inoremap'
             " probably the mapping was defined using <expr>
             let expr = match(value,
-                        \ '^[\s*&@]*[a-zA-Z][a-zA-z0-9_#\-]*(.\{-})$') != -1 ?
-                        \ '<expr>' : ''
+                    \ '^[[:blank:]*&@]*[a-zA-Z][a-zA-Z0-9_#]*(.*)$') != -1 ?
+                    \ '<expr>' : ''
             " new maps are always silent and buffer-local
             exe mapcmd.' <silent> <buffer> '.expr.' '.newkey.' '.
                         \ maparg(data[1], 'i')

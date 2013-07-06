@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 July 5
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 July 6
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.9.4
+                                version 0.10
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -145,6 +145,28 @@ for '(' and ')', therefore assuming that in Deutsch translation map there
 could be ')' to '=' translation, we would get '=' unusable in any keyboard
 layout (as far as echofunc treats ')' in a very specific way). That is why
 this translation is missing in example above and in file xkbswitch.tr content.
+
+There are multiple examples of similar issues. For instance Russian winkeys
+translate '.' into 'ю' and when you are editing a C/C++ source file with
+enabled omnicompletion plugin character 'ю' (which you can use in comments)
+will always be replaced by '.'. To address these issues starting from version
+0.10 a new variable g:XkbSwitchSkipIMappings was introduced. It defines which
+original Insert mode mappings should not be translated for specific filetypes.
+Add into your .vimrc lines
+>
+    let g:XkbSwitchSkipIMappings = {'c': ['.', '>', ':', '/*', '/*<CR>'],
+            \ 'cpp': ['.', '>', ':', '/*', '/*<CR>']}
+<
+and now you will be able to print 'ю' in C and C++ source files. In this
+example five Insert mode mappings were prohibited for translation in two
+filetypes: C and C++, the first three correspond to omnicompletion plugin
+and the last two address plugin c.vim. Why mappings duplicates starting from
+'/' were added: Russian winkeys translate '/' into '.' and this makes vim
+wait for a next character input after '.' was inserted which makes
+omnicompletion plugin almost unusable.
+
+Beware: variable g:XkbSwitchSkipIMappings is not parameterized by keyboard
+layouts but only by filetypes.
 
 ------------------------------------------------------------------------------
                                             *xkbswitch-default-layouts*
@@ -500,5 +522,10 @@ A. Change History~
 
 0.9.4
     - Switching between Select and Visual modes (with <C-g>) without flickers
+
+0.10
+    - Fixed building Insert mode mappings defined with <expr>
+    - Added new variable g:XkbSwitchSkipIMappings to disable translation of
+      specific Insert mode mappings for specific file types
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
