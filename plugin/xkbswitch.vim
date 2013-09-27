@@ -267,9 +267,13 @@ fun! <SID>imappings_load()
                 endif
             endfor
             " do not reload existing mapping unnecessarily
+            " FIXME: list of mappings to skip depends on value of &filetype,
+            " therefore it must be reloaded on FileType events!
             if newkey == data[1] || exists('mappingskeys[newkey]') ||
-                        \ (exists('g:XkbSwitchSkipIMappings[&ft]') &&
-                        \ index(g:XkbSwitchSkipIMappings[&ft], data[1]) != -1)
+                    \ (exists('g:XkbSwitchSkipIMappings[&ft]') &&
+                    \ index(g:XkbSwitchSkipIMappings[&ft], data[1]) != -1) ||
+                    \ (exists('g:XkbSwitchSkipIMappings["*"]') &&
+                    \ index(g:XkbSwitchSkipIMappings["*"], data[1]) != -1)
                 continue
             endif
             let mapcmd = match(value, '^[[:blank:]&@]*\*') == -1 ? 'imap' :

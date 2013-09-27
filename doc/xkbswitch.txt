@@ -154,16 +154,19 @@ will always be replaced by '.'. To address these issues starting from version
 original Insert mode mappings should not be translated for specific filetypes.
 Add into your .vimrc lines
 >
-    let g:XkbSwitchSkipIMappings = {'c': ['.', '>', ':', '/*', '/*<CR>'],
-            \ 'cpp': ['.', '>', ':', '/*', '/*<CR>']}
+    let g:XkbSwitchSkipIMappings =
+            \ {'c'   : ['.', '>', ':', '{<CR>', '/*', '/*<CR>'],
+            \  'cpp' : ['.', '>', ':', '{<CR>', '/*', '/*<CR>']}
 <
 and now you will be able to print 'ю' in C and C++ source files. In this
-example five Insert mode mappings were prohibited for translation in two
-filetypes: C and C++, the first three correspond to omnicompletion plugin
-and the last two address plugin c.vim. Why mappings duplicates starting from
-'/' were added: Russian winkeys translate '/' into '.' and this makes vim
-wait for a next character input after '.' was inserted which makes
-omnicompletion plugin almost unusable.
+example six Insert mode mappings were prohibited for translation in two
+filetypes: C and C++. The first three correspond to omnicompletion plugin and
+the last three address plugin c.vim. Why mappings duplicates starting from '/'
+were added: Russian winkeys translate '/' into '.' and this makes vim wait for
+a while until the next character after '.' has been inserted which makes
+omnicompletion plugin almost unusable. If you want to skip specific Insert
+mode mappings for all filetypes then you can use '*' as the filetype key in
+g:XkbSwitchSkipIMappings.
 
 Beware: variable g:XkbSwitchSkipIMappings is not parameterized by keyboard
 layouts but only by filetypes.
