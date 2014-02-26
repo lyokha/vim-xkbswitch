@@ -8,7 +8,7 @@ About
 
 Vim plugin XkbSwitch can be used to easily switch current keyboard layout back
 and forth when entering and leaving Insert mode. Say you are typing some
-document in Russian and have to leave Insert mode: when you press ```<Esc>```
+document in Russian and have to leave Insert mode: when you press ``<Esc>``
 your keyboard layout switches to US/English automatically. When you further
 enter Insert mode once again the Russian keyboard layout will be automatically
 switched back!
@@ -28,15 +28,15 @@ Features
 * Automatic loading of language-friendly Insert mode mappings duplicates.
   For example when Russian mappings have loaded then if there was a mapping
 
-  ```vim
+    ```vim
   <C-G>S        <Plug>ISurround
-  ```
+    ```
 
   a new mapping
 
-  ```vim
+    ```vim
   <C-G>Ы        <Plug>ISurround
-  ```
+    ```
 
   will be loaded. Insert mode mappings duplicates make it easy to apply
   existing maps in Insert mode without switching current keyboard layout.
@@ -49,7 +49,7 @@ Setup
 Before installation of the plugin the OS dependent keyboard layout switcher
 must be installed (see About). The plugin itself is installed by
 extracting of the distribution in your vim runtime directory.
-
+ 
 Configuration
 -------------
 
@@ -88,7 +88,7 @@ keyboard layout translation maps (or replace existing default 'ru' map):
 
 * Define variable g:XkbSwitchIMappingsTr:
 
-  ```vim
+    ```vim
   let g:XkbSwitchIMappingsTr = {
               \ 'ru':
               \ {'<': 'qwertyuiop[]asdfghjkl;''zxcvbnm,.`/'.
@@ -99,18 +99,18 @@ keyboard layout translation maps (or replace existing default 'ru' map):
               \ {'<': 'yz-[];''/YZ{}:"<>?~@#^&*_\',
               \  '>': 'zyßü+öä-ZYÜ*ÖÄ;:_°"§&/(?#'},
               \ }
-  ```
+    ```
 
 * Create a file with layout translation maps and put its path into variable
   g:XkbSwitchIMappingsTrData, for example:
 
-  ```vim
+    ```vim
   let g:XkbSwitchIMappingsTrData = $HOME.'/opt/xkbswitch.tr'
-  ```
+    ```
 
   File with maps must follow this format:
 
-  ```
+    ```
   ru  Russian winkeys layout
   < qwertyuiop[]asdfghjkl;'zxcvbnm,.`/QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?~@#$^&|
   > йцукенгшщзхъфывапролджэячсмитьбюё.ЙЦУКЕНГШЩЗХЪФЫВАПРОЛДЖЭЯЧСМИТЬБЮ,Ё"№;:?/
@@ -118,7 +118,7 @@ keyboard layout translation maps (or replace existing default 'ru' map):
   de
   < yz-[];'/YZ{}:"<>?~@#^&*(_\
   > zyßü+öä-ZYÜ*ÖÄ;:_°"§&/()?#
-  ```
+    ```
 
   Sample file xkbswitch.tr with exactly this content is shipped with this
   plugin distribution. It is encoded in UTF-8 and it is important as far as
@@ -160,7 +160,7 @@ g:XkbSwitchSkipIMappings.
 
 Beware: variable g:XkbSwitchSkipIMappings is not parameterized by keyboard
 layouts but only by filetypes.
-
+ 
 ### Default layouts
 
 By default last Normal mode keyboard layout is restored when leaving Insert
@@ -188,7 +188,7 @@ let g:XkbSwitchSkipFt = [ 'nerdtree' ]
 
 By default (e.g. when g:XkbSwitchSkipFt is not defined in .vimrc) following
 filetypes are skipped: *tagbar*, *gundo*, *nerdtree* and *fuf* (FuzzyFinder).
-
+ 
 ### Enable in runtime
 
 You can enable XkbSwitch in runtime (e.g. when g:XkbSwitchEnabled is not set
@@ -200,7 +200,7 @@ in your .vimrc) by issuing command
 
 This command will respect current settings of g:XkbSwitchIMappings etc. Be
 aware that there is no way to disable XkbSwitch after it has been enabled.
-
+ 
 Custom keyboard layout switching rules
 --------------------------------------
 
@@ -390,23 +390,23 @@ Troubleshooting
   duplicates with mappings defined in vim-latex. To work this issue around you
   can disable XkbSwitch Insert mode mappings duplicates for filetype *tex*:
 
-  ```vim
+    ```vim
   let g:XkbSwitchIMappingsSkipFt = ['tex']
-  ```
+    ```
 
 * *Related to X Server only.* When editing files on a remote host via ssh the
   ssh -X option must be supplied:
 
-  ```sh
+    ```sh
   ssh -X remote.host
-  ```
+    ```
 
   This option will make ssh forward X Server protocol messages between the
   local host and the remote host thus making it possible to switch the local
   host keyboard layouts.
 
-* *Related to GTK based gvim only.* In bare X terminals keycodes for ```<C-S>```
-  and ```<C-Ы>``` are the same which makes it possible to leave sequences with
+* *Related to GTK based gvim only.* In bare X terminals keycodes for ``<C-S>``
+  and ``<C-Ы>`` are the same which makes it possible to leave sequences with
   control keys in Insert mode mappings duplicates as they are. But this is not
   the case in GTK based gvim. The issue is still investigated.
 
@@ -417,23 +417,23 @@ Troubleshooting
   events that could be caught by autocommands when switching from Select
   mode to Normal mode. A workaround could be: when you are leaving Select
   mode without any character entered do it via Visual mode, e.g. enter
-  ```<C-G><Esc>``` instead simply ```<Esc>```.
+  ``<C-G><Esc>`` instead simply ``<Esc>``.
 
 * There is a clash with plugin EnhancedJumps when *bufhidden=delete*. When
   jumping back to the previous buffer an error message
 
-  ```
+    ```
   E121: Undefined variable: mappingsdump
-  ```
+    ```
 
   will raise. This is because both autocommand BufRead of this plugin and
   EnhancedJumps will use *redir* simultaneously which is not permitted.
   Normally there is very little probability to encounter this because option
   *bufhidden* is empty by default. To work this around you can add line
 
-  ```vim
+    ```vim
   let g:XkbSwitchLoadOnBufRead = 0
-  ```
+    ```
 
   in your .vimrc. However this may break the very first keyboard layout
   switching from Select mode in a just open buffer if there was no inserting
