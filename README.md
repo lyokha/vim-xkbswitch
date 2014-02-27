@@ -49,7 +49,7 @@ Setup
 Before installation of the plugin the OS dependent keyboard layout switcher
 must be installed (see About). The plugin itself is installed by
 extracting of the distribution in your vim runtime directory.
- 
+
 Configuration
 -------------
 
@@ -160,7 +160,7 @@ g:XkbSwitchSkipIMappings.
 
 Beware: variable g:XkbSwitchSkipIMappings is not parameterized by keyboard
 layouts but only by filetypes.
- 
+
 ### Default layouts
 
 By default last Normal mode keyboard layout is restored when leaving Insert
@@ -188,7 +188,7 @@ let g:XkbSwitchSkipFt = [ 'nerdtree' ]
 
 By default (e.g. when g:XkbSwitchSkipFt is not defined in .vimrc) following
 filetypes are skipped: *tagbar*, *gundo*, *nerdtree* and *fuf* (FuzzyFinder).
- 
+
 ### Enable in runtime
 
 You can enable XkbSwitch in runtime (e.g. when g:XkbSwitchEnabled is not set
@@ -200,7 +200,7 @@ in your .vimrc) by issuing command
 
 This command will respect current settings of g:XkbSwitchIMappings etc. Be
 aware that there is no way to disable XkbSwitch after it has been enabled.
- 
+
 Custom keyboard layout switching rules
 --------------------------------------
 
