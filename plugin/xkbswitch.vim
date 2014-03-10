@@ -284,7 +284,7 @@ fun! <SID>imappings_load()
                     \ '<expr>' : ''
             " new maps are always silent and buffer-local
             exe mapcmd.' <silent> <buffer> '.expr.' '.newkey.' '.
-                        \ maparg(data[1], 'i')
+                        \ substitute(maparg(data[1], 'i'), '|', '|', 'g')
         endfor
     endfor
 endfun
