@@ -283,8 +283,8 @@ fun! <SID>imappings_load()
                     \ '^[[:blank:]*&@]*[a-zA-Z][a-zA-Z0-9_#]*(.*)$') != -1 ?
                     \ '<expr>' : ''
             " new maps are always silent and buffer-local
-            exe mapcmd.' <silent> <buffer> '.expr.' '.newkey.' '.
-                        \ substitute(maparg(data[1], 'i'), '|', '|', 'g')
+            exe mapcmd.' <silent> <buffer> '.expr.' '.substitute(newkey.' '.
+                        \ maparg(data[1], 'i'), '|', '|', 'g')
         endfor
     endfor
 endfun
