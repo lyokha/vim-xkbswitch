@@ -234,8 +234,9 @@ fun! <SID>imappings_load()
                 continue
             endif
             let data = split(mapping)
-            " do not duplicate <Plug> mappings (when key starts with '<Plug>')
-            if match(data[1], '^\c<Plug>') != -1
+            " do not duplicate <Plug> and <SNR> mappings
+            " (when key starts with '<Plug>' or '<SNR>')
+            if match(data[1], '^\c\%(<Plug>\|<SNR>\)') != -1
                 continue
             endif
             let from  = g:XkbSwitchIMappingsTr[tr]['<']
