@@ -299,63 +299,64 @@ fun! <SID>check_syntax_rules(force)
     if !exists('b:xkb_saved_cur_layout')
         let b:xkb_saved_cur_layout = {}
     endif
-    if cur_synid != b:xkb_saved_cur_synid || a:force
-        let cur_layout = ''
-        let switched = 0
-        for role in b:xkb_syntax_in_roles
-            if index(b:xkb_syntax_out_roles, role) != -1 && a:force
-                continue
-            endif
-            if b:xkb_saved_cur_synid == role
-                let cur_layout =
-                    \ libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
-                let b:xkb_saved_cur_layout[role] = cur_layout
-                break
-            endif
-        endfor
-        for role in b:xkb_syntax_in_roles
-            if cur_synid == role
-                if index(b:xkb_syntax_out_roles, b:xkb_saved_cur_synid) == -1
-                    let cur_layout1 = cur_layout != '' ? cur_layout :
-                                \ libcall(g:XkbSwitch['backend'],
-                                \ g:XkbSwitch['get'], '')
-                    let b:xkb_ilayout = cur_layout1
-                endif
-                if exists('b:xkb_saved_cur_layout[role]')
-                    if b:xkb_saved_cur_layout[role] != cur_layout
-                        call libcall(g:XkbSwitch['backend'],
-                                    \ g:XkbSwitch['set'],
-                                    \ b:xkb_saved_cur_layout[role])
-                        let switched = 1
-                    endif
-                else
-                    let b:xkb_saved_cur_layout[role] = empty(cur_layout) ?
-                                \ libcall(g:XkbSwitch['backend'],
-                                \ g:XkbSwitch['get'], '') : cur_layout
-                endif
-                break
-            endif
-        endfor
-        if switched
-            let b:xkb_saved_cur_synid = cur_synid
-            return
-        endif
-        for role in b:xkb_syntax_out_roles
-            if b:xkb_saved_cur_synid == role
-                let ilayout = exists('b:xkb_ilayout') ? b:xkb_ilayout :
-                            \ ( exists('g:XkbSwitchILayout') ?
-                            \ g:XkbSwitchILayout : '' )
-                if ilayout != ''
-                    if ilayout != cur_layout
-                        call libcall(g:XkbSwitch['backend'],
-                                    \ g:XkbSwitch['set'], ilayout)
-                    endif
-                endif
-                break
-            endif
-        endfor
-        let b:xkb_saved_cur_synid = cur_synid
+    if cur_synid == b:xkb_saved_cur_synid && !a:force
+        return
     endif
+    let cur_layout = ''
+    let switched = 0
+    for role in b:xkb_syntax_in_roles
+        if index(b:xkb_syntax_out_roles, role) != -1 && a:force
+            continue
+        endif
+        if b:xkb_saved_cur_synid == role
+            let cur_layout =
+                    \ libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+            let b:xkb_saved_cur_layout[role] = cur_layout
+            break
+        endif
+    endfor
+    for role in b:xkb_syntax_in_roles
+        if cur_synid == role
+            if index(b:xkb_syntax_out_roles, b:xkb_saved_cur_synid) == -1
+                if cur_layout == ''
+                    let cur_layout =
+                    \ libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+                endif
+                let b:xkb_ilayout = cur_layout
+            endif
+            if exists('b:xkb_saved_cur_layout[role]')
+                if b:xkb_saved_cur_layout[role] != cur_layout
+                    call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
+                                \ b:xkb_saved_cur_layout[role])
+                    let switched = 1
+                endif
+            else
+                if cur_layout == ''
+                    let cur_layout =
+                    \ libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+                endif
+                let b:xkb_saved_cur_layout[role] = cur_layout
+            endif
+            break
+        endif
+    endfor
+    if switched
+        let b:xkb_saved_cur_synid = cur_synid
+        return
+    endif
+    for role in b:xkb_syntax_out_roles
+        if b:xkb_saved_cur_synid == role
+            let ilayout = exists('b:xkb_ilayout') ? b:xkb_ilayout :
+                        \ (exists('g:XkbSwitchILayout') ?
+                        \  g:XkbSwitchILayout : '')
+            if ilayout != '' && ilayout != cur_layout
+                call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
+                            \ ilayout)
+            endif
+            break
+        endif
+    endfor
+    let b:xkb_saved_cur_synid = cur_synid
 endfun
 
 fun! <SID>syntax_rules_load()
@@ -441,7 +442,7 @@ fun! <SID>xkb_switch(mode, ...)
     endif
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
     let nlayout = g:XkbSwitchNLayout != '' ? g:XkbSwitchNLayout :
-                \ ( exists('b:xkb_nlayout') ? b:xkb_nlayout : '' )
+                \ (exists('b:xkb_nlayout') ? b:xkb_nlayout : '')
     if a:mode == 0
         if nlayout != ''
             if cur_layout != nlayout
@@ -479,8 +480,8 @@ fun! <SID>xkb_switch(mode, ...)
                 let b:xkb_ilayout = cur_layout
             else
                 let switched = exists('b:xkb_ilayout') ? b:xkb_ilayout :
-                            \ ( exists('g:XkbSwitchILayout') ?
-                            \ g:XkbSwitchILayout : '' )
+                            \ (exists('g:XkbSwitchILayout') ?
+                            \  g:XkbSwitchILayout : '')
                 if switched != ''
                     if switched != cur_layout &&
                                 \ !exists('b:xkb_ilayout_managed')
@@ -506,7 +507,7 @@ fun! <SID>xkb_save(...)
     let imode = mode() =~ '^[iR]'
     let save_ilayout_param = s:XkbSwitchSaveILayout && a:0
     if save_ilayout_param && !g:XkbSwitch['local'] &&
-                \ ( !imode || !s:XkbSwitchFocused )
+                \ (!imode || !s:XkbSwitchFocused)
         return
     endif
     if index(g:XkbSwitchSkipFt, &ft) != -1
