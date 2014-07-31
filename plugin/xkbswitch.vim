@@ -207,6 +207,19 @@ fun! <SID>xkb_mappings_load()
         nnoremap <buffer> <silent> <3-LeftMouse>
                 \ V:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
     endif
+    if &selectmode =~ 'key' && &keymodel =~ 'startsel'
+        for key in ['Left', 'Right', 'Up', 'Down', 'End', 'Home',
+                    \ 'PageUp', 'PageDown']
+            exe "nnoremap <buffer> <silent> <S-".key.">".
+                        \ " :call <SID>xkb_switch(1, 1)<CR><S-".key.">"
+        endfor
+    endif
+    if &selectmode =~ 'cmd'
+        for cmd in ['v', 'V', '<C-v>']
+            exe "nnoremap <buffer> <silent> ".cmd.
+                        \ " :call <SID>xkb_switch(1, 1)<CR>".cmd
+        endfor
+    endif
     let b:xkb_mappings_loaded = 1
 endfun
 
