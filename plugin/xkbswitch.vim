@@ -168,7 +168,9 @@ endif
 if !exists('g:XkbSwitchSelectmodeKeys')
     let g:XkbSwitchSelectmodeKeys =
                 \ ['<S-Left>', '<S-Right>', '<S-Up>', '<S-Down>', '<S-End>',
-                \  '<S-Home>', '<S-PageUp>', '<S-PageDown>']
+                \  '<S-Home>', '<S-PageUp>', '<S-PageDown>', '<S-C-Left>',
+                \  '<S-C-Right>', '<S-C-Up>', '<S-C-Down>', '<S-C-End>',
+                \  '<S-C-Home>', '<S-C-PageUp>', '<S-C-PageDown>']
 endif
 
 " gvim client-server workaround:
