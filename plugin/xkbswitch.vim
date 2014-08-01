@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.10
+" Version:     0.11
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -72,7 +72,7 @@ if !exists('g:XkbSwitchSkipIMappings')
 endif
 
 if !exists('g:XkbSwitchSkipFt')
-    let g:XkbSwitchSkipFt = [ 'tagbar', 'gundo', 'nerdtree', 'fuf' ]
+    let g:XkbSwitchSkipFt = ['tagbar', 'gundo', 'nerdtree', 'fuf']
 endif
 
 if !exists('g:XkbSwitchNLayout')
@@ -165,6 +165,12 @@ if !exists('g:XkbSwitchSyntaxRules')
     let g:XkbSwitchSyntaxRules = []
 endif
 
+if !exists('g:XkbSwitchSelectmodeKeys')
+    let g:XkbSwitchSelectmodeKeys =
+                \ ['<S-Left>', '<S-Right>', '<S-Up>', '<S-Down>', '<S-End>',
+                \  '<S-Home>', '<S-PageUp>', '<S-PageDown>']
+endif
+
 " gvim client-server workaround:
 " 1. Globally managed keyboard layouts:
 "    Save Insert mode keyboard layout periodically (as fast as CursorHoldI
@@ -212,10 +218,9 @@ fun! <SID>xkb_mappings_load()
             \ <C-o>V:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
     endif
     if &selectmode =~ 'key' && &keymodel =~ 'startsel'
-        for key in ['Left', 'Right', 'Up', 'Down', 'End', 'Home',
-                    \ 'PageUp', 'PageDown']
-            exe "nnoremap <buffer> <silent> <S-".key.">".
-                        \ " :call <SID>xkb_switch(1, 1)<CR><S-".key.">"
+        for skey in g:XkbSwitchSelectmodeKeys
+            exe "nnoremap <buffer> <silent> ".skey.
+                        \ " :call <SID>xkb_switch(1, 1)<CR>".skey
             " BEWARE: there are at least 4 transitions from/to Insert mode:
             " 1. <C-o> triggers InsertLeave, looks like there is no way to
             "    skip this,
@@ -228,8 +233,8 @@ fun! <SID>xkb_mappings_load()
             " Unfortunately transitions 1 and 2 cannot be skipped and may lead
             " to fast double keyboard layout switching that user may notice in
             " a system tray area.
-            exe "inoremap <buffer> <silent> <S-".key.">".
-                        \ " <C-o>:let b:xkb_skip_skey = 1<CR><S-".key.">"
+            exe "inoremap <buffer> <silent> ".skey.
+                        \ " <C-o>:let b:xkb_skip_skey = 1<CR>".skey
         endfor
     endif
     if &selectmode =~ 'cmd'

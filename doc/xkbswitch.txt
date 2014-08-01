@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2013 July 6
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2014 August 1
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.10
+                                version 0.11
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -530,5 +530,10 @@ A. Change History~
     - Fixed building Insert mode mappings defined with <expr>
     - Added new variable g:XkbSwitchSkipIMappings to disable translation of
       specific Insert mode mappings for specific file types
+
+0.11
+    - Implemented full support for various selection models defined with
+      option selectmode
+    - Do not duplicate <SNR> mappings
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
