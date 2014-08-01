@@ -201,17 +201,35 @@ fun! <SID>xkb_mappings_load()
                 \ <C-g>:<C-u>call <SID>xkb_switch(0)<Bar>normal gv<CR>
     if &selectmode =~ 'mouse'
         snoremap <buffer> <silent> <LeftRelease>
-                \ <C-g>:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
+            \ <C-g>:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
         nnoremap <buffer> <silent> <2-LeftMouse>
-                \ viw:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
+            \ viw:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
         nnoremap <buffer> <silent> <3-LeftMouse>
-                \ V:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
+            \ V:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
+        inoremap <buffer> <silent> <2-LeftMouse>
+            \ <C-o>viw:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
+        inoremap <buffer> <silent> <3-LeftMouse>
+            \ <C-o>V:<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
     endif
     if &selectmode =~ 'key' && &keymodel =~ 'startsel'
         for key in ['Left', 'Right', 'Up', 'Down', 'End', 'Home',
                     \ 'PageUp', 'PageDown']
             exe "nnoremap <buffer> <silent> <S-".key.">".
                         \ " :call <SID>xkb_switch(1, 1)<CR><S-".key.">"
+            " BEWARE: there are at least 4 transitions from/to Insert mode:
+            " 1. <C-o> triggers InsertLeave, looks like there is no way to
+            "    skip this,
+            " 2. <CR> triggers InsertEnter, this will restore Insert mode
+            "    layout,
+            " 3. <S-key> at the end of the mapping triggers InsertLeave that
+            "    we skip using variable b:xkb_skip_skey (phase 1),
+            " 4. When user start typing it triggers InsertEnter which is also
+            "    skipped by b:xkb_skip_skey (phase 2).
+            " Unfortunately transitions 1 and 2 cannot be skipped and may lead
+            " to fast double keyboard layout switching that user may notice in
+            " a system tray area.
+            exe "inoremap <buffer> <silent> <S-".key.">".
+                        \ " <C-o>:let b:xkb_skip_skey = 1<CR><S-".key.">"
         endfor
     endif
     if &selectmode =~ 'cmd'
@@ -457,6 +475,10 @@ fun! <SID>xkb_switch(mode, ...)
     let nlayout = g:XkbSwitchNLayout != '' ? g:XkbSwitchNLayout :
                 \ (exists('b:xkb_nlayout') ? b:xkb_nlayout : '')
     if a:mode == 0
+        if exists('b:xkb_skip_skey') && b:xkb_skip_skey > 0
+            let b:xkb_skip_skey = 2
+            return
+        endif
         if nlayout != ''
             if cur_layout != nlayout
                 call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
@@ -468,6 +490,10 @@ fun! <SID>xkb_switch(mode, ...)
         endif
         let b:xkb_pending_imode = 0
     elseif a:mode == 1
+        if exists('b:xkb_skip_skey') && b:xkb_skip_skey > 1
+            let b:xkb_skip_skey = 0
+            return
+        endif
         call <SID>load_all()
         let switched = ''
         if a:0 && a:1 && exists('b:xkb_syntax_in_roles')
