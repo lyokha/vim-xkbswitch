@@ -14,7 +14,9 @@ endif
 let g:loaded_XkbSwitch = 1
 
 if !exists('g:XkbSwitchLib')
-    if has('unix')
+    if has('macunix')
+        let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.dylib'
+    elseif has('unix')
         " do not load if there is no X11
         if empty($DISPLAY)
             finish
@@ -33,6 +35,11 @@ endif
 " 'local' defines if backend gets and sets keyboard layout locally in the
 " window or not
 let s:XkbSwitchDict = {
+            \ 'macunix':
+            \ {'backend': g:XkbSwitchLib,
+            \  'get':     'Xkb_Switch_getXkbLayout',
+            \  'set':     'Xkb_Switch_setXkbLayout',
+            \  'local':   0},
             \ 'unix':
             \ {'backend': g:XkbSwitchLib,
             \  'get':     'Xkb_Switch_getXkbLayout',
@@ -51,7 +58,9 @@ let s:XkbSwitchDict = {
             \ }
 
 if !exists('g:XkbSwitch')
-    if has('unix')
+    if has('macunix')
+        let g:XkbSwitch = s:XkbSwitchDict['macunix']
+    elseif has('unix')
         let g:XkbSwitch = s:XkbSwitchDict['unix']
     elseif has('win32')
         let g:XkbSwitch = s:XkbSwitchDict['win32']
