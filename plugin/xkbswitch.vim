@@ -394,8 +394,7 @@ fun! <SID>check_syntax_rules(force)
     for role in b:xkb_syntax_out_roles
         if b:xkb_saved_cur_synid == role
             let ilayout = exists('b:xkb_ilayout') ? b:xkb_ilayout :
-                        \ (exists('g:XkbSwitchILayout') ?
-                        \  g:XkbSwitchILayout : '')
+                        \ g:XkbSwitchILayout
             if ilayout != '' && ilayout != cur_layout
                 call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
                             \ ilayout)
@@ -535,8 +534,7 @@ fun! <SID>xkb_switch(mode, ...)
                 let b:xkb_ilayout = cur_layout
             else
                 let switched = exists('b:xkb_ilayout') ? b:xkb_ilayout :
-                            \ (exists('g:XkbSwitchILayout') ?
-                            \  g:XkbSwitchILayout : '')
+                            \ g:XkbSwitchILayout
                 if switched != ''
                     if switched != cur_layout &&
                                 \ !exists('b:xkb_ilayout_managed')
