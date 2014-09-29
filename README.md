@@ -439,3 +439,13 @@ Troubleshooting
   switching from Select mode in a just open buffer if there was no inserting
   yet.
 
+* If you use *gh*-commands (*gh*, *gH* and *g_CTRL-H*) for your own specific
+  purposes then you'll probably want to disable mappings defined for some or
+  all of these commands in the plugin. For example
+
+    ```vim
+  let g:XkbSwitchSkipGhKeys = ['gh', 'gH']
+    ```
+
+    disables plugin mappings for two of them.
+

@@ -174,6 +174,10 @@ if !exists('g:XkbSwitchSyntaxRules')
     let g:XkbSwitchSyntaxRules = []
 endif
 
+if !exists('g:XkbSwitchSkipGhKeys')
+    let g:XkbSwitchSkipGhKeys = []
+endif
+
 if !exists('g:XkbSwitchSelectmodeKeys')
     let g:XkbSwitchSelectmodeKeys =
                 \ ['<S-Left>', '<S-Right>', '<S-Up>', '<S-Down>', '<S-End>',
@@ -209,8 +213,10 @@ endfun
 
 fun! <SID>xkb_mappings_load()
     for hcmd in ['gh', 'gH', 'g']
-        exe "nnoremap <buffer> <silent> ".hcmd.
-                    \ " :call <SID>xkb_switch(1, 1)<CR>".hcmd
+        if index(g:XkbSwitchSkipGhKeys, hcmd) == -1
+            exe "nnoremap <buffer> <silent> ".hcmd.
+                        \ " :call <SID>xkb_switch(1, 1)<CR>".hcmd
+        endif
     endfor
     xnoremap <buffer> <silent> <C-g>
                 \ :<C-u>call <SID>xkb_switch(1, 1)<Bar>normal gv<CR><C-g>
