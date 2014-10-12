@@ -42,9 +42,9 @@ xkb-switch-win (http://github.com/DeXP/xkb-switch-win) for Windows.
 
 For Mac OS X you can try Input Source Switcher
 (https://github.com/vovkasm/input-source-switcher) and set library path as
-
+>
     let g:XkbSwitchLib = '/usr/local/lib/libInputSourceSwitcher.dylib'
-
+<
 
 ==============================================================================
                                             *xkbswitch-features*
