@@ -14,8 +14,9 @@ enter Insert mode once again the Russian keyboard layout will be automatically
 switched back!
 
 XkbSwitch requires OS dependent keyboard layout switcher. Currently it depends
-on [xkb-switch](http://github.com/ierton/xkb-switch) for UNIX / X Server and [xkb-switch-win](http://github.com/DeXP/xkb-switch-win) for Windows. Mac OS X
-keyboard layout switcher is currently unknown and hence not supported.
+on [xkb-switch](http://github.com/ierton/xkb-switch) for UNIX / X Server and [xkb-switch-win](http://github.com/DeXP/xkb-switch-win) for Windows.
+For Mac OS X you can try [Input Source Switcher](https://github.com/vovkasm/input-source-switcher) and set library path as
+```let g:XkbSwitchLib = '/usr/local/lib/libInputSourceSwitcher.dylib'```.
 
 Features
 --------
