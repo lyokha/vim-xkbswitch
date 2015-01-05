@@ -21,7 +21,7 @@ For Mac OS X you can try [Input Source Switcher](https://github.com/vovkasm/inpu
 Features
 --------
 
-* Supported OS: UNIX / X Server, Windows
+* Supported OS: UNIX / X Server, Windows, Mac OS X
 * Switches keyboard layout when entering / leaving Insert and Select modes
 * Keyboard layouts are stored separately for each buffer
 * Keyboard layouts are kept intact while navigating between windows or
