@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2014 August 1
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2015 January 6
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.11
+                                version 0.12
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -50,7 +50,7 @@ For Mac OS X you can try Input Source Switcher
                                             *xkbswitch-features*
 3. Features~
 
-  - Supported OS: UNIX / X Server, Windows
+  - Supported OS: UNIX / X Server, Windows, Mac OS X
   - Switches keyboard layout when entering / leaving Insert and Select modes
   - Keyboard layouts are stored separately for each buffer
   - Keyboard layouts are kept intact while navigating between windows or
@@ -548,5 +548,11 @@ A. Change History~
     - Implemented full support for various selection models defined with
       option selectmode
     - Do not duplicate <SNR> mappings
+
+0.12
+    - Added support for Mac OS X using external library Input Source Switcher
+      (see updated docs)
+    - Added new global variable g:XkbSwitchSkipGhKeys which can be used to
+      optionally disable gh-mappings required for Select mode support
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
