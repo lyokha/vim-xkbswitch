@@ -21,7 +21,7 @@ For Mac OS X you can try
 set library path as
 
 ```vim
-let g:XkbSwitchLib = '/usr/local/lib/libInputSourceSwitcher.dylib'.
+let g:XkbSwitchLib = '/usr/local/lib/libInputSourceSwitcher.dylib'
 ```
 
 Features
