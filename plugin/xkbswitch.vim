@@ -91,7 +91,7 @@ endif
 let s:XkbSwitchGlobalLayout = ''
 
 if !exists('g:XkbSwitchRestoreGlobalLayout')
-    let g:XkbSwitchRestoreGlobalLayout = 1
+    let g:XkbSwitchRestoreGlobalLayout = 0
 endif
 
 if !exists('g:XkbSwitchILayout')
