@@ -88,6 +88,12 @@ if !exists('g:XkbSwitchNLayout')
     let g:XkbSwitchNLayout = ''
 endif
 
+let s:XkbSwitchGlobalLayout = ''
+
+if !exists('g:XkbSwitchRestoreGlobalLayout')
+    let g:XkbSwitchRestoreGlobalLayout = 1
+endif
+
 if !exists('g:XkbSwitchILayout')
     let g:XkbSwitchILayout = ''
 endif
@@ -493,6 +499,9 @@ fun! <SID>xkb_switch(mode, ...)
         return
     endif
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+    if g:XkbSwitchRestoreGlobalLayout && empty(s:XkbSwitchGlobalLayout)
+        let s:XkbSwitchGlobalLayout = cur_layout
+    endif
     let nlayout = g:XkbSwitchNLayout != '' ? g:XkbSwitchNLayout :
                 \ (exists('b:xkb_nlayout') ? b:xkb_nlayout : '')
     if a:mode == 0
@@ -600,6 +609,17 @@ fun! <SID>xkb_save(...)
     endif
 endfun
 
+fun! <SID>xkb_restore_global_layout()
+    if empty(s:XkbSwitchGlobalLayout)
+        return
+    endif
+    let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
+    if cur_layout != s:XkbSwitchGlobalLayout
+        call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
+                    \ s:XkbSwitchGlobalLayout)
+    endif
+endfun
+
 fun! <SID>enable_xkb_switch(force)
     if g:XkbSwitchEnabled && !a:force
         return
@@ -634,6 +654,7 @@ fun! <SID>enable_xkb_switch(force)
                         \ call <SID>xkb_switch(mode() =~ '^[iR]', 2)
             autocmd BufLeave * let s:XkbSwitchLastIEnterBufnr = 0 |
                         \ call <SID>xkb_save()
+            autocmd VimLeave * call <SID>xkb_restore_global_layout()
             if s:XkbSwitchSaveILayout
                 if g:XkbSwitch['local']
                     autocmd TabLeave * if s:XkbSwitchLastIEnterBufnr != 0 &&
