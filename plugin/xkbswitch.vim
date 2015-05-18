@@ -80,6 +80,10 @@ if !exists('g:XkbSwitchSkipIMappings')
     let g:XkbSwitchSkipIMappings = {}
 endif
 
+if !exists('g:XkbSwitchLoadRIMappings')
+    let g:XkbSwitchLoadRIMappings = 1
+endif
+
 if !exists('g:XkbSwitchSkipFt')
     let g:XkbSwitchSkipFt = ['tagbar', 'gundo', 'nerdtree', 'fuf']
 endif
@@ -204,6 +208,14 @@ let s:XkbSwitchSaveILayout = has('gui_running') && has('clientserver')
 let s:XkbSwitchFocused = 1
 let s:XkbSwitchLastIEnterBufnr = 0
 
+let s:XkbSwitchIRegList = []
+if g:XkbSwitchLoadRIMappings
+    let s:XkbSwitchIRegList = range(char2nr('a'), char2nr('z'))
+    for char in ['"', '%', '#', '*', '+', '/', ':', '.', '-', '=']
+        call add(s:XkbSwitchIRegList, char2nr(char))
+    endfor
+endif
+
 
 fun! <SID>load_all()
     if index(g:XkbSwitchSkipFt, &ft) != -1
@@ -284,7 +296,10 @@ fun! <SID>imappings_load()
     for mapping in mappings
         let mappingskeys[split(mapping)[1]] = 1
     endfor
+    let skip_rim_list = []
     for tr in g:XkbSwitchIMappings
+        let from = g:XkbSwitchIMappingsTr[tr]['<']
+        let to   = g:XkbSwitchIMappingsTr[tr]['>']
         for mapping in mappings
             let value = substitute(mapping,
                         \ '\s*\S\+\s\+\S\+\s\+\(.*\)', '\1', '')
@@ -298,8 +313,6 @@ fun! <SID>imappings_load()
             if match(data[1], '^\c\%(<Plug>\|<SNR>\)') != -1
                 continue
             endif
-            let from  = g:XkbSwitchIMappingsTr[tr]['<']
-            let to    = g:XkbSwitchIMappingsTr[tr]['>']
             " replace characters starting control sequences with spaces
             let clean = ''
             if g:XkbSwitchIMappingsTrCtrl
@@ -326,6 +339,22 @@ fun! <SID>imappings_load()
                     \ data[1][i]."', '')"
                 endif
             endfor
+            if g:XkbSwitchLoadRIMappings
+                let rim_key_match = matchlist(data[1], '^\c<C-R>\(.\)$')
+                if exists('rim_key_match[1]')
+                    let rim_key = rim_key_match[1]
+                    if index(s:XkbSwitchIRegList, rim_key) == -1
+                        let rim_key_tr = tr(rim_key, to, from)
+                        if rim_key_tr != rim_key &&
+                                    \ index(s:XkbSwitchIRegList,
+                                    \ char2nr(rim_key_tr)) != -1
+                            call add(skip_rim_list, rim_key_tr)
+                        endif
+                    else
+                        call add(skip_rim_list, rim_key)
+                    endif
+                endif
+            endif
             " do not reload existing mapping unnecessarily
             " FIXME: list of mappings to skip depends on value of &filetype,
             " therefore it must be reloaded on FileType events!
@@ -346,6 +375,18 @@ fun! <SID>imappings_load()
             exe mapcmd.' <silent> <buffer> '.expr.' '.substitute(newkey.' '.
                         \ maparg(data[1], 'i'), '|', '|', 'g')
         endfor
+        if g:XkbSwitchLoadRIMappings
+            for rim_key_nr in s:XkbSwitchIRegList
+                let rim_key = nr2char(rim_key_nr)
+                let rim_key_tr = tr(rim_key, from, to)
+                if index(s:XkbSwitchIRegList, char2nr(rim_key_tr)) != -1 ||
+                            \ index(skip_rim_list, rim_key) != -1
+                    continue
+                endif
+                exe 'inoremap <silent> <buffer> <C-R>'.rim_key_tr.' <C-R>'.
+                            \ rim_key
+            endfor 
+        endif
     endfor
 endfun
 

@@ -168,6 +168,18 @@ g:XkbSwitchSkipIMappings.
 Beware: variable g:XkbSwitchSkipIMappings is not parameterized by keyboard
 layouts but only by filetypes.
 
+Besides natural Insert mode mappings, register insertion translations are also
+supported. For example being in Insert mode and having Russian winkeys layout
+on, you can insert content of register 'a' just printing ``<C-R>ф`` without
+switching current layout. To disable translation of register names in Insert
+mode put line
+
+```vim
+    let g:XkbSwitchLoadRIMappings = 0
+```
+
+in your .vimrc.
+
 ### Default layouts
 
 By default last Normal mode keyboard layout is restored when leaving Insert
