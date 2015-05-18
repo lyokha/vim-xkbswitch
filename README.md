@@ -6,6 +6,13 @@ by Alexey Radkov and Dmitry Hrabrov a.k.a. DeXPeriX
 About
 -----
 
+If you speak and write in two or more languages you may be know how it's
+frustrating to constantly switch keyboard layouts manually, because of vim
+in command mode can understand only English letters. So you need constantly
+change keyboard layout into English if you need perform some command and
+if you are writing texts for example in Russian, German or Chinese at the
+same time.
+
 Vim plugin XkbSwitch can be used to easily switch current keyboard layout back
 and forth when entering and leaving Insert mode. Say you are typing some
 document in Russian and have to leave Insert mode: when you press ``<Esc>``
