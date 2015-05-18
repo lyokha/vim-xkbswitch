@@ -6,8 +6,8 @@ by Alexey Radkov and Dmitry Hrabrov a.k.a. DeXPeriX
 About
 -----
 
-If you speak and write in two or more languages you may be know how it's
-frustrating to constantly switch keyboard layouts manually, because of vim
+If you speak and write in two or more languages you may know how it's
+frustrating to constantly switch keyboard layouts manually, because vim
 in command mode can understand only English letters. So you need constantly
 change keyboard layout into English if you need perform some command and
 if you are writing texts for example in Russian, German or Chinese at the
