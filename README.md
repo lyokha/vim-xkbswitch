@@ -17,12 +17,15 @@ XkbSwitch requires OS dependent keyboard layout switcher. Currently it depends
 on [xkb-switch](http://github.com/ierton/xkb-switch) for UNIX / X Server and
 [xkb-switch-win](http://github.com/DeXP/xkb-switch-win) for Windows.
 For Mac OS X you can try
-[Input Source Switcher](http://github.com/vovkasm/input-source-switcher) and
-set library path as
+[*xkbswitch-macosx*](http://github.com/myshov/xkbswitch-macosx) or
+[Input Source Switcher](http://github.com/vovkasm/input-source-switcher). In
+the latter case you will have to put line
 
 ```vim
 let g:XkbSwitchLib = '/usr/local/lib/libInputSourceSwitcher.dylib'
 ```
+
+into your .vimrc settings.
 
 Features
 --------
@@ -171,14 +174,14 @@ layouts but only by filetypes.
 Besides natural Insert mode mappings, register insertion translations are also
 supported. For example being in Insert mode and having Russian winkeys layout
 on, you can insert content of register 'a' just printing ``<C-R>ф`` without
-switching current layout. To disable translation of register names in Insert
-mode put line
+switching current keyboard layout. To disable translation of register names in
+Insert mode put line
 
 ```vim
     let g:XkbSwitchLoadRIMappings = 0
 ```
 
-in your .vimrc.
+into your .vimrc.
 
 ### Default layouts
 
