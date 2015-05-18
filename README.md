@@ -17,7 +17,7 @@ XkbSwitch requires OS dependent keyboard layout switcher. Currently it depends
 on [xkb-switch](http://github.com/ierton/xkb-switch) for UNIX / X Server and
 [xkb-switch-win](http://github.com/DeXP/xkb-switch-win) for Windows.
 For Mac OS X you can try
-[*xkbswitch-macosx*](http://github.com/myshov/xkbswitch-macosx) or
+[xkbswitch-macosx](http://github.com/myshov/xkbswitch-macosx) or
 [Input Source Switcher](http://github.com/vovkasm/input-source-switcher). In
 the latter case you will have to put line
 
