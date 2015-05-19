@@ -340,10 +340,9 @@ fun! <SID>imappings_load()
                 endif
             endfor
             if g:XkbSwitchLoadRIMappings
-                let rim_key_match = matchlist(data[1], '^\c<C-R>\(.\)$')
-                if exists('rim_key_match[1]')
-                    let rim_key = rim_key_match[1]
-                    if index(s:XkbSwitchIRegList, rim_key) == -1
+                let rim_key = matchstr(data[1], '^\c<C-R>\zs.$')
+                if !empty(rim_key)
+                    if index(s:XkbSwitchIRegList, char2nr(rim_key)) == -1
                         let rim_key_tr = tr(rim_key, to, from)
                         if rim_key_tr != rim_key &&
                                     \ index(s:XkbSwitchIRegList,
