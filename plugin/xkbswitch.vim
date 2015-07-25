@@ -21,7 +21,11 @@ if !exists('g:XkbSwitchLib')
         if empty($DISPLAY)
             finish
         endif
-        let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
+        if filereadable('/usr/lib/libxkbswitch.so')
+            let g:XkbSwitchLib = '/usr/lib/libxkbswitch.so'
+        else
+            let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
+        endif
     elseif has('win64')
         let g:XkbSwitchLib = $VIMRUNTIME.'/libxkbswitch64.dll'
     elseif has('win32')
