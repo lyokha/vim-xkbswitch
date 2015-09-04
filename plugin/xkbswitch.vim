@@ -15,16 +15,20 @@ let g:loaded_XkbSwitch = 1
 
 if !exists('g:XkbSwitchLib')
     if has('macunix')
-        let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.dylib'
+        if filereadable('/usr/local/lib/libxkbswitch.dylib')
+            let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.dylib'
+        else
+            let g:XkbSwitchLib = '/usr/lib/libxkbswitch.dylib'
+        endif
     elseif has('unix')
         " do not load if there is no X11
         if empty($DISPLAY)
             finish
         endif
-        if filereadable('/usr/lib/libxkbswitch.so')
-            let g:XkbSwitchLib = '/usr/lib/libxkbswitch.so'
-        else
+        if filereadable('/usr/local/lib/libxkbswitch.so')
             let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
+        else
+            let g:XkbSwitchLib = '/usr/lib/libxkbswitch.so'
         endif
     elseif has('win64')
         let g:XkbSwitchLib = $VIMRUNTIME.'/libxkbswitch64.dll'
