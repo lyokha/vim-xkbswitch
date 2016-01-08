@@ -185,7 +185,7 @@ switching current keyboard layout. To disable translation of register names in
 Insert mode put line
 
 ```vim
-    let g:XkbSwitchLoadRIMappings = 0
+let g:XkbSwitchLoadRIMappings = 0
 ```
 
 into your .vimrc.
