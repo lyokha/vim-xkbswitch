@@ -202,6 +202,14 @@ Also you can specify original Insert mode keyboard layout:
 >
     let g:XkbSwitchILayout = 'us'
 <
+Or unconditional Insert mode keyboard layout using buffer variable with the
+same name:
+>
+    let b:XkbSwitchILayout = 'us'
+<
+Be aware that momental switching from-and-to Insert mode (e.g. with Insert
+mode command <C-O> and all types of selections) will turn current keyboard
+layout to the value of b:XkbSwitchILayout.
 
 ------------------------------------------------------------------------------
                                             *xkbswitch-filetype-disable*

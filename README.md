@@ -199,11 +199,22 @@ mode, but you can specify to use particular layout for that:
 let g:XkbSwitchNLayout = 'us'
 ```
 
-Also you can specify original Insert mode keyboard layout:
+Also you can specify *original* Insert mode keyboard layout:
 
 ```vim
 let g:XkbSwitchILayout = 'us'
 ```
+
+Or *unconditional* Insert mode keyboard layout using buffer variable with the
+same name:
+
+```vim
+let b:XkbSwitchILayout = 'us'
+```
+
+Be aware that momental switching from-and-to Insert mode (e.g. with Insert
+mode command ``<C-O>`` and all types of selections) will turn current keyboard
+layout to the value of b:XkbSwitchILayout.
 
 ### Disable for specific filetypes
 
