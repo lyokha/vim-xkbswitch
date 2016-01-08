@@ -365,14 +365,14 @@ The next definition
  let g:XkbSwitchPostIEnterAuto = [
              \ [{'pat': '*.mdict', 'cmd': 'call MdictCheckLang(1)'}, 0] ]
 <
-registers an InsertEnter autocommand in augroup XkbSwitch. If we would have
-instead defined an InsertEnter autocommand here then the command would have
-been put before the standard InsertEnter autocommand in augroup XkbSwitch.
-Using variable g:XkbSwitchPostIEnterAuto ensures that the new command will run
-after the standard InsertEnter autocommand. The second element in an item
-inside g:XkbSwitchPostIEnterAuto can be 0 or 1. If it is 1 then XkbSwitch
-won't switch layout itself when entering Insert mode. In our case it should be
-0 because MdictCheckLang() requires preliminary switching keyboard layout from
+registers an InsertEnter autocommand in augroup XkbSwitch. If we had instead
+defined an InsertEnter autocommand here then the command would have been put
+before the standard InsertEnter autocommand in augroup XkbSwitch. Using
+variable g:XkbSwitchPostIEnterAuto ensures that the new command will run after
+the standard InsertEnter autocommand. The second element in an item inside
+g:XkbSwitchPostIEnterAuto can be 0 or 1. If it is 1 then XkbSwitch won't
+switch layout itself when entering Insert mode. In our case it should be 0
+because MdictCheckLang() requires preliminary switching keyboard layout from
 XkbSwitch when entering Insert mode.
 
 Starting from version 0.9 a generic helper for building custom syntax based
