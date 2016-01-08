@@ -212,16 +212,18 @@ same name:
 let b:XkbSwitchILayout = 'us'
 ```
 
-Be aware that momental switching from-and-to Insert mode (e.g. with Insert
-mode command ``<C-O>`` and all types of selections) will turn current keyboard
-layout to the value of b:XkbSwitchILayout. If you want to use unconditional
-Insert mode keyboard layout by default then put line
+If b:XkbSwitchILayout is set to the empty value then the keyboard layout is not
+changed when entering Insert mode. Be aware that momental switching from-and-to
+Insert mode (e.g. with Insert mode command ``<C-O>`` and all types of
+selections) will turn current keyboard layout to the value of
+b:XkbSwitchILayout. If you want to use unconditional Insert mode keyboard layout
+by default then put line
 
 ```vim
 autocmd BufEnter * let b:XkbSwitchILayout = 'us'
 ```
 
-into your .vimrc.
+into your .vimrc (change *us* to desired value if needed).
 
 ### Disable for specific filetypes
 

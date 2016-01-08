@@ -596,14 +596,16 @@ fun! <SID>xkb_switch(mode, ...)
             if b:xkb_pending_imode && b:xkb_pending_ilayout != cur_layout
                 let b:xkb_ilayout = cur_layout
             else
-                let switched = exists('b:XkbSwitchILayout') ?
+                if !exists('b:XkbSwitchILayout') || b:XkbSwitchILayout != ''
+                    let switched = exists('b:XkbSwitchILayout') ?
                             \ b:XkbSwitchILayout : (exists('b:xkb_ilayout') ?
                             \ b:xkb_ilayout : g:XkbSwitchILayout)
-                if switched != ''
-                    if switched != cur_layout &&
-                                \ !exists('b:xkb_ilayout_managed')
-                        call libcall(g:XkbSwitch['backend'],
-                                    \ g:XkbSwitch['set'], switched)
+                    if switched != ''
+                        if switched != cur_layout &&
+                                    \ !exists('b:xkb_ilayout_managed')
+                            call libcall(g:XkbSwitch['backend'],
+                                        \ g:XkbSwitch['set'], switched)
+                        endif
                     endif
                 endif
             endif
