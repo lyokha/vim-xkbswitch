@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2015 January 6
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2016 January 12
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.12
+                                version 0.13
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -582,5 +582,14 @@ A. Change History~
       (see updated docs)
     - Added new global variable g:XkbSwitchSkipGhKeys which can be used to
       optionally disable gh-mappings required for Select mode support
+
+0.13
+    - Named registers insertion keys translation (e.g <C-R>a to <C-R>ф for
+      Russian winkeys layout)
+    - Better xkbswitch library search algorithm
+    - Option for choosing unconditional keyboard layout when entering Insert
+      mode with buffer-variable b:XkbSwitchILayout. This can also be used to
+      disable keyboard layout switching when entering Insert mode (see updated
+      docs)
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
