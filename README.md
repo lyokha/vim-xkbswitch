@@ -197,7 +197,8 @@ XkbSwitch is unable to guess keyboard layout when using Normal mode commands
 in this by setting
 
 ```vim
-let g:XkbSwitchAssistNKeymap = 1
+let g:XkbSwitchAssistNKeymap = 1    " for commands r and f
+let g:XkbSwitchAssistSKeymap = 1    " for search lines
 ```
 
 provided keymap is set to some value, for example
@@ -220,10 +221,11 @@ this approach has at least two obvious problems:
 - There can be problems when three or more keyboard layouts are used.
   Imagine that keymap was set to some Russian keyboard layout, you entered
   some text in Insert mode using a German layout and then switched back to
-  Normal mode. Now all text entered after *r*, *f* and search commands will
-  be printed in the Russian layout instead of the German as you would
-  normally expect. Remember that you can always switch back to the usual
-  Normal mode keyboard layout using *Ctrl-^* in Insert and Command-line modes.
+  Normal mode. Now all text entered after *r* and *f* and in search lines
+  will be printed in the Russian layout instead of the German as you would
+  normally expect. To reset commands *r* and *f* to the usual Normal mode
+  keyboard layout simply switch to it in Insert mode. To reset search lines
+  press *Ctrl-^* when printing text to search.
 
 ### Default layouts
 

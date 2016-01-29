@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.13
+" Version:     0.14
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -94,6 +94,9 @@ endif
 
 if !exists('g:XkbSwitchAssistNKeymap')
     let g:XkbSwitchAssistNKeymap = 0
+endif
+if !exists('g:XkbSwitchAssistSKeymap')
+    let g:XkbSwitchAssistSKeymap = 0
 endif
 
 if !exists('g:XkbSwitchSkipFt')
@@ -569,6 +572,8 @@ fun! <SID>xkb_switch(mode, ...)
             endif
             if g:XkbSwitchAssistNKeymap
                 exe "setlocal iminsert=".nswitch
+            endif
+            if g:XkbSwitchAssistSKeymap
                 exe "setlocal imsearch=".nswitch
             endif
         endif
@@ -583,6 +588,8 @@ fun! <SID>xkb_switch(mode, ...)
         endif
         if g:XkbSwitchAssistNKeymap
             setlocal iminsert=0
+        endif
+        if g:XkbSwitchAssistSKeymap
             setlocal imsearch=0
         endif
         call <SID>load_all()
