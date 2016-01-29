@@ -18,9 +18,10 @@ Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
     4. Setup .................................: |xkbswitch-setup|
     5. Configuration .........................: |xkbswitch-configure|
         5.1 Basic configuration ..............: |xkbswitch-conf-basic|
-        5.2 Default layouts ..................: |xkbswitch-default-layouts|
-        5.3 Disable for specific filetypes ...: |xkbswitch-filetype-disable|
-        5.4 Enable in runtime ................: |xkbswitch-runtime-enable|
+        5.2 Keymap assistance in Normal mode..: |xkbswitch-assist-nkeymap|
+        5.3 Default layouts ..................: |xkbswitch-default-layouts|
+        5.4 Disable for specific filetypes ...: |xkbswitch-filetype-disable|
+        5.5 Enable in runtime ................: |xkbswitch-runtime-enable|
     6. Custom keyboard layout switching rules.: |xkbswitch-plugins|
     7. Troubleshooting .......................: |xkbswitch-issues|
     A. Change History ........................: |xkbswitch-changes|
@@ -190,8 +191,41 @@ Insert mode put line
 into your .vimrc.
 
 ------------------------------------------------------------------------------
+                                            *xkbswitch-assist-nkeymap*
+5.2 Keymap assistance in Normal mode~
+
+XkbSwitch is unable to guess keyboard layout when using Normal mode commands
+|r| and |f| and searching with |/| and |?|. Fortunately it can assist |keymap|
+in this by setting
+>
+    let g:XkbSwitchAssistNKeymap = 1
+<
+provided keymap is set to some value, for example
+>
+    set keymap=russian-jcukenwin
+    set iminsert=0
+    set imsearch=0
+<
+Now when you leave Insert mode, the keyboard layout is switched back to the
+usual Normal mode value, but values of |iminsert| and |imsearch| are set
+depending on the last Insert mode keyboard layout: if it was equal to the
+usual Normal mode layout then they are set to 0, otherwise to 1. Beware that
+this approach has at least two obvious problems:
+
+  - There is no correct system keyboard layout indication when entering text
+    after these commands: it will keep showing the usual Normal mode layout.
+
+  - There can be problems when three or more keyboard layouts are used.
+    Imagine that keymap was set to some Russian keyboard layout, you entered
+    some text in Insert mode using a German layout and then switched back to
+    Normal mode. Now all text entered after |r|, |f| and search commands will
+    be printed in the Russian layout instead of the German as you would
+    normally expect. Remember that you can always switch back to the usual
+    Normal mode keyboard layout using |i_Ctrl-^| and |c_Ctrl-^|.
+
+------------------------------------------------------------------------------
                                             *xkbswitch-default-layouts*
-5.2 Default layouts~
+5.3 Default layouts~
 
 By default last Normal mode keyboard layout is restored when leaving Insert
 mode, but you can specify to use particular layout for that:
@@ -220,7 +254,7 @@ into your .vimrc (change 'us' to desired value if needed).
 
 ------------------------------------------------------------------------------
                                             *xkbswitch-filetype-disable*
-5.3 Disable for specific filetypes~
+5.4 Disable for specific filetypes~
 
 It makes sense to disable XkbSwitch for buffers with specific filetypes, for
 example various file system or tag navigators. For example to disable
@@ -233,7 +267,7 @@ filetypes are skipped: 'tagbar', 'gundo', 'nerdtree' and 'fuf' (FuzzyFinder).
 
 ------------------------------------------------------------------------------
                                             *xkbswitch-runtime-enable*
-5.4 Enable in runtime~
+5.5 Enable in runtime~
 
 You can enable XkbSwitch in runtime (e.g. when g:XkbSwitchEnabled is not set
 in your .vimrc) by issuing command

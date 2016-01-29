@@ -190,6 +190,41 @@ let g:XkbSwitchLoadRIMappings = 0
 
 into your .vimrc.
 
+### Keymap assistance in Normal mode
+
+XkbSwitch is unable to guess keyboard layout when using Normal mode commands
+*r* and *f* and searching with */* and *?*. Fortunately it can assist *keymap*
+in this by setting
+
+```vim
+let g:XkbSwitchAssistNKeymap = 1
+```
+
+provided keymap is set to some value, for example
+
+```vim
+set keymap=russian-jcukenwin
+set iminsert=0
+set imsearch=0
+```
+
+Now when you leave Insert mode, the keyboard layout is switched back to the
+usual Normal mode value, but values of *iminsert* and *imsearch* are set
+depending on the last Insert mode keyboard layout: if it was equal to the
+usual Normal mode layout then they are set to 0, otherwise to 1. Beware that
+this approach has at least two obvious problems:
+
+- There is no correct system keyboard layout indication when entering text
+  after these commands: it will keep showing the usual Normal mode layout.
+
+- There can be problems when three or more keyboard layouts are used.
+  Imagine that keymap was set to some Russian keyboard layout, you entered
+  some text in Insert mode using a German layout and then switched back to
+  Normal mode. Now all text entered after *r*, *f* and search commands will
+  be printed in the Russian layout instead of the German as you would
+  normally expect. Remember that you can always switch back to the usual
+  Normal mode keyboard layout using *Ctrl-^* in Insert and Command-line modes.
+
 ### Default layouts
 
 By default last Normal mode keyboard layout is restored when leaving Insert

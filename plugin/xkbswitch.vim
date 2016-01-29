@@ -92,6 +92,10 @@ if !exists('g:XkbSwitchLoadRIMappings')
     let g:XkbSwitchLoadRIMappings = 1
 endif
 
+if !exists('g:XkbSwitchAssistNKeymap')
+    let g:XkbSwitchAssistNKeymap = 0
+endif
+
 if !exists('g:XkbSwitchSkipFt')
     let g:XkbSwitchSkipFt = ['tagbar', 'gundo', 'nerdtree', 'fuf']
 endif
@@ -550,17 +554,22 @@ fun! <SID>xkb_switch(mode, ...)
     if g:XkbSwitchRestoreGlobalLayout && empty(s:XkbSwitchGlobalLayout)
         let s:XkbSwitchGlobalLayout = cur_layout
     endif
-    let nlayout = g:XkbSwitchNLayout != '' ? g:XkbSwitchNLayout :
-                \ (exists('b:xkb_nlayout') ? b:xkb_nlayout : '')
     if a:mode == 0
         if exists('b:xkb_skip_skey') && b:xkb_skip_skey > 0
             let b:xkb_skip_skey = 2
             return
         endif
+        let nlayout = g:XkbSwitchNLayout != '' ? g:XkbSwitchNLayout :
+                    \ (exists('b:xkb_nlayout') ? b:xkb_nlayout : '')
         if nlayout != ''
-            if cur_layout != nlayout
+            let nswitch = cur_layout != nlayout
+            if nswitch
                 call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
                             \ nlayout)
+            endif
+            if g:XkbSwitchAssistNKeymap
+                exe "setlocal iminsert=".nswitch
+                exe "setlocal imsearch=".nswitch
             endif
         endif
         if !a:0 || a:1 != 2
@@ -571,6 +580,10 @@ fun! <SID>xkb_switch(mode, ...)
         if exists('b:xkb_skip_skey') && b:xkb_skip_skey > 1
             let b:xkb_skip_skey = 0
             return
+        endif
+        if g:XkbSwitchAssistNKeymap
+            setlocal iminsert=0
+            setlocal imsearch=0
         endif
         call <SID>load_all()
         let switched = ''
