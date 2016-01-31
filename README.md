@@ -235,7 +235,7 @@ and map g:XkbSwitchKeymapNames to keymap names instead of values of
 b:keymap_name. For example
 
 ```vim
-    let g:XkbSwitchKeymapNames = {'ru' : 'russian-jcukenw',
+    let g:XkbSwitchKeymapNames = {'ru' : 'russian-jcukenwin',
                 \ 'uk' : 'ukrainian-jcuken'}
 ```
 

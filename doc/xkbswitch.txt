@@ -228,7 +228,7 @@ define a new variable
 and map g:XkbSwitchKeymapNames to keymap names instead of values of
 b:keymap_name. For example
 >
-    let g:XkbSwitchKeymapNames = {'ru' : 'russian-jcukenw',
+    let g:XkbSwitchKeymapNames = {'ru' : 'russian-jcukenwin',
                 \ 'uk' : 'ukrainian-jcuken'}
 <
 Now keymap will automatically switch to the last keyboard layout when you
