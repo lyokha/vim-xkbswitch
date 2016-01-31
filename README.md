@@ -212,20 +212,86 @@ set imsearch=0
 Now when you leave Insert mode, the keyboard layout is switched back to the
 usual Normal mode value, but values of *iminsert* and *imsearch* are set
 depending on the last Insert mode keyboard layout: if it was equal to the
-usual Normal mode layout then they are set to 0, otherwise to 1. Beware that
-this approach has at least two obvious problems:
+value of b:keymap_name that is normally defined in keymap files then they are
+set to 1, otherwise to 0. If keymap names do not match system keyboard layout
+names then you can remap them using variable g:XkbSwitchKeymapNames.
 
-- There is no correct system keyboard layout indication when entering text
-  after these commands: it will keep showing the usual Normal mode layout.
+```vim
+let g:XkbSwitchKeymapNames = {'ru' : 'ru_keymap', 'uk' : 'uk_keymap'}
+```
 
-- There can be problems when three or more keyboard layouts are used.
-  Imagine that keymap was set to some Russian keyboard layout, you entered
-  some text in Insert mode using a German layout and then switched back to
-  Normal mode. Now all text entered after *r* and *f* and in search lines
-  will be printed in the Russian layout instead of the German as you would
-  normally expect. To reset commands *r* and *f* to the usual Normal mode
-  keyboard layout simply switch to it in Insert mode. To reset search lines
-  press *Ctrl-^* when printing text to search.
+Here *ru* and *uk* are system keyboard layout names whereas *ru_keymap* and
+*uk_keymap* are values of b:keymap_name.
+
+When more than two keyboard layouts are used it probably makes sense to set
+keymaps dynamically in runtime. XkbSwitch can do it for you! You only need to
+define a new variable
+
+```vim
+let g:XkbSwitchDynamicKeymap = 1
+```
+
+and map g:XkbSwitchKeymapNames to keymap names instead of values of
+b:keymap_name. For example
+
+```vim
+    let g:XkbSwitchKeymapNames = {'ru' : 'russian-jcukenw',
+                \ 'uk' : 'ukrainian-jcuken'}
+```
+
+Now keymap will automatically switch to the last keyboard layout when you
+leave Insert mode.
+
+To reset commands *r* and *f* to the usual Normal mode keyboard layout simply
+switch to it in Insert mode. To reset search lines press *Ctrl-^*.
+
+There is only one problem not solved so far: the system keyboard layout
+indicator when in Normal mode and search lines will show the usual Normal mode
+layout. We need some hint that *iminsert* is active and to what language it
+points, it also would show what layout will be switched to when we enter
+Insert mode again. Very convenient feature, is not?
+
+I will show how to make a keymap indicator for the [old Powerline plugin]
+(http://github.com/Lokaltog/vim-powerline), newer offsprings like [airline]
+(http://github.com/vim-airline/vim-airline) must not differ a lot.
+
+Add lines
+
+```vim
+	\ Pl#Segment#Create('keymap_name'     ,
+		\'%{&iminsert && exists("b:keymap_name") ? b:keymap_name : ""}',
+		\ Pl#Segment#Modes('!N')),
+```
+
+into the array passed to Pl#Segment#Init() in file
+autoload/Powerline/Segments.vim before the line with *fileformat*, line
+
+```vim
+		\ , 'keymap_name'
+```
+
+into the list passed to Pl#Theme#Buffer() in file
+autoload/Powerline/Themes/default.vim (or whatever theme you are using)
+before the line with *fileformat*, and lines
+
+```vim
+	\ Pl#Hi#Segments(['keymap_name'], {
+		\ 'n': ['brightestorange', 'gray2'],
+		\ 'i': ['brightestorange', 'darkestblue'],
+		\ }),
+	\
+```
+
+somewhere into the list passed to Pl#Colorscheme#Init() in file
+autoload/Powerline/Colorschemes/default.vim (or whatever Powerline colorscheme
+you are using). Then enter command
+
+```vim
+    :PowerlineClearCache
+```
+
+, restart vim and now the indicator must work (but it will only show keymap
+names when *iminsert* is set).
 
 ### Default layouts
 

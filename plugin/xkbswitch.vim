@@ -95,8 +95,17 @@ endif
 if !exists('g:XkbSwitchAssistNKeymap')
     let g:XkbSwitchAssistNKeymap = 0
 endif
+
 if !exists('g:XkbSwitchAssistSKeymap')
     let g:XkbSwitchAssistSKeymap = 0
+endif
+
+if !exists('g:XkbSwitchKeymapNames')
+    let g:XkbSwitchKeymapNames = {}
+endif
+
+if !exists('g:XkbSwitchDynamicKeymap')
+    let g:XkbSwitchDynamicKeymap = 0
 endif
 
 if !exists('g:XkbSwitchSkipFt')
@@ -107,14 +116,14 @@ if !exists('g:XkbSwitchNLayout')
     let g:XkbSwitchNLayout = ''
 endif
 
+if !exists('g:XkbSwitchILayout')
+    let g:XkbSwitchILayout = ''
+endif
+
 let s:XkbSwitchGlobalLayout = ''
 
 if !exists('g:XkbSwitchRestoreGlobalLayout')
     let g:XkbSwitchRestoreGlobalLayout = 0
-endif
-
-if !exists('g:XkbSwitchILayout')
-    let g:XkbSwitchILayout = ''
 endif
 
 if !exists('g:XkbSwitchEnabled')
@@ -565,16 +574,36 @@ fun! <SID>xkb_switch(mode, ...)
         let nlayout = g:XkbSwitchNLayout != '' ? g:XkbSwitchNLayout :
                     \ (exists('b:xkb_nlayout') ? b:xkb_nlayout : '')
         if nlayout != ''
-            let nswitch = cur_layout != nlayout
-            if nswitch
+            if cur_layout != nlayout
                 call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
                             \ nlayout)
             endif
+        endif
+        if g:XkbSwitchAssistNKeymap || g:XkbSwitchAssistSKeymap
+            let keymap_switch = 0
+            let ilayout = a:0 && a:1 == 2 ?
+                        \ (exists('b:xkb_ilayout') ?
+                        \ b:xkb_ilayout : cur_layout) : cur_layout
+            if g:XkbSwitchDynamicKeymap
+                if exists('g:XkbSwitchKeymapNames[ilayout]')
+                    if g:XkbSwitchKeymapNames[ilayout] != &keymap
+                        exe "setlocal keymap=".
+                                    \ g:XkbSwitchKeymapNames[ilayout]
+                    endif
+                    let keymap_switch = 1
+                endif
+            else
+                let keymap_switch = exists('b:keymap_name') ?
+                            \ (exists('g:XkbSwitchKeymapNames[ilayout]') ?
+                            \  (g:XkbSwitchKeymapNames[ilayout] ==
+                            \   b:keymap_name) :
+                            \  ilayout == b:keymap_name) : 0
+            endif
             if g:XkbSwitchAssistNKeymap
-                exe "setlocal iminsert=".nswitch
+                exe "setlocal iminsert=".keymap_switch
             endif
             if g:XkbSwitchAssistSKeymap
-                exe "setlocal imsearch=".nswitch
+                exe "setlocal imsearch=".keymap_switch
             endif
         endif
         if !a:0 || a:1 != 2
@@ -586,11 +615,13 @@ fun! <SID>xkb_switch(mode, ...)
             let b:xkb_skip_skey = 0
             return
         endif
-        if g:XkbSwitchAssistNKeymap
-            setlocal iminsert=0
-        endif
-        if g:XkbSwitchAssistSKeymap
-            setlocal imsearch=0
+        if !a:0 || a:1 != 2 || mode() =~ '^[iR]'
+            if g:XkbSwitchAssistNKeymap
+                setlocal iminsert=0
+            endif
+            if g:XkbSwitchAssistSKeymap
+                setlocal imsearch=0
+            endif
         endif
         call <SID>load_all()
         let switched = ''
