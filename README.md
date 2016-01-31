@@ -251,9 +251,9 @@ layout. We need some hint that *iminsert* is active and to what language it
 points, it also would show what layout will be switched to when we enter
 Insert mode again. Very convenient feature, is not?
 
-I will show how to make a keymap indicator for the [old Powerline plugin]
-(http://github.com/Lokaltog/vim-powerline), newer offsprings like [airline]
-(http://github.com/vim-airline/vim-airline) must not differ a lot.
+I will show how to make a keymap indicator for the old
+[Powerline](http://github.com/Lokaltog/vim-powerline) plugin, newer offsprings
+like [airline](http://github.com/vim-airline/vim-airline) must not differ a lot.
 
 Add lines
 
