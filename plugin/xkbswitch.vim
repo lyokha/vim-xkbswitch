@@ -7,6 +7,12 @@
 
 scriptencoding utf-8
 
+if $DISPLAY == "" 
+	let g:XkbSwitchEnabled = 0
+else
+	let g:XkbSwitchEnabled = 1
+endif 
+
 if exists('g:loaded_XkbSwitch') && g:loaded_XkbSwitch
     finish
 endif
