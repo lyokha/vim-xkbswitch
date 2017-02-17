@@ -7,17 +7,18 @@
 
 scriptencoding utf-8
 
-if $DISPLAY == "" 
-	let g:XkbSwitchEnabled = 0
-else
-	let g:XkbSwitchEnabled = 1
-endif 
-
 if exists('g:loaded_XkbSwitch') && g:loaded_XkbSwitch
     finish
 endif
 
 let g:loaded_XkbSwitch = 1
+
+" prevent crashes of Vim due to xkb-switch (Github PR #30)
+" FIXME: this is too strict because another hypothetical keyboard layout
+"        switcher (that won't crash) can be used here
+if has('unix') && empty($DISPLAY)
+    let g:XkbSwitchEnabled = 0
+endif
 
 if !exists('g:XkbSwitchLib')
     if has('macunix')
@@ -27,7 +28,8 @@ if !exists('g:XkbSwitchLib')
             let g:XkbSwitchLib = '/usr/lib/libxkbswitch.dylib'
         endif
     elseif has('unix')
-        " do not load if there is no X11
+        " do not load if there is no X11,
+        " see also comment about excessive strictness above
         if empty($DISPLAY)
             finish
         endif
