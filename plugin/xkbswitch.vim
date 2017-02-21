@@ -151,6 +151,9 @@ fun! <SID>tr_load(file)
             continue
         endif
         let data = split(line)
+        if empty(data)
+            continue
+        endif
         if data[0] == '<' || data[0] == '>'
             if tr == ''
                 continue
@@ -331,7 +334,11 @@ fun! <SID>imappings_load()
     let mappings = split(mappingsdump, '\n')
     let mappingskeys = {}
     for mapping in mappings
-        let mappingskeys[split(mapping)[1]] = 1
+        let data = split(mapping)
+        if len(data) < 3 || data[0] != 'i' && data[0] != '!'
+            continue
+        endif
+        let mappingskeys[data[1]] = 1
     endfor
     let skip_rim_list = []
     for tr in g:XkbSwitchIMappings
@@ -341,7 +348,7 @@ fun! <SID>imappings_load()
             " FIXME: checking for basic mappings validity could be moved
             " outside the 'for tr' loop to avoid duplicate tests
             let data = split(mapping)
-            if data[0] != 'i' && data[0] != '!' || len(data) < 3
+            if len(data) < 3 || data[0] != 'i' && data[0] != '!'
                 continue
             endif
             let mapvalue = maparg(data[1], 'i')
