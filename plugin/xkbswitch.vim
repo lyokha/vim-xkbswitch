@@ -320,9 +320,14 @@ fun! <SID>imappings_load()
     if index(g:XkbSwitchIMappingsSkipFt, &ft) != -1
         return
     endif
-    redir => mappingsdump
-    silent imap
-    redir END
+    let mappingsdump = ''
+    if exists('*execute')
+        let mappingsdump = execute('imap', 'silent!')
+    else
+        redir => mappingsdump
+        silent imap
+        redir END
+    endif
     let mappings = split(mappingsdump, '\n')
     let mappingskeys = {}
     for mapping in mappings
@@ -333,16 +338,25 @@ fun! <SID>imappings_load()
         let from = g:XkbSwitchIMappingsTr[tr]['<']
         let to   = g:XkbSwitchIMappingsTr[tr]['>']
         for mapping in mappings
+            " FIXME: checking for basic mappings validity could be moved
+            " outside the 'for tr' loop to avoid duplicate tests
+            let data = split(mapping)
+            if data[0] != 'i' && data[0] != '!' || len(data) < 3
+                continue
+            endif
+            let mapvalue = maparg(data[1], 'i')
+            if empty(mapvalue)
+                continue
+            endif
             let value = substitute(mapping,
                         \ '\s*\S\+\s\+\S\+\s\+\(.*\)', '\1', '')
             " do not duplicate <script> mappings (when value contains '&')
             if match(value, '^[[:blank:]*@]*&') != -1
                 continue
             endif
-            let data = split(mapping)
             " do not duplicate <Plug> and <SNR> mappings
             " (when key starts with '<Plug>' or '<SNR>')
-            if match(data[1], '^\c\%(<Plug>\|<SNR>\)') != -1
+            if match(data[1], '^\c<\%(Plug\|SNR\)>') != -1
                 continue
             endif
             " replace characters starting control sequences with spaces
@@ -403,8 +417,8 @@ fun! <SID>imappings_load()
                     \ '^[[:blank:]*&@]*[a-zA-Z][a-zA-Z0-9_#]*(.*)$') != -1 ?
                     \ '<expr>' : ''
             " new maps are always silent and buffer-local
-            exe mapcmd.' <silent> <buffer> '.expr.' '.substitute(newkey.' '.
-                        \ maparg(data[1], 'i'), '|', '|', 'g')
+            exe mapcmd.' <silent> <buffer> '.expr.' '.
+                        \ substitute(newkey.' '.mapvalue, '|', '|', 'g')
         endfor
         if g:XkbSwitchLoadRIMappings
             for rim_key_nr in s:XkbSwitchIRegList
