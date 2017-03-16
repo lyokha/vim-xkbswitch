@@ -16,7 +16,7 @@ let g:loaded_XkbSwitch = 1
 " prevent crashes of Vim due to xkb-switch (Github PR #30)
 " FIXME: this is too strict because another hypothetical keyboard layout
 "        switcher (that won't crash) can be used here
-if has('unix') && empty($DISPLAY)
+if !has('macunix') && has('unix') && empty($DISPLAY)
     let g:XkbSwitchEnabled = 0
 endif
 
@@ -437,7 +437,7 @@ fun! <SID>imappings_load()
                 endif
                 exe 'inoremap <silent> <buffer> <C-R>'.rim_key_tr.' <C-R>'.
                             \ rim_key
-            endfor 
+            endfor
         endif
     endfor
 endfun
