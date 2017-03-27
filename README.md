@@ -3,6 +3,21 @@ Vim-xkbswitch
 
 by Alexey Radkov and Dmitry Hrabrov a.k.a. DeXPeriX
 
+Table of contents
+-----------------
+
+- [About](#about)
+- [Features](#features)
+- [Setup](#setup)
+- [Configuration](#configuration)
+    + [Basic configuration](#basic-configuration)
+    + [Keymap assistance in Normal mode](#keymap-assistance-in-normal-mode)
+    + [Default layouts](#default-layouts)
+    + [Disable for specific filetypes](#disable-for-specific-filetypes)
+    + [Enable in runtime](#enable-in-runtime)
+- [Custom keyboard layout switching rules](#custom-keyboard-layout-switching-rules)
+- [Troubleshooting](#troubleshooting)
+
 About
 -----
 
@@ -535,6 +550,15 @@ comments areas, but in the mdict rule we do not care about leaving areas
 
 Troubleshooting
 ---------------
+
+* Some characters from alternative keyboard layouts may fail to enter or behave
+  in strange ways for certain filetypes. For example in Russian winkeys layout
+  characters 'б', 'ю', 'ж' and 'э' may fail to enter in C++ source files. The
+  reason of that is layout translation maps specified in variable
+  g:XkbSwitchIMappings. You may work this around by simply not setting this
+  variable, or better by specifying characters from the main keyboard layout
+  whose translation should be skipped using variable g:XkbSwitchSkipIMappings.
+  See details in section [Basic configuration](#basic-configuration).
 
 * There is a known issue when vim-latex package is installed. In this case
   entering Russian symbols in Insert mode when editing tex files becomes

@@ -506,6 +506,15 @@ comments areas, but in the mdict rule we do not care about leaving areas
                                             *xkbswitch-issues*
 7. Troubleshooting~
 
+  - Some characters from alternative keyboard layouts may fail to enter or
+    behave in strange ways for certain filetypes. For example in Russian
+    winkeys layout characters 'б', 'ю', 'ж' and 'э' may fail to enter in C++
+    source files. The reason of that is layout translation maps specified in
+    variable g:XkbSwitchIMappings. You may work this around by simply not
+    setting this variable, or better by specifying characters from the main
+    keyboard layout whose translation should be skipped using variable
+    g:XkbSwitchSkipIMappings. See details in |xkbswitch-conf-basic|.
+
   - There is a known issue when vim-latex package is installed. In this case
     entering Russian symbols in Insert mode when editing tex files becomes
     impossible. The issue arises from clashing XkbSwitch Insert mappings
