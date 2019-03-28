@@ -572,7 +572,7 @@ Troubleshooting
 
 * When leaving Insert mode after using an alternative keyboard layout (say
   Russian), there could be a time lag (of length *1 sec* if the value of
-  ``timeoutlen`` was not altered), before typing commands in Normal mode get
+  ``timeoutlen`` was not altered) before typing commands in Normal mode gets
   back to produce any effect. To cope with this issue, the value of
   `ttimeoutlen` (notice the *double-t* in the beginning of its name!) must be
   set to some small value, say
