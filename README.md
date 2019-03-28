@@ -570,6 +570,17 @@ Troubleshooting
   let g:XkbSwitchIMappingsSkipFt = ['tex']
     ```
 
+* When leaving Insert mode after using an alternative keyboard layout (say
+  Russian), there could be a time lag (of length *1 sec* if the value of
+  ``timeoutlen`` was not altered), before typing commands in Normal mode get
+  back to produce any effect. To cope with this issue, the value of
+  `ttimeoutlen` (notice the *double-t* in the beginning of its name!) must be
+  set to some small value, say
+
+    ```vim
+  set ttimeoutlen=50
+    ```
+
 * *Related to X Server only.* When editing files on a remote host via ssh the
   ssh -X option must be supplied:
 
