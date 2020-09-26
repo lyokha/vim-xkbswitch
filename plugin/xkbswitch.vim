@@ -810,3 +810,23 @@ if g:XkbSwitchEnabled
     call <SID>enable_xkb_switch(1)
 endif
 
+if !exists('g:leaderf_loaded')
+    finish
+endif
+
+if !exists('g:Lf_Extensions')
+    let g:Lf_Extensions = {}
+endif
+
+let g:Lf_Extensions.xkbswitch = {
+            \ 'source': 'leaderf#xkbswitch#source',
+            \ 'accept': 'leaderf#xkbswitch#accept',
+            \ 'bang_enter': 'leaderf#xkbswitch#bang_enter',
+            \ 'highlights_def': {
+            \ 'Lf_hl_xkbswitchTitle': '.*',
+            \ },
+            \ 'highlights_cmd': [
+            \ 'hi link Lf_hl_xkbswitchTitle Title',
+            \ ],
+            \ }
+
