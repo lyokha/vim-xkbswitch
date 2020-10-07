@@ -23,7 +23,8 @@ Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
         5.4 Disable for specific filetypes ...: |xkbswitch-filetype-disable|
         5.5 Enable in runtime ................: |xkbswitch-runtime-enable|
     6. Custom keyboard layout switching rules.: |xkbswitch-plugins|
-    7. Troubleshooting .......................: |xkbswitch-issues|
+    7. Integration with other plugins ........: |xkbswitch-integration|
+    8. Troubleshooting .......................: |xkbswitch-issues|
     A. Change History ........................: |xkbswitch-changes|
 
 ==============================================================================
@@ -503,8 +504,24 @@ comments areas, but in the mdict rule we do not care about leaving areas
 'mdictOriginal' and 'mdictTranslated' and only care about entering them.
 
 ==============================================================================
+                                            *xkbswitch-integration*
+7. Integration with other plugins~
+
+------------------------------------------------------------------------------
+                                            *xkbswitch-leaderf*
+7.1 LeaderF~
+
+The command `Leaderf xkbswitch` can popup a window to switch input method.
+
+The introduction of `Leaderf` can be found in
+https://github.com/Yggdroot/LeaderF
+
+A test vimrc can be found in
+https://github.com/lyokha/vim-xkbswitch/pull/45#issue-493491212 .
+
+==============================================================================
                                             *xkbswitch-issues*
-7. Troubleshooting~
+8. Troubleshooting~
 
   - Some characters from alternative keyboard layouts may fail to enter or
     behave in strange ways for certain filetypes. For example in Russian
