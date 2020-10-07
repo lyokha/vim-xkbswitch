@@ -20,11 +20,19 @@ if !has('macunix') && has('unix') && empty($DISPLAY)
     let g:XkbSwitchEnabled = 0
 endif
 
+if !exists('g:XkbSwitchLib') && $XDG_SESSION_DESKTOP ==# 'gnome'
+    if filereadable('/usr/local/lib/libg3kbswitch.so')
+        let g:XkbSwitchLib = '/usr/local/lib/libg3kbswitch.so'
+    elseif filereadable('/usr/lib/libg3kbswitch.so')
+        let g:XkbSwitchLib = '/usr/lib/libg3kbswitch.so'
+    endif
+endif
+
 if !exists('g:XkbSwitchLib')
     if has('macunix')
         if filereadable('/usr/local/lib/libxkbswitch.dylib')
             let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.dylib'
-        else
+        elseif filereadable('/usr/lib/libxkbswitch.dylib')
             let g:XkbSwitchLib = '/usr/lib/libxkbswitch.dylib'
         endif
     elseif has('unix')
@@ -35,17 +43,21 @@ if !exists('g:XkbSwitchLib')
         endif
         if filereadable('/usr/local/lib/libxkbswitch.so')
             let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
-        else
+        elseif filereadable('/usr/lib/libxkbswitch.so')
             let g:XkbSwitchLib = '/usr/lib/libxkbswitch.so'
         endif
-    elseif has('win64')
+    elseif has('win64') && filereadable($VIMRUNTIME.'/libxkbswitch64.dll')
         let g:XkbSwitchLib = $VIMRUNTIME.'/libxkbswitch64.dll'
-    elseif has('win32')
+    elseif has('win32') && filereadable($VIMRUNTIME.'/libxkbswitch32.dll')
         let g:XkbSwitchLib = $VIMRUNTIME.'/libxkbswitch32.dll'
-    else
-        " not supported yet
-        finish
     endif
+endif
+
+if !exists('g:XkbSwitchLib')
+    echohl WarningMsg
+    echo 'Please Install XkbSwitchLib!'
+    echohl None
+    finish
 endif
 
 " 'local' defines if backend gets and sets keyboard layout locally in the
