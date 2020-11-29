@@ -132,6 +132,10 @@ if !exists('g:XkbSwitchSkipFt')
     let g:XkbSwitchSkipFt = ['tagbar', 'gundo', 'nerdtree', 'fuf']
 endif
 
+if !exists('g:XkbSwitchSkipWinVar')
+    let g:XkbSwitchSkipWinVar = ['float']
+endif
+
 if !exists('g:XkbSwitchNLayout')
     let g:XkbSwitchNLayout = ''
 endif
@@ -264,8 +268,21 @@ if g:XkbSwitchLoadRIMappings
 endif
 
 
-fun! <SID>load_all()
+fun! <SID>skip_buf_or_win()
     if index(g:XkbSwitchSkipFt, &ft) != -1
+        return 1
+    endif
+    for winvar in g:XkbSwitchSkipWinVar
+        if getwinvar(0, winvar, 0)
+            return 1
+        endif
+    endfor
+    return 0
+endfun
+
+
+fun! <SID>load_all()
+    if <SID>skip_buf_or_win()
         return
     endif
     if !exists('b:xkb_mappings_loaded')
@@ -600,7 +617,7 @@ fun! <SID>xkb_switch(mode, ...)
     if s:XkbSwitchSaveILayout && !g:XkbSwitch['local'] && !s:XkbSwitchFocused
         return
     endif
-    if index(g:XkbSwitchSkipFt, &ft) != -1
+    if <SID>skip_buf_or_win()
         return
     endif
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
@@ -721,7 +738,7 @@ fun! <SID>xkb_save(...)
                 \ (!imode || !s:XkbSwitchFocused)
         return
     endif
-    if index(g:XkbSwitchSkipFt, &ft) != -1
+    if <SID>skip_buf_or_win()
         return
     endif
     let save_ilayout_param_local = save_ilayout_param && g:XkbSwitch['local']
