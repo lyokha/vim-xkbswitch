@@ -614,10 +614,10 @@ fun! <SID>save_ilayout(cur_layout)
 endfun
 
 fun! <SID>xkb_switch(mode, ...)
-    if s:XkbSwitchSaveILayout && !g:XkbSwitch['local'] && !s:XkbSwitchFocused
+    if <SID>skip_buf_or_win()
         return
     endif
-    if <SID>skip_buf_or_win()
+    if s:XkbSwitchSaveILayout && !g:XkbSwitch['local'] && !s:XkbSwitchFocused
         return
     endif
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
@@ -732,13 +732,13 @@ fun! <SID>xkb_switch(mode, ...)
 endfun
 
 fun! <SID>xkb_save(...)
+    if <SID>skip_buf_or_win()
+        return
+    endif
     let imode = mode() =~ '^[iR]'
     let save_ilayout_param = s:XkbSwitchSaveILayout && a:0
     if save_ilayout_param && !g:XkbSwitch['local'] &&
                 \ (!imode || !s:XkbSwitchFocused)
-        return
-    endif
-    if <SID>skip_buf_or_win()
         return
     endif
     let save_ilayout_param_local = save_ilayout_param && g:XkbSwitch['local']

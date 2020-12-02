@@ -13,7 +13,7 @@ Table of contents
     + [Basic configuration](#basic-configuration)
     + [Keymap assistance in Normal mode](#keymap-assistance-in-normal-mode)
     + [Default layouts](#default-layouts)
-    + [Disable for specific filetypes](#disable-for-specific-filetypes)
+    + [Disable for specific filetypes and windows](#disable-for-specific-filetypes-and-windows)
     + [Enable in runtime](#enable-in-runtime)
 - [Custom keyboard layout switching rules](#custom-keyboard-layout-switching-rules)
 - [Troubleshooting](#troubleshooting)
@@ -25,7 +25,7 @@ If you speak and write in two or more languages you may know how it's
 frustrating to constantly switch keyboard layouts manually, because vim
 in command mode can understand only English letters. So you need constantly
 change keyboard layout into English if you need perform some command and
-if you are writing texts for example in Russian, German or Chinese at the
+if you are writing texts, for example, in Russian, German or Chinese at the
 same time.
 
 Vim plugin XkbSwitch can be used to easily switch current keyboard layout back
@@ -66,7 +66,7 @@ Features
 * Keyboard layouts are kept intact while navigating between windows or
   tabs without leaving Insert mode
 * Automatic loading of language-friendly Insert mode mappings duplicates.
-  For example when Russian mappings have loaded then if there was a mapping
+  For example, when Russian mappings have loaded then if there was a mapping
 
     ```vim
   <C-G>S        <Plug>ISurround
@@ -168,11 +168,12 @@ keyboard layout translation maps (or replace existing default 'ru' map):
 
 Be very careful with mapping duplicates! They won't replace existing Insert
 mode mappings but may define extra mappings that will change normal Insert
-mode user experience. For example plugin echofunc defines Insert mode mappings
-for '(' and ')', therefore assuming that in Deutsch translation map there
-could be ')' to '=' translation, we would get '=' unusable in any keyboard
-layout (as far as echofunc treats ')' in a very specific way). That is why
-this translation is missing in example above and in file xkbswitch.tr content.
+mode user experience. For example, plugin echofunc defines Insert mode
+mappings for '(' and ')', therefore assuming that in Deutsch translation map
+there could be ')' to '=' translation, we would get '=' unusable in any
+keyboard layout (as far as echofunc treats ')' in a very specific way). That
+is why this translation is missing in example above and in file xkbswitch.tr
+content.
 
 There are multiple examples of similar issues. For instance Russian winkeys
 translate '.' into 'ю' and when you are editing a C/C++ source file with
@@ -202,7 +203,7 @@ Beware: variable g:XkbSwitchSkipIMappings is not parameterized by keyboard
 layouts but only by filetypes.
 
 Besides natural Insert mode mappings, register insertion translations are also
-supported. For example being in Insert mode and having Russian winkeys layout
+supported. For example, being in Insert mode and having Russian winkeys layout
 on, you can insert content of register 'a' just printing ``<C-R>ф`` without
 switching current keyboard layout. To disable translation of register names in
 Insert mode put line
@@ -351,18 +352,30 @@ autocmd BufEnter * let b:XkbSwitchILayout = 'us'
 
 into your .vimrc (change *us* to desired value if needed).
 
-### Disable for specific filetypes
+### Disable for specific filetypes and windows
 
 It makes sense to disable XkbSwitch for buffers with specific filetypes, for
-example various file system or tag navigators. For example to disable
+example various file system or tag navigators. For example, to disable
 XkbSwitch for NerdTree add in your .vimrc line
 
 ```vim
-let g:XkbSwitchSkipFt = [ 'nerdtree' ]
+let g:XkbSwitchSkipFt = ['nerdtree']
 ```
 
 By default (e.g. when g:XkbSwitchSkipFt is not defined in .vimrc) following
 filetypes are skipped: *tagbar*, *gundo*, *nerdtree* and *fuf* (FuzzyFinder).
+
+Some window types may break normal layout switching. One notable example is
+*neovim*'s *float* windows. There is a special variable to disable interference
+with them:
+
+```vim
+let g:XkbSwitchSkipWinVar = ['float']
+```
+
+This is the default value, but it is configurable. The list may contain *window
+variables* (those listed by function getwinvar()) set to non-zero values in the
+current window.
 
 ### Enable in runtime
 
