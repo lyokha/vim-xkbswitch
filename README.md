@@ -51,7 +51,7 @@ into your .vimrc settings.
 
 Gnome 3 no longer works correctly with xkb-switch, so consider switching to
 [g3kb-switch](http://github.com/lyokha/g3kb-switch) if you are using this
-environment. The plugin can be loaded with
+desktop environment. The plugin can be loaded with
 
 ```vim
 let g:XkbSwitchLib = '/usr/local/lib/libg3kbswitch.so'
