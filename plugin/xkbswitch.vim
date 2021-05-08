@@ -45,6 +45,10 @@ if !exists('g:XkbSwitchLib')
             let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
         elseif filereadable('/usr/lib/libxkbswitch.so')
             let g:XkbSwitchLib = '/usr/lib/libxkbswitch.so'
+        elseif filereadable('/usr/lib64/libxkbswitch.so')
+            let g:XkbSwitchLib = '/usr/lib64/libxkbswitch.so'
+        elseif filereadable('/usr/lib32/libxkbswitch.so')
+            let g:XkbSwitchLib = '/usr/lib32/libxkbswitch.so'
         endif
     elseif has('win64') && filereadable($VIMRUNTIME.'/libxkbswitch64.dll')
         let g:XkbSwitchLib = $VIMRUNTIME.'/libxkbswitch64.dll'
