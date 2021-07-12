@@ -420,9 +420,8 @@ fun! <SID>imappings_load()
                 " spaces, however it should not happen as soon as wide
                 " characters cannot start control character sequences
                 if clean[i] == " "
-                    exe
-                    \ "let newkey = substitute(newkey, '\\(^[^ ]*\\) ', \"\\1".
-                    \ escape(data[1][i], '"')."\", '')"
+                    exe "let newkey = substitute(newkey, '\\(^[^ ]*\\) ', ".
+                                \ "\"\\1".escape(data[1][i], '"')."\", '')"
                 endif
             endfor
             if g:XkbSwitchLoadRIMappings
