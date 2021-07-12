@@ -421,8 +421,8 @@ fun! <SID>imappings_load()
                 " characters cannot start control character sequences
                 if clean[i] == " "
                     exe
-                    \ "let newkey = substitute(newkey, '\\(^[^ ]*\\) ', '\\1".
-                    \ data[1][i]."', '')"
+                    \ "let newkey = substitute(newkey, '\\(^[^ ]*\\) ', \"\\1".
+                    \ escape(data[1][i], '"')."\", '')"
                 endif
             endfor
             if g:XkbSwitchLoadRIMappings
