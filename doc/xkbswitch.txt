@@ -310,7 +310,7 @@ into your .vimrc (change 'us' to desired value if needed).
 
 ------------------------------------------------------------------------------
                                             *xkbswitch-filetype-disable*
-5.4 Disable for specific filetypes and windows~
+5.4 Disable for specific filetypes~
 
 It makes sense to disable XkbSwitch for buffers with specific filetypes, for
 example various file system or tag navigators. For example, to disable
@@ -320,16 +320,6 @@ XkbSwitch for NerdTree add in your .vimrc line
 <
 By default (e.g. when g:XkbSwitchSkipFt is not defined in .vimrc) following
 filetypes are skipped: 'tagbar', 'gundo', 'nerdtree' and 'fuf' (FuzzyFinder).
-
-Some window types may break normal layout switching. One notable example is
-neovim's float windows. There is a special variable to disable interference
-with them:
->
-    let g:XkbSwitchSkipWinVar = ['float']
-<
-This is the default value, but it is configurable. The list may contain window
-variables (those listed by function |getwinvar()|) set to non-zero values in
-the current window.
 
 ------------------------------------------------------------------------------
                                             *xkbswitch-runtime-enable*

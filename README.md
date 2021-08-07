@@ -13,7 +13,7 @@ Table of contents
     + [Basic configuration](#basic-configuration)
     + [Keymap assistance in Normal mode](#keymap-assistance-in-normal-mode)
     + [Default layouts](#default-layouts)
-    + [Disable for specific filetypes and windows](#disable-for-specific-filetypes-and-windows)
+    + [Disable for specific filetypes](#disable-for-specific-filetypes)
     + [Enable in runtime](#enable-in-runtime)
 - [Custom keyboard layout switching rules](#custom-keyboard-layout-switching-rules)
 - [Troubleshooting](#troubleshooting)
@@ -352,7 +352,7 @@ autocmd BufEnter * let b:XkbSwitchILayout = 'us'
 
 into your .vimrc (change *us* to desired value if needed).
 
-### Disable for specific filetypes and windows
+### Disable for specific filetypes
 
 It makes sense to disable XkbSwitch for buffers with specific filetypes, for
 example various file system or tag navigators. For example, to disable
@@ -364,18 +364,6 @@ let g:XkbSwitchSkipFt = ['nerdtree']
 
 By default (e.g. when g:XkbSwitchSkipFt is not defined in .vimrc) following
 filetypes are skipped: *tagbar*, *gundo*, *nerdtree* and *fuf* (FuzzyFinder).
-
-Some window types may break normal layout switching. One notable example is
-*neovim*'s *float* windows. There is a special variable to disable interference
-with them:
-
-```vim
-let g:XkbSwitchSkipWinVar = ['float']
-```
-
-This is the default value, but it is configurable. The list may contain *window
-variables* (those listed by function getwinvar()) set to non-zero values in the
-current window.
 
 ### Enable in runtime
 

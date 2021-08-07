@@ -136,6 +136,8 @@ if !exists('g:XkbSwitchSkipFt')
     let g:XkbSwitchSkipFt = ['tagbar', 'gundo', 'nerdtree', 'fuf']
 endif
 
+" this was used to disable interference with float windows from plugin Coc,
+" now that we skip 'nofile' buftypes, this seems obsolete
 if !exists('g:XkbSwitchSkipWinVar')
     let g:XkbSwitchSkipWinVar = ['float']
 endif
@@ -273,7 +275,8 @@ endif
 
 
 fun! <SID>skip_buf_or_win()
-    if index(g:XkbSwitchSkipFt, &ft) != -1
+    if getbufvar('', '&buftype') == 'nofile' ||
+                \ index(g:XkbSwitchSkipFt, &ft) != -1
         return 1
     endif
     for winvar in g:XkbSwitchSkipWinVar
