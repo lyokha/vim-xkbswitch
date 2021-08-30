@@ -426,18 +426,16 @@ function! s:set_colors()
     endif
     exe 'hi mdictOriginalHl term=standout ctermfg='.colors['original'][0].
                 \ ' guifg='.colors['original'][1]
-    exe 'hi mdictTranslatedHl term=standout ctermfg='.
-                \ colors['translated'][0].' guifg='.colors['translated'][1]
+    exe 'hi mdictTranslatedHl term=standout ctermfg='.colors['translated'][0].
+                \ ' guifg='.colors['translated'][1]
     exe 'hi mdictExtraHl term=standout ctermfg='.colors['extra'][0].
                 \ ' guifg='.colors['extra'][1]
 endfunction
 
-syntax match mdictOriginal '\%(^\s*|\)\@<=[^|]\+\ze|[^-]'
-            \ containedin=VimwikiTableRow contained contains=mdictExtra
-
-syntax match mdictTranslated '\%([^-]|\)\@<=[^|]\+\ze|$'
-            \ containedin=VimwikiTableRow contained contains=mdictExtra
-
+syntax match mdictCell '|[^|]*\ze|' containedin=VimwikiTableRow contained
+            \ contains=VimwikiCellSeparator,mdictOriginal,mdictTranslated
+syntax match mdictOriginal '[^|]\+\ze|\s*\S*.*$' contained contains=mdictExtra
+syntax match mdictTranslated '[^|]\+\ze|\s*$' contained contains=mdictExtra
 syntax match mdictExtra '([^()]*)' contained
 
 call s:set_colors()
