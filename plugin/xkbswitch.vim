@@ -649,16 +649,25 @@ fun! <SID>xkb_switch(mode, ...)
         endif
         if g:XkbSwitchAssistNKeymap || g:XkbSwitchAssistSKeymap
             let keymap_switch = 0
+            let keymap_was_switched = 0
             let ilayout = a:0 && a:1 == 2 ?
                         \ (exists('b:xkb_ilayout') ?
                         \ b:xkb_ilayout : cur_layout) : cur_layout
             if g:XkbSwitchDynamicKeymap
                 if exists('g:XkbSwitchKeymapNames[ilayout]')
                     if g:XkbSwitchKeymapNames[ilayout] != &keymap
+                        let save_iminsert = &iminsert
+                        let save_imsearch = &imsearch
                         exe "setlocal keymap=".
                                     \ g:XkbSwitchKeymapNames[ilayout]
+                        if !g:XkbSwitchAssistNKeymap
+                            exe "setlocal iminsert=".save_iminsert
+                        endif
+                        if !g:XkbSwitchAssistSKeymap
+                            exe "setlocal imsearch=".save_imsearch
+                        endif
                     endif
-                    let keymap_switch = 1
+                    let keymap_was_switched = 1
                 endif
             else
                 let keymap_switch = exists('b:keymap_name') ?
@@ -667,11 +676,13 @@ fun! <SID>xkb_switch(mode, ...)
                             \   b:keymap_name) :
                             \  ilayout == b:keymap_name) : 0
             endif
-            if g:XkbSwitchAssistNKeymap
-                exe "setlocal iminsert=".keymap_switch
-            endif
-            if g:XkbSwitchAssistSKeymap
-                exe "setlocal imsearch=".keymap_switch
+            if !keymap_was_switched
+                if g:XkbSwitchAssistNKeymap
+                    exe "setlocal iminsert=".keymap_switch
+                endif
+                if g:XkbSwitchAssistSKeymap
+                    exe "setlocal imsearch=".keymap_switch
+                endif
             endif
         endif
         if !a:0 || a:1 != 2
