@@ -267,7 +267,13 @@ Now keymap will automatically switch to the last keyboard layout when you
 leave Insert mode.
 
 To reset commands *r* and *f* to the usual Normal mode keyboard layout simply
-switch to it in Insert mode. To reset search lines press *Ctrl-^*.
+switch to it in Insert mode or enter command
+
+```vim
+:setlocal iminsert=0
+```
+
+To reset search lines press *Ctrl-^*.
 
 There is only one problem not solved so far: the system keyboard layout
 indicator when in Normal mode and search lines will show the usual Normal mode
@@ -311,7 +317,7 @@ autoload/Powerline/Colorschemes/default.vim (or whatever Powerline colorscheme
 you are using). Then enter command
 
 ```vim
-    :PowerlineClearCache
+:PowerlineClearCache
 ```
 
 , restart vim and now the indicator must work (but it will only show keymap
