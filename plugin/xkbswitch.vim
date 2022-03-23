@@ -649,7 +649,7 @@ fun! <SID>xkb_switch(mode, ...)
         endif
         if g:XkbSwitchAssistNKeymap || g:XkbSwitchAssistSKeymap
             let keymap_switch = 0
-            let keymap_was_switched = 0
+            let skip_keymap_switch = 0
             let ilayout = a:0 && a:1 == 2 ?
                         \ (exists('b:xkb_ilayout') ?
                         \ b:xkb_ilayout : cur_layout) : cur_layout
@@ -664,10 +664,12 @@ fun! <SID>xkb_switch(mode, ...)
                             exe "setlocal iminsert=".save_iminsert
                         endif
                         if !g:XkbSwitchAssistSKeymap
-                            exe "setlocal imsearch=".save_imsearch
+                            let new_imsearch = save_imsearch == -1 ?
+                                        \ save_iminsert : save_imsearch
+                            exe "setlocal imsearch=".new_imsearch
                         endif
                     endif
-                    let keymap_was_switched = 1
+                    let skip_keymap_switch = 1
                 endif
             else
                 let keymap_switch = exists('b:keymap_name') ?
@@ -676,7 +678,7 @@ fun! <SID>xkb_switch(mode, ...)
                             \   b:keymap_name) :
                             \  ilayout == b:keymap_name) : 0
             endif
-            if !keymap_was_switched
+            if !skip_keymap_switch
                 if g:XkbSwitchAssistNKeymap
                     exe "setlocal iminsert=".keymap_switch
                 endif
