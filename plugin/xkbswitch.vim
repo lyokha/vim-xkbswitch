@@ -655,7 +655,9 @@ fun! <SID>xkb_switch(mode, ...)
                         \ b:xkb_ilayout : cur_layout) : cur_layout
             if g:XkbSwitchDynamicKeymap
                 if exists('g:XkbSwitchKeymapNames[ilayout]')
-                    if g:XkbSwitchKeymapNames[ilayout] != &keymap
+                    if g:XkbSwitchKeymapNames[ilayout] == &keymap
+                        let keymap_switch = 1
+                    else
                         let save_iminsert = &iminsert
                         let save_imsearch = &imsearch
                         exe "setlocal keymap=".
@@ -668,8 +670,8 @@ fun! <SID>xkb_switch(mode, ...)
                                         \ save_iminsert : save_imsearch
                             exe "setlocal imsearch=".new_imsearch
                         endif
+                        let skip_keymap_switch = 1
                     endif
-                    let skip_keymap_switch = 1
                 endif
             else
                 let keymap_switch = exists('b:keymap_name') ?

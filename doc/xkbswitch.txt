@@ -110,9 +110,10 @@ layouts, for example
 >
     let g:XkbSwitchIMappings = ['ru', 'de']
 <
-but currently only Russian winkeys layout translation map ('ru') is supported
-out of the box. There are 2 ways how a user can provide extra definitions of
-keyboard layout translation maps (or replace existing default 'ru' map):
+but currently only Russian winkeys ('ru') and Ukrainian ('uk') layout
+translation maps are supported out of the box. There are 2 ways how a user can
+provide extra definitions of keyboard layout translation maps (or alter/remove
+existing default 'ru' and 'uk' maps):
 
   - Define variable g:XkbSwitchIMappingsTr:
 >
