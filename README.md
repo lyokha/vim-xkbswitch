@@ -260,21 +260,23 @@ and map g:XkbSwitchKeymapNames to keymap names instead of values of
 b:keymap_name. For example
 
 ```vim
-    let g:XkbSwitchKeymapNames = {'ru' : 'russian-jcukenwin',
-                \ 'uk' : 'ukrainian-jcuken'}
+let g:XkbSwitchKeymapNames =
+            \ {'ru' : 'russian-jcukenwin', 'uk' : 'ukrainian-jcuken'}
+
 ```
 
 Now keymap will automatically switch to the last keyboard layout when you
 leave Insert mode.
 
-To reset commands *r* and *f* to the usual Normal mode keyboard layout simply
-switch to it in Insert mode or enter command
+To toggle keymap layout in Normal mode for using in commands *r* and *f*, you
+may need to set a dedicated key:
 
 ```vim
-:setlocal iminsert=0
+let g:XkbSwitchIminsertToggleKey = '<C-^>'
 ```
 
-To reset search lines press *Ctrl-^*.
+Notice that toggling keymap layout when typing a pattern for a search command
+can be done with the builtin key *Ctrl-^*.
 
 There is only one problem not solved so far: the system keyboard layout
 indicator when in Normal mode and search lines will show the usual Normal mode

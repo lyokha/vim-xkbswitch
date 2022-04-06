@@ -132,6 +132,10 @@ if !exists('g:XkbSwitchDynamicKeymap')
     let g:XkbSwitchDynamicKeymap = 0
 endif
 
+if !exists('g:XkbSwitchIminsertToggleKey')
+    let g:XkbSwitchIminsertToggleKey = ''
+endif
+
 if !exists('g:XkbSwitchSkipFt')
     let g:XkbSwitchSkipFt = ['tagbar', 'gundo', 'nerdtree', 'fuf']
 endif
@@ -352,6 +356,16 @@ fun! <SID>xkb_mappings_load()
             exe "nnoremap <buffer> <silent> ".cmd.
                         \ " :call <SID>xkb_switch(1, 1)<CR>".cmd
         endfor
+    endif
+    if !empty(g:XkbSwitchIminsertToggleKey)
+        exe "nnoremap <buffer> <silent> ".g:XkbSwitchIminsertToggleKey.
+                    \ " :if !empty(&keymap) <Bar> if &iminsert == 0 <Bar>".
+                    \ "setlocal iminsert=1 <Bar>".
+                    \ "echo 'set keymap' &keymap <Bar>".
+                    \ "elseif &iminsert == 1 <Bar>".
+                    \ "setlocal iminsert=0 <Bar>".
+                    \ "echo 'unset keymap' &keymap <Bar>".
+                    \ "endif <Bar> endif<CR>"
     endif
     let b:xkb_mappings_loaded = 1
 endfun
