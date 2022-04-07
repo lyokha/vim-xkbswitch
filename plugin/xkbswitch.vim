@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.14
+" Version:     0.16
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 

@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2016 January 29
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2022 April 07
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.14
+                                version 0.16
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -705,5 +705,15 @@ A. Change History~
 0.15
     - Integration with LeaderF plugin (thanks to Freed-Wu)
     - Fixed interference with neovim's float windows
+
+0.16
+    - Bugfix: insert mappings which contain single quotes must be escaped
+      when building translations
+    - Fixed wrong behavior of dynamic keymap assistance in Normal mode
+    - Improvement: never enable the plugin in nofile buftypes
+    - In default g:XkbSwitchIMappingsTr the Ukrainian (uk) keyboard layout
+      translation map was added (thanks to kukushkawi)
+    - Improvement: provide ability to toggle |iminsert| in Normal mode by
+      defining variable g:XkbSwitchIminsertToggleKey
 
 vim:tw=78:sts=8:ts=8:sw=8:noet:ft=help:
