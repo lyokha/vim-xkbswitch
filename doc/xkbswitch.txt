@@ -242,48 +242,23 @@ may need to set a dedicated key:
 >
     let g:XkbSwitchIminsertToggleKey = '<C-^>'
 <
+By default pressing the key will be echoed in the command-line which is
+sometimes superfluous: modern status-line plugins such as airline
+(http://github.com/vim-airline/vim-airline) normally provide support
+for showing |iminsert| indicators.
+
+To disable echo messages when toggling keymap layout add line
+>
+    let g:XkbSwitchIminsertToggleEcho = 0
+<
+into your .vimrc.
+
+To enable the |iminsert| indicator in airline add line
+>
+    let g:airline_detect_iminsert = 1
+<
 Notice that toggling keymap layout when typing a pattern for a search command
 can be done with the builtin key |c_Ctrl-^|.
-
-There is only one problem not solved so far: the system keyboard layout
-indicator when in Normal mode and search lines will show the usual Normal mode
-layout. We need some hint that |iminsert| is active and to what language it
-points, it also would show what layout will be switched to when we enter
-Insert mode again. Very convenient feature, is not?
-
-I will show how to make a keymap indicator for the old Powerline plugin
-(http://github.com/Lokaltog/vim-powerline), newer offsprings like airline
-(http://github.com/vim-airline/vim-airline) must not differ a lot.
-
-Add lines
->
-	\ Pl#Segment#Create('keymap_name'     ,
-		\'%{&iminsert && exists("b:keymap_name") ? b:keymap_name : ""}',
-		\ Pl#Segment#Modes('!N')),
-<
-into the array passed to Pl#Segment#Init() in file
-autoload/Powerline/Segments.vim before the line with 'fileformat', line
->
-		\ , 'keymap_name'
-<
-into the list passed to Pl#Theme#Buffer() in file
-autoload/Powerline/Themes/default.vim (or whatever theme you are using)
-before the line with 'fileformat', and lines
->
-	\ Pl#Hi#Segments(['keymap_name'], {
-		\ 'n': ['brightestorange', 'gray2'],
-		\ 'i': ['brightestorange', 'darkestblue'],
-		\ }),
-	\
-<
-somewhere into the list passed to Pl#Colorscheme#Init() in file
-autoload/Powerline/Colorschemes/default.vim (or whatever Powerline colorscheme
-you are using). Then enter command
->
-    :PowerlineClearCache
-<
-, restart vim and now the indicator must work (but it will only show keymap
-names when |iminsert| is set).
 
 ------------------------------------------------------------------------------
                                             *xkbswitch-default-layouts*
