@@ -31,6 +31,13 @@ Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
                                             *xkbswitch-about*
 2. About~
 
+If you speak and write in two or more languages you may know how it's
+frustrating to constantly switch keyboard layouts manually, because vim
+in command mode can understand only English letters. So you need constantly
+change keyboard layout into English if you need perform some command and
+if you are writing texts, for example, in Russian, German or Chinese at the
+same time.
+
 Vim plugin XkbSwitch can be used to easily switch current keyboard layout back
 and forth when entering and leaving Insert mode. Say you are typing some
 document in Russian and have to leave Insert mode: when you press <Esc> your
@@ -51,6 +58,12 @@ have to put line
 <
 into your .vimrc settings.
 
+Gnome 3 no longer works correctly with xkb-switch, so consider switching to
+g3kb-switch (http://github.com/lyokha/g3kb-switch) if you are using this
+desktop environment. The plugin can be loaded with
+>
+    let g:XkbSwitchLib = '/usr/local/lib/libg3kbswitch.so'
+<
 ==============================================================================
                                             *xkbswitch-features*
 3. Features~
@@ -73,7 +86,7 @@ into your .vimrc settings.
 <
     will be loaded. Insert mode mappings duplicates make it easy to apply
     existing maps in Insert mode without switching current keyboard layout.
-    See details in |xkb-configure|.
+    See details in section |xkbswitch-configure|.
   - Fast and easy building of custom syntax based keyboard layout switching
     rules in Insert mode.
 
