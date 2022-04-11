@@ -60,11 +60,13 @@ let g:XkbSwitchLib = '/usr/local/lib/libg3kbswitch.so'
 Features
 --------
 
-* Supported OS: UNIX / X Server, Windows, Mac OS X
-* Switches keyboard layout when entering / leaving Insert and Select modes
-* Keyboard layouts are stored separately for each buffer
+* Supported OS: UNIX / X Server, Windows, Mac OS X.
+* Switches keyboard layout when entering / leaving Insert and Select modes.
+* Dynamic keymap assistance in commands like *r* and *f* in Normal mode as well
+  as in search patterns.
+* Keyboard layouts are stored separately for each buffer.
 * Keyboard layouts are kept intact while navigating between windows or
-  tabs without leaving Insert mode
+  tabs without leaving Insert mode.
 * Automatic loading of language-friendly Insert mode mappings duplicates.
   For example, when Russian mappings have loaded then if there was a mapping
 
@@ -81,7 +83,7 @@ Features
   will be loaded. Insert mode mappings duplicates make it easy to apply
   existing maps in Insert mode without switching current keyboard layout.
 * Fast and easy building of custom syntax based keyboard layout switching
-  rules in Insert mode
+  rules in Insert mode.
 
 Setup
 -----
