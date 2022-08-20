@@ -59,7 +59,9 @@ endif
 
 if !exists('g:XkbSwitchLib')
     echohl WarningMsg
-    echo 'Please Install XkbSwitchLib!'
+    echomsg "xkbswitch: the switcher library was not found by known ".
+                \ "installation paths, you may want to set variable ".
+                \ "g:XkbSwitchLib to point to the switcher library installed"
     echohl None
     finish
 endif
