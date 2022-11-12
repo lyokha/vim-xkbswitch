@@ -63,9 +63,9 @@ Features
 --------
 
 * Supported OS: UNIX / X Server, Windows, Mac OS X.
-* Switches keyboard layout when entering / leaving Insert and Select modes.
-* Dynamic keymap assistance in commands like *r* and *f* in Normal mode as well
-  as in search patterns.
+* Switches keyboard layout when entering / leaving Insert and Select modes
+  as well as the command line when searching patterns.
+* Dynamic keymap assistance in commands like *r* and *f* in Normal mode.
 * Keyboard layouts are stored separately for each buffer.
 * Keyboard layouts are kept intact while navigating between windows or
   tabs without leaving Insert mode.
@@ -222,21 +222,25 @@ into your .vimrc.
 ### Keymap assistance in Normal mode
 
 XkbSwitch is unable to guess keyboard layout when using Normal mode commands
-*r* and *f* and searching with */* and *?*. Fortunately it can assist *keymap*
-in this by setting
+*r* and *f* and, in the past, searching patterns with */* and *?*. Fortunately,
+it can assist *keymap* in this by setting
 
 ```vim
 let g:XkbSwitchAssistNKeymap = 1    " for commands r and f
 let g:XkbSwitchAssistSKeymap = 1    " for search lines
 ```
 
-provided keymap is set to some value, for example
+given that keymap is set to some value, for example
 
 ```vim
 set keymap=russian-jcukenwin
 set iminsert=0
 set imsearch=0
 ```
+
+(Note that setting of g:XkbSwitchAssistSKeymap is deprecated because tracking
+of entering / leaving command line for searching patterns is fully supported
+after events CmdlineEnter and CmdlineLeave have been introduced in vim.)
 
 Now when you leave Insert mode, the keyboard layout is switched back to the
 usual Normal mode value, but values of *iminsert* and *imsearch* are set

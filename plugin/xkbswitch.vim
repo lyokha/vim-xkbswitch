@@ -122,6 +122,16 @@ if !exists('g:XkbSwitchAssistNKeymap')
     let g:XkbSwitchAssistNKeymap = 0
 endif
 
+if exists('##CmdlineEnter')
+    if exists('g:XkbSwitchAssistSKeymap')
+        echohl WarningMsg
+        echomsg "xkbswitch: g:XkbSwitchAssistSKeymap is deprecated ".
+                    \ "and disabled"
+        echohl None
+    endif
+    let g:XkbSwitchAssistSKeymap = 0
+endif
+
 if !exists('g:XkbSwitchAssistSKeymap')
     let g:XkbSwitchAssistSKeymap = 0
 endif
@@ -842,6 +852,11 @@ fun! <SID>enable_xkb_switch(force)
             autocmd InsertEnter *
                         \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
                         \ call <SID>xkb_switch(1)
+            if exists('##CmdlineEnter')
+                autocmd CmdlineEnter /,\?
+                            \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
+                            \ call <SID>xkb_switch(1)
+            endif
             for item in g:XkbSwitchPostIEnterAuto
                 if exists('item[0]["pat"]')
                     exe "autocmd InsertEnter ".item[0]['pat']." ".
@@ -855,6 +870,9 @@ fun! <SID>enable_xkb_switch(force)
                 endif
             endfor
             autocmd InsertLeave * call <SID>xkb_switch(0)
+            if exists('##CmdlineEnter')
+                autocmd CmdlineLeave /,\? call <SID>xkb_switch(0)
+            endif
             " BEWARE: Select modes are not supported well when navigating
             " between windows or tabs due to vim restrictions
             autocmd BufEnter * let s:XkbSwitchLastIEnterBufnr = 0 |
