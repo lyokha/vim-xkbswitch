@@ -299,6 +299,10 @@ let s:XkbSwitchSaveILayout = has('gui_running') && has('clientserver')
 let s:XkbSwitchFocused = 1
 let s:XkbSwitchLastIEnterBufnr = 0
 
+" note that the order of command-line events is
+" CmdlineEnter -> CmdwinEnter -> CmdwinLeave -> CmdlineLeave
+let s:XkbSwitchCmdwinEntered = 0
+
 let s:XkbSwitchIRegList = []
 if g:XkbSwitchLoadRIMappings
     let s:XkbSwitchIRegList = range(char2nr('a'), char2nr('z'))
@@ -867,6 +871,9 @@ fun! <SID>enable_xkb_switch(force)
                             \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
                             \ call <SID>xkb_switch(1)
             endif
+            if exists('##CmdwinEnter')
+                autocmd CmdwinEnter /,\? let s:XkbSwitchCmdwinEntered = 1
+            endif
             for item in g:XkbSwitchPostIEnterAuto
                 if exists('item[0]["pat"]')
                     exe "autocmd InsertEnter ".item[0]['pat']." ".
@@ -881,7 +888,10 @@ fun! <SID>enable_xkb_switch(force)
             endfor
             autocmd InsertLeave * call <SID>xkb_switch(0)
             if exists('##CmdlineEnter')
-                autocmd CmdlineLeave /,\? call <SID>xkb_switch(0)
+                autocmd CmdlineLeave /,\?
+                            \ if !s:XkbSwitchCmdwinEntered |
+                            \ call <SID>xkb_switch(0) | else |
+                            \ let s:XkbSwitchCmdwinEntered = 0 | endif
             endif
             " BEWARE: Select modes are not supported well when navigating
             " between windows or tabs due to vim restrictions
