@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2022 April 07
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2022 Nov 13
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.16
+                                version 0.17
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -574,22 +574,6 @@ https://github.com/lyokha/vim-xkbswitch/pull/45#issue-493491212 .
     mode without any character entered do it via Visual mode, e.g. enter
     <C-G><Esc> instead simply <Esc>.
 
-  - There is a clash with plugin EnhancedJumps when bufhidden=delete. When
-    jumping back to the previous buffer an error message
->
-    E121: Undefined variable: mappingsdump
-<
-    will raise. This is because both autocommand BufRead of this plugin and
-    EnhancedJumps will use 'redir' simultaneously which is not permitted.
-    Normally there is very little probability to encounter this because option
-    'bufhidden' is empty by default. To work this around you can add line
->
-    let g:XkbSwitchLoadOnBufRead = 0
-<
-    in your .vimrc. However this may break the very first keyboard layout
-    switching from Select mode in a just open buffer if there was no inserting
-    yet.
-
   - If you use gh-commands (|gh|, |gH| and |g_CTRL-H|) for your own specific
     purposes then you'll probably want to disable mappings defined for some or
     all of these commands in the plugin. For example
@@ -601,6 +585,12 @@ https://github.com/lyokha/vim-xkbswitch/pull/45#issue-493491212 .
 ==============================================================================
                                             *xkbswitch-changes*
 A. Change History~
+
+0.17
+    - Full support for tracking keyboard layout state upon entering/leaving
+      command line when searching patterns with / and ?
+    - Setting variables g:XkbSwitchAssistSKeymap and g:XkbSwitchLoadOnBufRead
+      is now deprecated and has no effect
 
 0.16
     - Bugfix: insert mappings which contain single quotes must be escaped

@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.16
+" Version:     0.17
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -125,8 +125,8 @@ endif
 if exists('##CmdlineEnter')
     if exists('g:XkbSwitchAssistSKeymap')
         echohl WarningMsg
-        echomsg "xkbswitch: g:XkbSwitchAssistSKeymap is deprecated ".
-                    \ "and disabled"
+        echomsg "xkbswitch: setting variable g:XkbSwitchAssistSKeymap is ".
+                    \ "deprecated and has no effect"
         echohl None
     endif
     let g:XkbSwitchAssistSKeymap = 0
@@ -178,6 +178,16 @@ endif
 
 if !exists('g:XkbSwitchEnabled')
     let g:XkbSwitchEnabled = 0
+endif
+
+if exists('*execute')
+    if exists('g:XkbSwitchLoadOnBufRead')
+        echohl WarningMsg
+        echomsg "xkbswitch: setting variable g:XkbSwitchLoadOnBufRead is ".
+                    \ "deprecated and has no effect"
+        echohl None
+    endif
+    let g:XkbSwitchLoadOnBufRead = 1
 endif
 
 if !exists('g:XkbSwitchLoadOnBufRead')
