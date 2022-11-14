@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.17
+" Version:     0.17.1
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -299,10 +299,6 @@ let s:XkbSwitchSaveILayout = has('gui_running') && has('clientserver')
 let s:XkbSwitchFocused = 1
 let s:XkbSwitchLastIEnterBufnr = 0
 
-" note that the order of command-line events is
-" CmdlineEnter -> CmdwinEnter -> CmdwinLeave -> CmdlineLeave
-let s:XkbSwitchCmdwinEntered = 0
-
 let s:XkbSwitchIRegList = []
 if g:XkbSwitchLoadRIMappings
     let s:XkbSwitchIRegList = range(char2nr('a'), char2nr('z'))
@@ -310,6 +306,10 @@ if g:XkbSwitchLoadRIMappings
         call add(s:XkbSwitchIRegList, char2nr(char))
     endfor
 endif
+
+" note that the order of events related to command-line window is
+" CmdlineEnter -> CmdwinEnter -> CmdwinLeave -> CmdlineLeave
+let s:XkbSwitchCmdwinEntered = 0
 
 
 fun! <SID>skip_buf_or_win()
