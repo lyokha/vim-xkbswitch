@@ -840,14 +840,13 @@ fun! <SID>xkb_save(...)
     endif
 endfun
 
-fun! <SID>xkb_restore_global_layout()
-    if empty(s:XkbSwitchGlobalLayout)
+fun! <SID>xkb_set(layout)
+    if empty(a:layout)
         return
     endif
     let cur_layout = libcall(g:XkbSwitch['backend'], g:XkbSwitch['get'], '')
-    if cur_layout != s:XkbSwitchGlobalLayout
-        call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'],
-                    \ s:XkbSwitchGlobalLayout)
+    if cur_layout != a:layout
+        call libcall(g:XkbSwitch['backend'], g:XkbSwitch['set'], a:layout)
     endif
 endfun
 
@@ -889,9 +888,10 @@ fun! <SID>enable_xkb_switch(force)
             autocmd InsertLeave * call <SID>xkb_switch(0)
             if exists('##CmdlineEnter')
                 autocmd CmdlineLeave /,\?
-                            \ if !s:XkbSwitchCmdwinEntered |
-                            \ call <SID>xkb_switch(0) | else |
-                            \ let s:XkbSwitchCmdwinEntered = 0 | endif
+                            \ if s:XkbSwitchCmdwinEntered |
+                            \ let s:XkbSwitchCmdwinEntered = 0 |
+                            \ call <SID>xkb_set(g:XkbSwitchNLayout) | else |
+                            \ call <SID>xkb_switch(0) | endif
             endif
             " BEWARE: Select modes are not supported well when navigating
             " between windows or tabs due to vim restrictions
@@ -899,7 +899,7 @@ fun! <SID>enable_xkb_switch(force)
                         \ call <SID>xkb_switch(mode() =~ '^[iR]', 2)
             autocmd BufLeave * let s:XkbSwitchLastIEnterBufnr = 0 |
                         \ call <SID>xkb_save()
-            autocmd VimLeave * call <SID>xkb_restore_global_layout()
+            autocmd VimLeave * call <SID>xkb_set(s:XkbSwitchGlobalLayout)
             if s:XkbSwitchSaveILayout
                 if g:XkbSwitch['local']
                     autocmd TabLeave * if s:XkbSwitchLastIEnterBufnr != 0 &&
