@@ -505,9 +505,12 @@ fun! <SID>imappings_load()
             let mapcmd = match(value, '^[[:blank:]&@]*\*') == -1 ? 'imap' :
                         \ 'inoremap'
             " probably the mapping was defined using <expr>
+            " FIXME: here the mapping is supposed to have been declared with
+            " <expr> if it looks like a function call, i.e. it starts with
+            " allowed symbols and ends with something inside parentheses
             let expr = match(value,
-                    \ '^[[:blank:]*&@]*[a-zA-Z][a-zA-Z0-9_#]*(.*)$') != -1 ?
-                    \ '<expr>' : ''
+                    \ '^[[:blank:]*&@]*\%(<SNR>[0-9]\+_\)\?[a-zA-Z]'.
+                    \ '[a-zA-Z0-9_#]*(.*)$') != -1 ? '<expr>' : ''
             " new maps are always silent and buffer-local
             exe mapcmd.' <silent> <buffer> '.expr.' '.
                         \ substitute(newkey.' '.mapvalue, '|', '|', 'g')
