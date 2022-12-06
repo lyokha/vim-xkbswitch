@@ -430,55 +430,53 @@ fun! <SID>imappings_load()
     for tr in g:XkbSwitchIMappings
         let from = g:XkbSwitchIMappingsTr[tr]['<']
         let to   = g:XkbSwitchIMappingsTr[tr]['>']
-        for mapping in mappings
-            " FIXME: checking for basic mappings validity could be moved
-            " outside the 'for tr' loop to avoid duplicate tests
-            let data = split(mapping)
-            if len(data) < 3 || data[0] != 'i' && data[0] != '!'
-                continue
-            endif
-            let mapvalue = maparg(data[1], 'i')
+        for key in keys(mappingskeys)
+            let mapvalue = maparg(key, 'i')
             if empty(mapvalue)
                 continue
             endif
-            let value = substitute(mapping,
-                        \ '\s*\S\+\s\+\S\+\s\+\(.*\)', '\1', '')
-            " do not duplicate <script> mappings (when value contains '&')
-            if match(value, '^[[:blank:]*@]*&') != -1
+            " note that mapflags['rhs'] contains the original map value
+            " (with <SID> functions not yet translated to <SNR> prefixes)
+            " while mapvalue contains the value with <SNR> translations
+            " applied, therefore mapvalue shall be used in the mapping
+            " translations to ensure proper translations of <SID> functions
+            let mapflags = maparg(key, 'i', 0, 1)
+            " do not duplicate <script> mappings
+            if mapflags['script'] == 1
                 continue
             endif
             " do not duplicate <Plug> and <SNR> mappings
             " (when key starts with '<Plug>' or '<SNR>')
-            if match(data[1], '^\c<\%(Plug\|SNR\)>') != -1
+            if match(key, '^\c<\%(Plug\|SNR\)>') != -1
                 continue
             endif
             " replace characters starting control sequences with spaces
             let clean = ''
             if g:XkbSwitchIMappingsTrCtrl
-                let clean = substitute(data[1],
+                let clean = substitute(key,
                 \ '\(<[^>]\{-}\)\(-\=\)\([^->]\+\)>',
                 \ '\=repeat(" ", strlen(submatch(1)) + strlen(submatch(2))) .
                 \ (strlen(submatch(3)) == 1 ? submatch(3) :
                 \ repeat(" ", strlen(submatch(3)))) . " "', 'g')
             else
-                let clean = substitute(data[1],
+                let clean = substitute(key,
                 \ '<[^>]\+>', '\=repeat(" ", strlen(submatch(0)))', 'g')
             endif
             " apply translations
             let newkey = tr(clean, from, to)
             " restore control characters from original mapping
             for i in range(strlen(substitute(clean, ".", "x", "g")))
-                " BEWARE: in principle strlen(clean(...)) and strlen(data[1])
+                " BEWARE: in principle strlen(clean(...)) and strlen(key)
                 " may differ in case if wide characters have been replaced by
                 " spaces, however it should not happen as soon as wide
                 " characters cannot start control character sequences
                 if clean[i] == " "
                     exe "let newkey = substitute(newkey, '\\(^[^ ]*\\) ', ".
-                                \ "\"\\\\1".escape(data[1][i], '"')."\", '')"
+                                \ "\"\\\\1".escape(key[i], '"')."\", '')"
                 endif
             endfor
             if g:XkbSwitchLoadRIMappings
-                let rim_key = matchstr(data[1], '^\c<C-R>\zs.$')
+                let rim_key = matchstr(key, '^\c<C-R>\zs.$')
                 if !empty(rim_key)
                     if index(s:XkbSwitchIRegList, char2nr(rim_key)) == -1
                         let rim_key_tr = tr(rim_key, to, from)
@@ -495,25 +493,20 @@ fun! <SID>imappings_load()
             " do not reload existing mapping unnecessarily
             " FIXME: list of mappings to skip depends on value of &filetype,
             " therefore it must be reloaded on FileType events!
-            if newkey == data[1] || exists('mappingskeys[newkey]') ||
+            if newkey == key || exists('mappingskeys[newkey]') ||
                     \ (exists('g:XkbSwitchSkipIMappings[&ft]') &&
-                    \ index(g:XkbSwitchSkipIMappings[&ft], data[1]) != -1) ||
+                    \ index(g:XkbSwitchSkipIMappings[&ft], key) != -1) ||
                     \ (exists('g:XkbSwitchSkipIMappings["*"]') &&
-                    \ index(g:XkbSwitchSkipIMappings["*"], data[1]) != -1)
+                    \ index(g:XkbSwitchSkipIMappings["*"], key) != -1)
                 continue
             endif
-            let mapcmd = match(value, '^[[:blank:]&@]*\*') == -1 ? 'imap' :
-                        \ 'inoremap'
-            " probably the mapping was defined using <expr>
-            " FIXME: here the mapping is supposed to have been declared with
-            " <expr> if it looks like a function call, i.e. it starts with
-            " allowed symbols and ends with something inside parentheses
-            let expr = match(value,
-                    \ '^[[:blank:]*&@]*\%(<SNR>[0-9]\+_\)\?[a-zA-Z]'.
-                    \ '[a-zA-Z0-9_#]*(.*)$') != -1 ? '<expr>' : ''
-            " new maps are always silent and buffer-local
-            exe mapcmd.' <silent> <buffer> '.expr.' '.
+            let mapcmd = mapflags['noremap'] == 1 ? 'inoremap' : 'imap'
+            let silent = mapflags['silent'] == 1 ? '<silent>' : ''
+            let expr   = mapflags['expr'] == 1 ? '<expr>' : ''
+            " new maps are always buffer-local!
+            exe mapcmd.' <buffer> '.silent.' '.expr.' '.
                         \ substitute(newkey.' '.mapvalue, '|', '|', 'g')
+            let mappingskeys[newkey] = 1
         endfor
         if g:XkbSwitchLoadRIMappings
             for rim_key_nr in s:XkbSwitchIRegList
@@ -532,7 +525,7 @@ endfun
 
 fun! <SID>check_syntax_rules(force)
     let col = col('.') == col('$') ? col('.') - 1 : col('.')
-    let cur_synid  = synIDattr(synID(line("."), col, 1), "name")
+    let cur_synid = synIDattr(synID(line("."), col, 1), "name")
     if !exists('b:xkb_saved_cur_synid')
         let b:xkb_saved_cur_synid = cur_synid
     endif
@@ -658,7 +651,7 @@ fun! <SID>save_ilayout(cur_layout)
     let ilayout_role = 'b:xkb_ilayout'
     if exists('b:xkb_syntax_out_roles')
         let col = col('.') == col('$') ? col('.') - 1 : col('.')
-        let cur_synid  = synIDattr(synID(line("."), col, 1), "name")
+        let cur_synid = synIDattr(synID(line("."), col, 1), "name")
         for role in b:xkb_syntax_out_roles
             if cur_synid == role
                 if !exists('b:xkb_saved_cur_layout')
@@ -760,7 +753,7 @@ fun! <SID>xkb_switch(mode, ...)
         if a:0 && a:1 && exists('b:xkb_syntax_in_roles')
             let col = mode() =~ '^[vV]' ? col('v') : col('.')
             let line = mode() =~ '^[vV]' ? line('v') : line('.')
-            let cur_synid  = synIDattr(synID(line, col, 1), "name")
+            let cur_synid = synIDattr(synID(line, col, 1), "name")
             for role in b:xkb_syntax_in_roles
                 if cur_synid == role && exists('b:xkb_saved_cur_layout[role]')
                     if b:xkb_saved_cur_layout[role] != cur_layout
