@@ -180,6 +180,8 @@ if !exists('g:XkbSwitchEnabled')
     let g:XkbSwitchEnabled = 0
 endif
 
+" variable g:XkbSwitchLoadOnBufRead was introduced to avoid unexpected
+" behavior related to redir command, redir is not used if exists('*execute')
 if exists('*execute')
     if exists('g:XkbSwitchLoadOnBufRead')
         echohl WarningMsg
@@ -299,11 +301,13 @@ let s:XkbSwitchSaveILayout = has('gui_running') && has('clientserver')
 let s:XkbSwitchFocused = 1
 let s:XkbSwitchLastIEnterBufnr = 0
 
-let s:XkbSwitchIRegList = []
+let s:XkbSwitchIRegList = {}
 if g:XkbSwitchLoadRIMappings
-    let s:XkbSwitchIRegList = range(char2nr('a'), char2nr('z'))
+    for i in range(char2nr('a'), char2nr('z'))
+        let s:XkbSwitchIRegList[nr2char(i)] = 1
+    endfor
     for char in ['"', '%', '#', '*', '+', '/', ':', '.', '-', '=']
-        call add(s:XkbSwitchIRegList, char2nr(char))
+        let s:XkbSwitchIRegList[char] = 1
     endfor
 endif
 
@@ -424,32 +428,35 @@ fun! <SID>imappings_load()
         if len(data) < 3 || data[0] != 'i' && data[0] != '!'
             continue
         endif
-        let mappingskeys[data[1]] = 1
+        " do not duplicate <Plug> and <SNR> mappings
+        " (when data[1] starts with '<Plug>' or '<SNR>')
+        if match(data[1], '^\c<\%(Plug\|SNR\)>') != -1
+            continue
+        endif
+        let mapvalue = maparg(data[1], 'i')
+        if empty(mapvalue)
+            continue
+        endif
+        " note that mapflags['rhs'] contains the original map value (with
+        " <SID> functions not yet translated to <SNR> prefixes) while mapvalue
+        " contains the value with <SNR> translations applied which means that
+        " mapvalue must be preferred in the mapping translations to ensure
+        " proper translations of <SID> functions
+        let mapflags = maparg(data[1], 'i', 0, 1)
+        " do not duplicate <script> mappings
+        if mapflags['script'] == 1
+            continue
+        endif
+        let mappingskeys[data[1]] = {'value': mapvalue,
+                    \ 'noremap': mapflags['noremap'],
+                    \ 'silent': mapflags['silent'],
+                    \ 'expr': mapflags['expr']}
     endfor
-    let skip_rim_list = []
+    let skip_rim_list = {}
     for tr in g:XkbSwitchIMappings
         let from = g:XkbSwitchIMappingsTr[tr]['<']
         let to   = g:XkbSwitchIMappingsTr[tr]['>']
-        for key in keys(mappingskeys)
-            let mapvalue = maparg(key, 'i')
-            if empty(mapvalue)
-                continue
-            endif
-            " note that mapflags['rhs'] contains the original map value
-            " (with <SID> functions not yet translated to <SNR> prefixes)
-            " while mapvalue contains the value with <SNR> translations
-            " applied, therefore mapvalue shall be used in the mapping
-            " translations to ensure proper translations of <SID> functions
-            let mapflags = maparg(key, 'i', 0, 1)
-            " do not duplicate <script> mappings
-            if mapflags['script'] == 1
-                continue
-            endif
-            " do not duplicate <Plug> and <SNR> mappings
-            " (when key starts with '<Plug>' or '<SNR>')
-            if match(key, '^\c<\%(Plug\|SNR\)>') != -1
-                continue
-            endif
+        for [key, data] in items(mappingskeys)
             " replace characters starting control sequences with spaces
             let clean = ''
             if g:XkbSwitchIMappingsTrCtrl
@@ -478,16 +485,7 @@ fun! <SID>imappings_load()
             if g:XkbSwitchLoadRIMappings
                 let rim_key = matchstr(key, '^\c<C-R>\zs.$')
                 if !empty(rim_key)
-                    if index(s:XkbSwitchIRegList, char2nr(rim_key)) == -1
-                        let rim_key_tr = tr(rim_key, to, from)
-                        if rim_key_tr != rim_key &&
-                                    \ index(s:XkbSwitchIRegList,
-                                    \ char2nr(rim_key_tr)) != -1
-                            call add(skip_rim_list, rim_key_tr)
-                        endif
-                    else
-                        call add(skip_rim_list, rim_key)
-                    endif
+                    let skip_rim_list[rim_key] = 1
                 endif
             endif
             " do not reload existing mapping unnecessarily
@@ -500,27 +498,33 @@ fun! <SID>imappings_load()
                     \ index(g:XkbSwitchSkipIMappings["*"], key) != -1)
                 continue
             endif
-            let mapcmd = mapflags['noremap'] == 1 ? 'inoremap' : 'imap'
-            let silent = mapflags['silent'] == 1 ? '<silent>' : ''
-            let expr   = mapflags['expr'] == 1 ? '<expr>' : ''
+            let mapcmd = data['noremap'] == 1 ? 'inoremap' : 'imap'
+            let silent = data['silent'] == 1 ? '<silent>' : ''
+            let expr   = data['expr'] == 1 ? '<expr>' : ''
             " new maps are always buffer-local!
             exe mapcmd.' <buffer> '.silent.' '.expr.' '.
-                        \ substitute(newkey.' '.mapvalue, '|', '|', 'g')
-            let mappingskeys[newkey] = 1
+                        \ substitute(newkey.' '.data['value'],
+                        \ '|', '|', 'g')
+            let mappingskeys[newkey] = data
         endfor
-        if g:XkbSwitchLoadRIMappings
-            for rim_key_nr in s:XkbSwitchIRegList
-                let rim_key = nr2char(rim_key_nr)
+    endfor
+    if g:XkbSwitchLoadRIMappings
+        for tr in g:XkbSwitchIMappings
+            let from = g:XkbSwitchIMappingsTr[tr]['<']
+            let to   = g:XkbSwitchIMappingsTr[tr]['>']
+            for rim_key in keys(s:XkbSwitchIRegList)
                 let rim_key_tr = tr(rim_key, from, to)
-                if index(s:XkbSwitchIRegList, char2nr(rim_key_tr)) != -1 ||
-                            \ index(skip_rim_list, rim_key) != -1
+                if exists('s:XkbSwitchIRegList[rim_key_tr]') ||
+                            \ exists('skip_rim_list[rim_key]') ||
+                            \ exists('skip_rim_list[rim_key_tr]')
                     continue
                 endif
-                exe 'inoremap <silent> <buffer> <C-R>'.rim_key_tr.' <C-R>'.
-                            \ rim_key
+                exe 'inoremap <silent> <buffer> <C-R>'.rim_key_tr.
+                            \ ' <C-R>'.rim_key
+                let skip_rim_list[rim_key_tr] = 1
             endfor
-        endif
-    endfor
+        endfor
+    endif
 endfun
 
 fun! <SID>check_syntax_rules(force)
