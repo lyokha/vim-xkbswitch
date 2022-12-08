@@ -546,6 +546,20 @@ comments areas, but in the mdict rule we do not care about leaving areas
 Troubleshooting
 ---------------
 
+* To test if the switcher library is well configured, run commands
+
+    ```vim
+  :echo libcall(g:XkbSwitchLib, 'Xkb_Switch_getXkbLayout', '')
+    ```
+
+  and
+
+    ```vim
+  :call libcall(g:XkbSwitchLib, 'Xkb_Switch_setXkbLayout', 'ru')
+    ```
+
+  which get and set the keyboard layout.
+
 * Some characters from alternative keyboard layouts may fail to enter or behave
   in strange ways for certain filetypes. For example in Russian winkeys layout
   characters 'б', 'ю', 'ж' and 'э' may fail to enter in C++ source files. The

@@ -9,7 +9,7 @@
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
 ==============================================================================
-                                            *xkbswitch* *xkbswitch-contents*
+                            *vim-xkbswitch* *xkbswitch* *xkbswitch-contents*
 1. Contents~
 
     1. Contents ..............................: |xkbswitch-contents|
@@ -523,6 +523,16 @@ https://github.com/lyokha/vim-xkbswitch/pull/45#issue-493491212 .
 ==============================================================================
                                             *xkbswitch-issues*
 8. Troubleshooting~
+
+  - To test if the switcher library is well configured, run commands
+>
+    :echo libcall(g:XkbSwitchLib, 'Xkb_Switch_getXkbLayout', '')
+<
+    and
+>
+    :call libcall(g:XkbSwitchLib, 'Xkb_Switch_setXkbLayout', 'ru')
+<
+    which get and set the keyboard layout.
 
   - Some characters from alternative keyboard layouts may fail to enter or
     behave in strange ways for certain filetypes. For example, in Russian
