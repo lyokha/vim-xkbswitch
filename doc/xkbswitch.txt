@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2022 Nov 13
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2022 Dec 20
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.17
+                                version 0.18
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -575,26 +575,16 @@ https://github.com/lyokha/vim-xkbswitch/pull/45#issue-493491212 .
     keys in Insert mode mappings duplicates as they are. But this is not the
     case in GTK based gvim. The issue is still investigated.
 
-  - XkbSwitch supports switching via Select mode too. But there is a case when
-    switching from Select mode to Normal mode will fail to restore Normal mode
-    keyboard layout. This will happen when leaving Select mode without any
-    character having been entered. The reason is simple: vim does not generate
-    events that could be caught by autocommands when switching from Select
-    mode to Normal mode. A workaround could be: when you are leaving Select
-    mode without any character entered do it via Visual mode, e.g. enter
-    <C-G><Esc> instead simply <Esc>.
-
-  - If you use gh-commands (|gh|, |gH| and |g_CTRL-H|) for your own specific
-    purposes then you'll probably want to disable mappings defined for some or
-    all of these commands in the plugin. For example
->
-    let g:XkbSwitchSkipGhKeys = ['gh', 'gH']
-<
-    disables plugin mappings for two of them.
-
 ==============================================================================
                                             *xkbswitch-changes*
 A. Change History~
+
+0.18
+    - Proper support for tracking keyboard layout state upon entering/leaving
+      Select mode using |ModeChanged| events
+    - Setting variables g:XkbSwitchSkipGhKeys and g:XkbSwitchSelectmodeKeys
+      is now deprecated and has no effect when |ModeChanged| events are
+      supported
 
 0.17
     - Full support for tracking keyboard layout state upon entering/leaving

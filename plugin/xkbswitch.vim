@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.17.2
+" Version:     0.18
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -122,7 +122,9 @@ if !exists('g:XkbSwitchAssistNKeymap')
     let g:XkbSwitchAssistNKeymap = 0
 endif
 
-if exists('##CmdlineEnter')
+let s:XkbSwitchExistsCmdlineEnter = exists('##CmdlineEnter')
+
+if s:XkbSwitchExistsCmdlineEnter
     if exists('g:XkbSwitchAssistSKeymap')
         echohl WarningMsg
         echomsg "xkbswitch: setting variable g:XkbSwitchAssistSKeymap is ".
@@ -277,6 +279,25 @@ if !exists('g:XkbSwitchSyntaxRules')
     let g:XkbSwitchSyntaxRules = []
 endif
 
+let s:XkbSwitchExistsModeChanged = exists('##ModeChanged')
+
+if s:XkbSwitchExistsModeChanged
+    if exists('g:XkbSwitchSkipGhKeys')
+        echohl WarningMsg
+        echomsg "xkbswitch: setting variable g:XkbSwitchSkipGhKeys is ".
+                    \ "deprecated and has no effect"
+        echohl None
+    endif
+    let g:XkbSwitchSkipGhKeys = []
+    if exists('g:XkbSwitchSelectmodeKeys')
+        echohl WarningMsg
+        echomsg "xkbswitch: setting variable g:XkbSwitchSelectmodeKeys is ".
+                    \ "deprecated and has no effect"
+        echohl None
+    endif
+    let g:XkbSwitchSelectmodeKeys = []
+endif
+
 if !exists('g:XkbSwitchSkipGhKeys')
     let g:XkbSwitchSkipGhKeys = []
 endif
@@ -330,19 +351,40 @@ fun! <SID>skip_buf_or_win()
 endfun
 
 
-fun! <SID>load_all()
-    if <SID>skip_buf_or_win()
+fun! <SID>load_all(...)
+    if a:0 && a:1 && <SID>skip_buf_or_win()
         return
     endif
     if !exists('b:xkb_mappings_loaded')
-        call <SID>xkb_mappings_load()
+        let b:xkb_mappings_loaded = 1
+        " BEWARE: all new mappings shall be buffer-local
+        call <SID>nmappings_load()
+        if !s:XkbSwitchExistsModeChanged
+            call <SID>smappings_load()
+        endif
         call <SID>imappings_load()
         call <SID>syntax_rules_load()
     endif
 endfun
 
 
-fun! <SID>xkb_mappings_load()
+fun! <SID>nmappings_load()
+    if !empty(g:XkbSwitchIminsertToggleKey)
+        exe "nnoremap <buffer> <silent> ".g:XkbSwitchIminsertToggleKey.
+                    \ " :if !empty(&keymap) <Bar> if &iminsert == 0 <Bar>".
+                    \ "setlocal iminsert=1 <Bar>".
+                    \ "if g:XkbSwitchIminsertToggleEcho <Bar>".
+                    \ "echo 'set keymap' &keymap <Bar> endif <Bar>".
+                    \ "elseif &iminsert == 1 <Bar>".
+                    \ "setlocal iminsert=0 <Bar>".
+                    \ "if g:XkbSwitchIminsertToggleEcho <Bar>".
+                    \ "echo 'unset keymap' &keymap <Bar> endif <Bar>".
+                    \ "endif <Bar> endif<CR>"
+    endif
+endfun
+
+
+fun! <SID>smappings_load()
     for hcmd in ['gh', 'gH', 'g']
         if index(g:XkbSwitchSkipGhKeys, hcmd) == -1
             exe "nnoremap <buffer> <silent> ".hcmd.
@@ -391,19 +433,6 @@ fun! <SID>xkb_mappings_load()
                         \ " :call <SID>xkb_switch(1, 1)<CR>".cmd
         endfor
     endif
-    if !empty(g:XkbSwitchIminsertToggleKey)
-        exe "nnoremap <buffer> <silent> ".g:XkbSwitchIminsertToggleKey.
-                    \ " :if !empty(&keymap) <Bar> if &iminsert == 0 <Bar>".
-                    \ "setlocal iminsert=1 <Bar>".
-                    \ "if g:XkbSwitchIminsertToggleEcho <Bar>".
-                    \ "echo 'set keymap' &keymap <Bar> endif <Bar>".
-                    \ "elseif &iminsert == 1 <Bar>".
-                    \ "setlocal iminsert=0 <Bar>".
-                    \ "if g:XkbSwitchIminsertToggleEcho <Bar>".
-                    \ "echo 'unset keymap' &keymap <Bar> endif <Bar>".
-                    \ "endif <Bar> endif<CR>"
-    endif
-    let b:xkb_mappings_loaded = 1
 endfun
 
 fun! <SID>imappings_load()
@@ -501,7 +530,6 @@ fun! <SID>imappings_load()
             let mapcmd = data['noremap'] == 1 ? 'inoremap' : 'imap'
             let silent = data['silent'] == 1 ? '<silent>' : ''
             let expr   = data['expr'] == 1 ? '<expr>' : ''
-            " new maps are always buffer-local!
             exe mapcmd.' <buffer> '.silent.' '.expr.' '.
                         \ substitute(newkey.' '.data['value'],
                         \ '|', '|', 'g')
@@ -813,9 +841,7 @@ fun! <SID>xkb_save(...)
         return
     endif
     let save_ilayout_param_local = save_ilayout_param && g:XkbSwitch['local']
-    " BEWARE: if buffer has not entered Insert mode yet (i.e.
-    " b:xkb_mappings_loaded is not loaded yet) then specific Normal mode
-    " keyboard layout for this buffer will be lost
+    " FIXME: is the following check needed?
     let xkb_loaded = save_ilayout_param_local ?
                 \ getbufvar(a:1, 'xkb_mappings_loaded') :
                 \ exists('b:xkb_mappings_loaded')
@@ -857,21 +883,24 @@ fun! <SID>enable_xkb_switch(force)
     if filereadable(g:XkbSwitch['backend']) == 1
         augroup XkbSwitch
             au!
-            " BEWARE: All mappings and syntax rules should be loaded at
-            " BufRead event for proper support of Select modes
             if g:XkbSwitchLoadOnBufRead
-                autocmd BufRead * call <SID>load_all()
+                autocmd BufRead * call <SID>load_all(1)
             endif
             autocmd InsertEnter *
                         \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
                         \ call <SID>xkb_switch(1)
-            if exists('##CmdlineEnter')
+            if s:XkbSwitchExistsCmdlineEnter
                 autocmd CmdlineEnter /,\?
                             \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
                             \ call <SID>xkb_switch(1)
             endif
             if exists('##CmdwinEnter')
                 autocmd CmdwinEnter /,\? let s:XkbSwitchCmdwinEntered = 1
+            endif
+            if s:XkbSwitchExistsModeChanged
+                autocmd ModeChanged [^sS]*:[sS]
+                            \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
+                            \ call <SID>xkb_switch(1, 1)
             endif
             for item in g:XkbSwitchPostIEnterAuto
                 if exists('item[0]["pat"]')
@@ -886,15 +915,16 @@ fun! <SID>enable_xkb_switch(force)
                 endif
             endfor
             autocmd InsertLeave * call <SID>xkb_switch(0)
-            if exists('##CmdlineEnter')
+            if s:XkbSwitchExistsCmdlineEnter
                 autocmd CmdlineLeave /,\?
                             \ if s:XkbSwitchCmdwinEntered |
                             \ let s:XkbSwitchCmdwinEntered = 0 |
                             \ call <SID>xkb_set(g:XkbSwitchNLayout) | else |
                             \ call <SID>xkb_switch(0) | endif
             endif
-            " BEWARE: Select modes are not supported well when navigating
-            " between windows or tabs due to vim restrictions
+            if s:XkbSwitchExistsModeChanged
+                autocmd ModeChanged [sS]:[^sSi]* call <SID>xkb_switch(0)
+            endif
             autocmd BufEnter * let s:XkbSwitchLastIEnterBufnr = 0 |
                         \ call <SID>xkb_switch(mode() =~ '^[iR]', 2)
             autocmd BufLeave * let s:XkbSwitchLastIEnterBufnr = 0 |
