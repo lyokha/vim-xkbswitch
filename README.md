@@ -240,7 +240,7 @@ set imsearch=0
 
 (Note that setting of g:XkbSwitchAssistSKeymap is deprecated because tracking
 of entering / leaving command line for searching patterns is fully supported
-after events CmdlineEnter and CmdlineLeave have been introduced in vim.)
+after CmdlineEnter and CmdlineLeave events have been introduced in vim.)
 
 Now when you leave Insert mode, the keyboard layout is switched back to the
 usual Normal mode value, but values of *iminsert* and *imsearch* are set

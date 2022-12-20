@@ -227,7 +227,7 @@ given that keymap is set to some value, for example
 <
 (Note that setting of g:XkbSwitchAssistSKeymap is deprecated because tracking
 of entering / leaving command line for searching patterns is fully supported
-after events |CmdlineEnter| and |CmdlineLeave| have been introduced in vim.)
+after |CmdlineEnter| and |CmdlineLeave| events have been introduced in vim.)
 
 Now when you leave Insert mode, the keyboard layout is switched back to the
 usual Normal mode value, but values of |iminsert| and |imsearch| are set
@@ -463,7 +463,7 @@ Function MdictCheckLang() does all the custom layout switching and can be
 regarded as a plugin to the XkbSwitch. The first autocommand states that if
 file has extension '.mdict' then its filetype must be 'vimwiki' and turns on
 XkbSwitch. The next two autocommands are optional and only make editing mdict
-files more comfortable. The last autocommand (for CursorMovedI events) calls
+files more comfortable. The last autocommand (for |CursorMovedI| events) calls
 MdictCheckLang() when cursor moves into different columns in Insert mode.
 The next definition
 >
@@ -554,9 +554,9 @@ https://github.com/lyokha/vim-xkbswitch/pull/45#issue-493491212 .
 <
   - When leaving Insert mode after using an alternative keyboard layout (say
     Russian), there could be a time lag (of length 1 sec if the value of
-    'timeoutlen' was not altered) before typing commands in Normal mode gets
+    |timeoutlen| was not altered) before typing commands in Normal mode gets
     back to produce any effect. To cope with this issue, the value of
-    'ttimeoutlen' (notice the double-t in the beginning of its name!) must be
+    |ttimeoutlen| (notice the double-t in the beginning of its name!) must be
     set to some small value, say
 >
     set ttimeoutlen=50
@@ -669,7 +669,7 @@ A. Change History~
 0.8.1
     - Fixed a bug when original Insert mode layout could be lost when leaving
       a buffer in Insert mode for a new tab in gvim. Thanks to zdm for code
-      contribution. The bug was caused by missing BufLeave events in certain
+      contribution. The bug was caused by missing |BufLeave| events in certain
       cases. It seems that it does not affect all vim flavors (both latest
       Mercurial snapshot built on my Fedora 18 desktop and standard vim
       distribution taken from repository seem to be not affected). You can
@@ -677,7 +677,7 @@ A. Change History~
 
         let g:XkbSwitchFixNoBufLeave = 0
 
-      if you know that your vim is good and always generates BufLeave events
+      if you know that your vim is good and always generates |BufLeave| events
       when jumping to another tab while being in Insert mode
 
 0.8
