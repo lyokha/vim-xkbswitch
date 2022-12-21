@@ -122,9 +122,9 @@ if !exists('g:XkbSwitchAssistNKeymap')
     let g:XkbSwitchAssistNKeymap = 0
 endif
 
-let s:XkbSwitchExistsCmdlineEnter = exists('##CmdlineEnter')
+let s:XkbSwitchUseCmdlineEnter = exists('##CmdlineEnter')
 
-if s:XkbSwitchExistsCmdlineEnter
+if s:XkbSwitchUseCmdlineEnter
     if exists('g:XkbSwitchAssistSKeymap')
         echohl WarningMsg
         echomsg "xkbswitch: setting variable g:XkbSwitchAssistSKeymap is ".
@@ -279,9 +279,9 @@ if !exists('g:XkbSwitchSyntaxRules')
     let g:XkbSwitchSyntaxRules = []
 endif
 
-let s:XkbSwitchExistsModeChanged = exists('##ModeChanged')
+let s:XkbSwitchUseModeChanged = exists('##ModeChanged')
 
-if s:XkbSwitchExistsModeChanged
+if s:XkbSwitchUseModeChanged
     if exists('g:XkbSwitchSkipGhKeys')
         echohl WarningMsg
         echomsg "xkbswitch: setting variable g:XkbSwitchSkipGhKeys is ".
@@ -359,9 +359,7 @@ fun! <SID>load_all(...)
         let b:xkb_mappings_loaded = 1
         " BEWARE: all new mappings shall be buffer-local
         call <SID>nmappings_load()
-        if !s:XkbSwitchExistsModeChanged
-            call <SID>smappings_load()
-        endif
+        call <SID>smappings_load()
         call <SID>imappings_load()
         call <SID>syntax_rules_load()
     endif
@@ -385,6 +383,9 @@ endfun
 
 
 fun! <SID>smappings_load()
+    if s:XkbSwitchUseModeChanged
+        return
+    endif
     for hcmd in ['gh', 'gH', 'g']
         if index(g:XkbSwitchSkipGhKeys, hcmd) == -1
             exe "nnoremap <buffer> <silent> ".hcmd.
@@ -889,7 +890,7 @@ fun! <SID>enable_xkb_switch(force)
             autocmd InsertEnter *
                         \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
                         \ call <SID>xkb_switch(1)
-            if s:XkbSwitchExistsCmdlineEnter
+            if s:XkbSwitchUseCmdlineEnter
                 autocmd CmdlineEnter /,\?
                             \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
                             \ call <SID>xkb_switch(1)
@@ -897,7 +898,7 @@ fun! <SID>enable_xkb_switch(force)
             if exists('##CmdwinEnter')
                 autocmd CmdwinEnter /,\? let s:XkbSwitchCmdwinEntered = 1
             endif
-            if s:XkbSwitchExistsModeChanged
+            if s:XkbSwitchUseModeChanged
                 autocmd ModeChanged [^sS]*:[sS]
                             \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
                             \ call <SID>xkb_switch(1, 1)
@@ -915,14 +916,14 @@ fun! <SID>enable_xkb_switch(force)
                 endif
             endfor
             autocmd InsertLeave * call <SID>xkb_switch(0)
-            if s:XkbSwitchExistsCmdlineEnter
+            if s:XkbSwitchUseCmdlineEnter
                 autocmd CmdlineLeave /,\?
                             \ if s:XkbSwitchCmdwinEntered |
                             \ let s:XkbSwitchCmdwinEntered = 0 |
                             \ call <SID>xkb_set(g:XkbSwitchNLayout) | else |
                             \ call <SID>xkb_switch(0) | endif
             endif
-            if s:XkbSwitchExistsModeChanged
+            if s:XkbSwitchUseModeChanged
                 autocmd ModeChanged [sS]:[^sSi]* call <SID>xkb_switch(0)
             endif
             autocmd BufEnter * let s:XkbSwitchLastIEnterBufnr = 0 |
