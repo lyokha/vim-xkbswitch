@@ -15,6 +15,7 @@ Table of contents
     + [Default layouts](#default-layouts)
     + [Disable for specific filetypes](#disable-for-specific-filetypes)
     + [Enable in runtime](#enable-in-runtime)
+- [Insert enter hook](#insert-enter-hook)
 - [Custom keyboard layout switching rules](#custom-keyboard-layout-switching-rules)
 - [Troubleshooting](#troubleshooting)
 
@@ -364,6 +365,30 @@ in your .vimrc) by issuing command
 
 This command will respect current settings of g:XkbSwitchIMappings etc. Be
 aware that there is no way to disable XkbSwitch after it has been enabled.
+
+Insert enter hook
+-----------------
+
+You may want to run a custom vim function when entering Insert mode. For
+example, let's flash the cursor for a moment if the keyboard layout switches.
+Plugin [Beacon](https://github.com/DanilaMihailov/beacon.nvim) fits very well
+for this purpose. Just put lines
+
+```vim
+let g:XkbSwitchIEnterHook = 'XkbSwitchIEnterHook'
+
+fun! XkbSwitchIEnterHook(old, new)
+    if a:new != a:old
+        let save_beacon_size = g:beacon_size
+        let g:beacon_size = 20
+        Beacon
+        let g:beacon_size = save_beacon_size
+    endif
+endfun
+```
+
+into .vimrc file. Arguments *old* and *new* are keyboard layouts being switched
+from and to respectively.
 
 Custom keyboard layout switching rules
 --------------------------------------

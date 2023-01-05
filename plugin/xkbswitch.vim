@@ -1,7 +1,7 @@
 " File:        xkbswitch.vim
 " Authors:     Alexey Radkov
 "              Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
-" Version:     0.18
+" Version:     0.19
 " Description: Automatic keyboard layout switching upon entering/leaving
 "              insert mode
 
@@ -809,11 +809,14 @@ fun! <SID>xkb_switch(mode, ...)
                     let switched = exists('b:XkbSwitchILayout') ?
                             \ b:XkbSwitchILayout : (exists('b:xkb_ilayout') ?
                             \ b:xkb_ilayout : g:XkbSwitchILayout)
-                    if switched != ''
-                        if switched != cur_layout &&
-                                    \ !exists('b:xkb_ilayout_managed')
+                    if switched != '' && !exists('b:xkb_ilayout_managed')
+                        if switched != cur_layout
                             call libcall(g:XkbSwitch['backend'],
                                         \ g:XkbSwitch['set'], switched)
+                        endif
+                        if exists('g:XkbSwitchIEnterHook')
+                            let Hook = function(g:XkbSwitchIEnterHook)
+                            call Hook(cur_layout, switched)
                         endif
                     endif
                 endif

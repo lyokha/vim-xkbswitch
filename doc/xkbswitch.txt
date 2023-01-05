@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2022 Dec 20
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2023 Jan 5
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.18
+                                version 0.19
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -22,9 +22,11 @@ Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
         5.3 Default layouts ..................: |xkbswitch-default-layouts|
         5.4 Disable for specific filetypes ...: |xkbswitch-filetype-disable|
         5.5 Enable in runtime ................: |xkbswitch-runtime-enable|
-    6. Custom keyboard layout switching rules.: |xkbswitch-plugins|
-    7. Integration with other plugins ........: |xkbswitch-integration|
-    8. Troubleshooting .......................: |xkbswitch-issues|
+    6. Insert enter hook .....................: |xkbswitch-insert-enter-hook|
+    7. Custom keyboard layout switching rules : |xkbswitch-custom-rules|
+    8. Integration with other plugins ........: |xkbswitch-integration|
+        8.1 LeaderF ..........................: |xkbswitch-integration-leaderf|
+    9. Troubleshooting .......................: |xkbswitch-issues|
     A. Change History ........................: |xkbswitch-changes|
 
 ==============================================================================
@@ -334,8 +336,30 @@ This command will respect current settings of g:XkbSwitchIMappings etc. Be
 aware that there is no way to disable XkbSwitch after it has been enabled.
 
 ==============================================================================
-                                            *xkbswitch-plugins*
-6. Custom keyboard layout switching rules~
+                                            *xkbswitch-insert-enter-hook*
+6. Insert enter hook~
+
+You may want to run a custom vim function when entering Insert mode. For
+example, let's flash the cursor for a moment if the keyboard layout switches.
+Plugin Beacon fits very well for this purpose. Just put lines
+>
+    let g:XkbSwitchIEnterHook = 'XkbSwitchIEnterHook'
+
+    fun! XkbSwitchIEnterHook(old, new)
+        if a:new != a:old
+            let save_beacon_size = g:beacon_size
+            let g:beacon_size = 20
+            Beacon
+            let g:beacon_size = save_beacon_size
+        endif
+    endfun
+<
+into .vimrc file. Arguments 'old' and 'new' are keyboard layouts being
+switched from and to respectively.
+
+==============================================================================
+                                            *xkbswitch-custom-rules*
+7. Custom keyboard layout switching rules~
 
 Imagine that you are editing a simple dictionary with 2 columns delimited by
 vertical bars. In the first column you are writing down a German word and in
@@ -506,11 +530,11 @@ comments areas, but in the mdict rule we do not care about leaving areas
 
 ==============================================================================
                                             *xkbswitch-integration*
-7. Integration with other plugins~
+8. Integration with other plugins~
 
 ------------------------------------------------------------------------------
-                                            *xkbswitch-leaderf*
-7.1 LeaderF~
+                                            *xkbswitch-integration-leaderf*
+8.1 LeaderF~
 
 The command `Leaderf xkbswitch` can popup a window to switch input method.
 
@@ -522,7 +546,7 @@ https://github.com/lyokha/vim-xkbswitch/pull/45#issue-493491212 .
 
 ==============================================================================
                                             *xkbswitch-issues*
-8. Troubleshooting~
+9. Troubleshooting~
 
   - To test if the switcher library is well configured, run commands
 >
@@ -578,6 +602,10 @@ https://github.com/lyokha/vim-xkbswitch/pull/45#issue-493491212 .
 ==============================================================================
                                             *xkbswitch-changes*
 A. Change History~
+
+0.19
+    - It's now possible to run a custom vim function when entering Insert
+      mode. The function is pointed by variable g:XkbSwitchIEnterHook
 
 0.18
     - Proper support for tracking keyboard layout state upon entering/leaving
