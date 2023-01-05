@@ -345,12 +345,20 @@ Plugin Beacon fits very well for this purpose. Just put lines
 >
     let g:XkbSwitchIEnterHook = 'XkbSwitchIEnterHook'
 
+    highlight link BeaconIEnter Cursor
+
+    fun! XkbSwitchRevertBeaconHighlight(id)
+        highlight! link Beacon BeaconDefault
+    endfun
+
     fun! XkbSwitchIEnterHook(old, new)
         if a:new != a:old
             let save_beacon_size = g:beacon_size
             let g:beacon_size = 20
+            highlight! link Beacon BeaconIEnter
             Beacon
             let g:beacon_size = save_beacon_size
+            call timer_start(500, 'XkbSwitchRevertBeaconHighlight')
         endif
     endfun
 <
