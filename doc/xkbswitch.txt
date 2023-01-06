@@ -1,4 +1,4 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2023 Jan 5
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2023 January 05
 
                             ---------------------
                              Xkb Layout Switcher

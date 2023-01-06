@@ -809,12 +809,16 @@ fun! <SID>xkb_switch(mode, ...)
                     let switched = exists('b:XkbSwitchILayout') ?
                             \ b:XkbSwitchILayout : (exists('b:xkb_ilayout') ?
                             \ b:xkb_ilayout : g:XkbSwitchILayout)
-                    if switched != '' && !exists('b:xkb_ilayout_managed')
-                        if switched != cur_layout
+                    if switched != ''
+                        let not_managed = 0
+                        if switched != cur_layout &&
+                                    \ !exists('b:xkb_ilayout_managed')
                             call libcall(g:XkbSwitch['backend'],
                                         \ g:XkbSwitch['set'], switched)
+                            let not_managed = 1
                         endif
-                        if exists('g:XkbSwitchIEnterHook')
+                        if exists('g:XkbSwitchIEnterHook') && (not_managed ||
+                                    \ !exists('b:xkb_ilayout_managed'))
                             let Hook = function(g:XkbSwitchIEnterHook)
                             call Hook(cur_layout, switched)
                         endif
