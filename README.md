@@ -59,11 +59,12 @@ of compatible switchers.
     ```
 
 - **i3wm**: [xkb-switch-i3](http://github.com/Zebradil/xkb-switch-i3).
+- **sway**: [sway-vim-kbswitch](http://github.com/khaser/sway-vim-kbswitch).
 
 Features
 --------
 
-* Supported OS: UNIX / X Server, Windows, Mac OS X.
+* Supported OS: UNIX(X Server / Sway), Windows, Mac OS X.
 * Switches keyboard layout when entering / leaving Insert and Select modes
   as well as the command line when searching patterns.
 * Dynamic keymap assistance in commands like *r* and *f* in Normal mode.
