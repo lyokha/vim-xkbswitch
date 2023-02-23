@@ -16,8 +16,16 @@ let g:loaded_XkbSwitch = 1
 " prevent crashes of Vim due to xkb-switch (Github PR #30)
 " FIXME: this is too strict because another hypothetical keyboard layout
 "        switcher (that won't crash) can be used here
-if !has('macunix') && has('unix') && empty($DISPLAY)
+if !has('macunix') && has('unix') && empty($DISPLAY) && empty($SWAYSOCK)
     let g:XkbSwitchEnabled = 0
+endif
+
+if !exists('g:XkbSwitchLib') && !empty($SWAYSOCK)
+    if filereadable('/usr/local/lib/libswaykbswitch.so')
+        let g:XkbSwitchLib = '/usr/local/lib/libswaykbswitch.so'
+    elseif filereadable('/usr/lib/libswaykbswitch.so')
+        let g:XkbSwitchLib = '/usr/lib/libswaykbswitch.so'
+    endif
 endif
 
 if !exists('g:XkbSwitchLib') && $XDG_SESSION_DESKTOP ==# 'gnome'
