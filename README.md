@@ -168,11 +168,9 @@ existing default 'ru' and 'uk' maps):
     ```
 
   Sample file xkbswitch.tr with exactly this content is shipped with this
-  plugin distribution. Note that it is encoded in UTF-8 as far as its content
-  is read by readfile().
-
-  Files with translation maps can be easily created from the vim keymap
-  definitions: see [utils/keymap2imaptr.vim](utils/keymap2imaptr.vim).
+  plugin distribution. Files with translation maps can be easily created from
+  vim keymap definitions: see comments in
+  [utils/keymap2imaptr.vim](utils/keymap2imaptr.vim).
 
 Be very careful with mapping duplicates! They won't replace existing Insert
 mode mappings but may define extra mappings that will change normal Insert
