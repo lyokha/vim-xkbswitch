@@ -64,7 +64,7 @@ of compatible switchers.
 Features
 --------
 
-* Supported OS: UNIX(X Server / Sway), Windows, Mac OS X.
+* Supported OS: UNIX (X Server / Sway), Windows, Mac OS X.
 * Switches keyboard layout when entering / leaving Insert and Select modes
   as well as the command line when searching patterns.
 * Dynamic keymap assistance in commands like *r* and *f* in Normal mode.
@@ -168,10 +168,11 @@ existing default 'ru' and 'uk' maps):
     ```
 
   Sample file xkbswitch.tr with exactly this content is shipped with this
-  plugin distribution. It is encoded in UTF-8 and it is important as far as
-  its content is read using readfile()! If your locale is not UTF-8 and
-  you want to use this sample file then it seems that you will have to
-  re-encode it in your locale standard encoding
+  plugin distribution. Note that it is encoded in UTF-8 as far as its content
+  is read by readfile().
+
+  Files with translation maps can be easily created from the vim keymap
+  definitions: see [utils/keymap2imaptr.vim](utils/keymap2imaptr.vim).
 
 Be very careful with mapping duplicates! They won't replace existing Insert
 mode mappings but may define extra mappings that will change normal Insert
