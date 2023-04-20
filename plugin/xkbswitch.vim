@@ -33,6 +33,10 @@ if !exists('g:XkbSwitchLib') && $XDG_SESSION_DESKTOP ==# 'gnome'
         let g:XkbSwitchLib = '/usr/local/lib/libg3kbswitch.so'
     elseif filereadable('/usr/lib/libg3kbswitch.so')
         let g:XkbSwitchLib = '/usr/lib/libg3kbswitch.so'
+    elseif filereadable('/usr/local/lib64/libg3kbswitch.so')
+        let g:XkbSwitchLib = '/usr/local/lib64/libg3kbswitch.so'
+    elseif filereadable('/usr/lib64/libg3kbswitch.so')
+        let g:XkbSwitchLib = '/usr/lib64/libg3kbswitch.so'
     endif
 endif
 
