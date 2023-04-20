@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2023 January 05
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2023 April 20
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.19
+                                version 0.20
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -609,6 +609,12 @@ https://github.com/lyokha/vim-xkbswitch/pull/45#issue-493491212 .
 ==============================================================================
                                             *xkbswitch-changes*
 A. Change History~
+
+0.20
+    - Support for Sway via libswaykbswitch.so (thanks to Andrey Khorokhorin)
+    - New utility keymap2imaptr.vim to help translate vim's language keymaps
+      to vim-xkbswitch imap translation files
+    - Test more paths to detect the location of libg3kbswitch.so
 
 0.19
     - It's now possible to run a custom vim function when entering Insert
