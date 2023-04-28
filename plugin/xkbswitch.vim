@@ -20,50 +20,46 @@ if !has('macunix') && has('unix') && empty($DISPLAY) && empty($SWAYSOCK)
     let g:XkbSwitchEnabled = 0
 endif
 
-if !exists('g:XkbSwitchLib') && !empty($SWAYSOCK)
-    if filereadable('/usr/local/lib/libswaykbswitch.so')
-        let g:XkbSwitchLib = '/usr/local/lib/libswaykbswitch.so'
-    elseif filereadable('/usr/lib/libswaykbswitch.so')
-        let g:XkbSwitchLib = '/usr/lib/libswaykbswitch.so'
+fun! <SID>find_library(backend, name)
+    if filereadable('/usr/local/lib/'.a:name)
+        let g:XkbSwitchLib = '/usr/local/lib/'.a:name
+    elseif filereadable('/usr/local/lib64/'.a:name)
+        let g:XkbSwitchLib = '/usr/local/lib64/'.a:name
+    elseif filereadable('/usr/local/lib32/'.a:name)
+        let g:XkbSwitchLib = '/usr/local/lib32/'.a:name
+    elseif filereadable('/usr/lib/'.a:name)
+        let g:XkbSwitchLib = '/usr/lib/'.a:name
+    elseif filereadable('/usr/lib64/'.a:name)
+        let g:XkbSwitchLib = '/usr/lib64/'.a:name
+    elseif filereadable('/usr/lib32/'.a:name)
+        let g:XkbSwitchLib = '/usr/lib32/'.a:name
+    elseif filereadable('/usr/lib/'.a:backend.'/'.a:name)
+        let g:XkbSwitchLib = '/usr/lib/'.a:backend.'/'.a:name
+    elseif filereadable('/usr/lib64/'.a:backend.'/'.a:name)
+        let g:XkbSwitchLib = '/usr/lib64/'.a:backend.'/'.a:name
+    elseif filereadable('/usr/lib32/'.a:backend.'/'.a:name)
+        let g:XkbSwitchLib = '/usr/lib32/'.a:backend.'/'.a:name
     endif
+endfun
+
+if !exists('g:XkbSwitchLib') && !empty($SWAYSOCK)
+    call <SID>find_library('sway-vim-kbswitch', 'libswaykbswitch.so')
 endif
 
 if !exists('g:XkbSwitchLib') && $XDG_SESSION_DESKTOP ==# 'gnome'
-    if filereadable('/usr/local/lib/libg3kbswitch.so')
-        let g:XkbSwitchLib = '/usr/local/lib/libg3kbswitch.so'
-    elseif filereadable('/usr/local/lib64/libg3kbswitch.so')
-        let g:XkbSwitchLib = '/usr/local/lib64/libg3kbswitch.so'
-    elseif filereadable('/usr/lib/libg3kbswitch.so')
-        let g:XkbSwitchLib = '/usr/lib/libg3kbswitch.so'
-    elseif filereadable('/usr/lib64/libg3kbswitch.so')
-        let g:XkbSwitchLib = '/usr/lib64/libg3kbswitch.so'
-    elseif filereadable('/usr/lib64/g3kb-switch/libg3kbswitch.so')
-        let g:XkbSwitchLib = '/usr/lib64/g3kb-switch/libg3kbswitch.so'
-    endif
+    call <SID>find_library('g3kb-switch', 'libg3kbswitch.so')
 endif
 
 if !exists('g:XkbSwitchLib')
     if has('macunix')
-        if filereadable('/usr/local/lib/libxkbswitch.dylib')
-            let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.dylib'
-        elseif filereadable('/usr/lib/libxkbswitch.dylib')
-            let g:XkbSwitchLib = '/usr/lib/libxkbswitch.dylib'
-        endif
+        call <SID>find_library('libxkbswitch-macosx', 'libxkbswitch.dylib')
     elseif has('unix')
         " do not load if there is no X11,
         " see also comment about excessive strictness above
         if empty($DISPLAY)
             finish
         endif
-        if filereadable('/usr/local/lib/libxkbswitch.so')
-            let g:XkbSwitchLib = '/usr/local/lib/libxkbswitch.so'
-        elseif filereadable('/usr/lib/libxkbswitch.so')
-            let g:XkbSwitchLib = '/usr/lib/libxkbswitch.so'
-        elseif filereadable('/usr/lib64/libxkbswitch.so')
-            let g:XkbSwitchLib = '/usr/lib64/libxkbswitch.so'
-        elseif filereadable('/usr/lib32/libxkbswitch.so')
-            let g:XkbSwitchLib = '/usr/lib32/libxkbswitch.so'
-        endif
+        call <SID>find_library('xkb-switch', 'libxkbswitch.so')
     elseif has('win64') && filereadable($VIMRUNTIME.'/libxkbswitch64.dll')
         let g:XkbSwitchLib = $VIMRUNTIME.'/libxkbswitch64.dll'
     elseif has('win32') && filereadable($VIMRUNTIME.'/libxkbswitch32.dll')
