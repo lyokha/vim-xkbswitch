@@ -20,7 +20,7 @@ if !has('macunix') && has('unix') && empty($DISPLAY) && empty($SWAYSOCK)
     let g:XkbSwitchEnabled = 0
 endif
 
-fun! <SID>find_library(backend, name)
+fun! s:find_library(backend, name)
     if filereadable('/usr/local/lib/'.a:name)
         let g:XkbSwitchLib = '/usr/local/lib/'.a:name
     elseif filereadable('/usr/local/lib64/'.a:name)
@@ -43,23 +43,23 @@ fun! <SID>find_library(backend, name)
 endfun
 
 if !exists('g:XkbSwitchLib') && !empty($SWAYSOCK)
-    call <SID>find_library('sway-vim-kbswitch', 'libswaykbswitch.so')
+    call s:find_library('sway-vim-kbswitch', 'libswaykbswitch.so')
 endif
 
 if !exists('g:XkbSwitchLib') && $XDG_SESSION_DESKTOP ==# 'gnome'
-    call <SID>find_library('g3kb-switch', 'libg3kbswitch.so')
+    call s:find_library('g3kb-switch', 'libg3kbswitch.so')
 endif
 
 if !exists('g:XkbSwitchLib')
     if has('macunix')
-        call <SID>find_library('libxkbswitch-macosx', 'libxkbswitch.dylib')
+        call s:find_library('libxkbswitch-macosx', 'libxkbswitch.dylib')
     elseif has('unix')
         " do not load if there is no X11,
         " see also comment about excessive strictness above
         if empty($DISPLAY)
             finish
         endif
-        call <SID>find_library('xkb-switch', 'libxkbswitch.so')
+        call s:find_library('xkb-switch', 'libxkbswitch.so')
     elseif has('win64') && filereadable($VIMRUNTIME.'/libxkbswitch64.dll')
         let g:XkbSwitchLib = $VIMRUNTIME.'/libxkbswitch64.dll'
     elseif has('win32') && filereadable($VIMRUNTIME.'/libxkbswitch32.dll')
@@ -209,7 +209,7 @@ if !exists('g:XkbSwitchLoadOnBufRead')
 endif
 
 
-fun! <SID>tr_load(file)
+fun! s:tr_load(file)
     let g:XkbSwitchIMappingsTr = {}
     let tr = ''
     for line in readfile(a:file, '')
@@ -234,7 +234,7 @@ fun! <SID>tr_load(file)
     endfor
 endfun
 
-fun! <SID>tr_load_default()
+fun! s:tr_load_default()
     let from = 'qwertyuiop[]asdfghjkl;''zxcvbnm,.`/'.
                 \ 'QWERTYUIOP{}ASDFGHJKL:"ZXCVBNM<>?~@#$^&|'
     let g:XkbSwitchIMappingsTr = {
@@ -249,7 +249,7 @@ fun! <SID>tr_load_default()
                 \ }
 endfun
 
-fun! <SID>tr_escape_imappings()
+fun! s:tr_escape_imappings()
     for key in keys(g:XkbSwitchIMappingsTr)
         if exists('g:XkbSwitchIMappingsTr[key]["<"]')
             let g:XkbSwitchIMappingsTr[key]['<'] =
@@ -265,12 +265,12 @@ endfun
 if !exists('g:XkbSwitchIMappingsTr')
     if exists('g:XkbSwitchIMappingsTrData') &&
                 \ filereadable(g:XkbSwitchIMappingsTrData)
-        call <SID>tr_load(g:XkbSwitchIMappingsTrData)
+        call s:tr_load(g:XkbSwitchIMappingsTrData)
     else
-        call <SID>tr_load_default()
+        call s:tr_load_default()
     endif
 else
-    call <SID>tr_escape_imappings()
+    call s:tr_escape_imappings()
 endif
 
 if !exists('g:XkbSwitchIMappingsTrCtrl')
@@ -347,7 +347,7 @@ endif
 let s:XkbSwitchCmdwinEntered = 0
 
 
-fun! <SID>skip_buf_or_win()
+fun! s:skip_buf_or_win()
     if getbufvar('', '&buftype') == 'nofile' ||
                 \ index(g:XkbSwitchSkipFt, &ft) != -1
         return 1
@@ -361,22 +361,22 @@ fun! <SID>skip_buf_or_win()
 endfun
 
 
-fun! <SID>load_all(...)
-    if a:0 && a:1 && <SID>skip_buf_or_win()
+fun! s:load_all(...)
+    if a:0 && a:1 && s:skip_buf_or_win()
         return
     endif
     if !exists('b:xkb_mappings_loaded')
         let b:xkb_mappings_loaded = 1
         " BEWARE: all new mappings shall be buffer-local
-        call <SID>nmappings_load()
-        call <SID>smappings_load()
-        call <SID>imappings_load()
-        call <SID>syntax_rules_load()
+        call s:nmappings_load()
+        call s:smappings_load()
+        call s:imappings_load()
+        call s:syntax_rules_load()
     endif
 endfun
 
 
-fun! <SID>nmappings_load()
+fun! s:nmappings_load()
     if !empty(g:XkbSwitchIminsertToggleKey)
         exe "nnoremap <buffer> <silent> ".g:XkbSwitchIminsertToggleKey.
                     \ " :if !empty(&keymap) <Bar> if &iminsert == 0 <Bar>".
@@ -392,7 +392,7 @@ fun! <SID>nmappings_load()
 endfun
 
 
-fun! <SID>smappings_load()
+fun! s:smappings_load()
     if s:XkbSwitchUseModeChanged
         return
     endif
@@ -446,7 +446,7 @@ fun! <SID>smappings_load()
     endif
 endfun
 
-fun! <SID>imappings_load()
+fun! s:imappings_load()
     if empty(g:XkbSwitchIMappings)
         return
     endif
@@ -566,7 +566,7 @@ fun! <SID>imappings_load()
     endif
 endfun
 
-fun! <SID>check_syntax_rules(force)
+fun! s:check_syntax_rules(force)
     let col = col('.') == col('$') ? col('.') - 1 : col('.')
     let cur_synid = synIDattr(synID(line("."), col, 1), "name")
     if !exists('b:xkb_saved_cur_synid')
@@ -634,7 +634,7 @@ fun! <SID>check_syntax_rules(force)
     let b:xkb_saved_cur_synid = cur_synid
 endfun
 
-fun! <SID>syntax_rules_load()
+fun! s:syntax_rules_load()
     for rule in g:XkbSwitchSyntaxRules
         let in_roles = []
         let out_roles = []
@@ -655,14 +655,14 @@ fun! <SID>syntax_rules_load()
                             \ join(in_roles, "','").in_quote.
                             \ "] | let b:xkb_syntax_out_roles = [".out_quote.
                             \ join(out_roles, "','").out_quote.
-                            \ "] | endif | call <SID>check_syntax_rules(1)"
+                            \ "] | endif | call s:check_syntax_rules(1)"
                 exe "autocmd CursorMovedI ".rule['pat'].
                             \ " if !exists('b:xkb_syntax_in_roles') | ".
                             \ "let b:xkb_syntax_in_roles = [".in_quote.
                             \ join(in_roles, "','").in_quote.
                             \ "] | let b:xkb_syntax_out_roles = [".out_quote.
                             \ join(out_roles, "','").out_quote.
-                            \ "] | endif | call <SID>check_syntax_rules(0)"
+                            \ "] | endif | call s:check_syntax_rules(0)"
             endif
             if exists('rule["ft"]')
                 exe "autocmd InsertEnter * if index(['".
@@ -673,7 +673,7 @@ fun! <SID>syntax_rules_load()
                             \ join(in_roles, "','").in_quote.
                             \ "] | let b:xkb_syntax_out_roles = [".out_quote.
                             \ join(out_roles, "','").out_quote.
-                            \ "] | endif | call <SID>check_syntax_rules(1) ".
+                            \ "] | endif | call s:check_syntax_rules(1) ".
                             \ "| endif"
                 exe "autocmd CursorMovedI * if index(['".
                             \ join(split(rule['ft'], '\s*,\s*'), "','").
@@ -683,14 +683,14 @@ fun! <SID>syntax_rules_load()
                             \ join(in_roles, "','").in_quote.
                             \ "] | let b:xkb_syntax_out_roles = [".out_quote.
                             \ join(out_roles, "','").out_quote.
-                            \ "] | endif | call <SID>check_syntax_rules(0) ".
+                            \ "] | endif | call s:check_syntax_rules(0) ".
                             \ "| endif"
             endif
         augroup END
     endfor
 endfun
 
-fun! <SID>save_ilayout(cur_layout)
+fun! s:save_ilayout(cur_layout)
     let ilayout_role = 'b:xkb_ilayout'
     if exists('b:xkb_syntax_out_roles')
         let col = col('.') == col('$') ? col('.') - 1 : col('.')
@@ -708,8 +708,8 @@ fun! <SID>save_ilayout(cur_layout)
     exe "let ".ilayout_role." = '".a:cur_layout."'"
 endfun
 
-fun! <SID>xkb_switch(mode, ...)
-    if <SID>skip_buf_or_win()
+fun! s:xkb_switch(mode, ...)
+    if s:skip_buf_or_win()
         return
     endif
     if s:XkbSwitchSaveILayout && !g:XkbSwitch['local'] && !s:XkbSwitchFocused
@@ -775,7 +775,7 @@ fun! <SID>xkb_switch(mode, ...)
             endif
         endif
         if !a:0 || a:1 != 2
-            call <SID>save_ilayout(cur_layout)
+            call s:save_ilayout(cur_layout)
         endif
         let b:xkb_pending_imode = 0
     elseif a:mode == 1
@@ -791,7 +791,7 @@ fun! <SID>xkb_switch(mode, ...)
                 setlocal imsearch=0
             endif
         endif
-        call <SID>load_all()
+        call s:load_all()
         let switched = ''
         if a:0 && a:1 && exists('b:xkb_syntax_in_roles')
             let col = mode() =~ '^[vV]' ? col('v') : col('.')
@@ -848,8 +848,8 @@ fun! <SID>xkb_switch(mode, ...)
     endif
 endfun
 
-fun! <SID>xkb_save(...)
-    if <SID>skip_buf_or_win()
+fun! s:xkb_save(...)
+    if s:skip_buf_or_win()
         return
     endif
     let imode = mode() =~ '^[iR]'
@@ -875,7 +875,7 @@ fun! <SID>xkb_save(...)
         call setbufvar(a:1, 'xkb_ilayout', cur_layout)
     else
         if imode
-            call <SID>save_ilayout(cur_layout)
+            call s:save_ilayout(cur_layout)
         else
             if g:XkbSwitchNLayout == ''
                 let b:xkb_nlayout = cur_layout
@@ -884,7 +884,7 @@ fun! <SID>xkb_save(...)
     endif
 endfun
 
-fun! <SID>xkb_set(layout)
+fun! s:xkb_set(layout)
     if empty(a:layout)
         return
     endif
@@ -894,7 +894,7 @@ fun! <SID>xkb_set(layout)
     endif
 endfun
 
-fun! <SID>enable_xkb_switch(force)
+fun! s:enable_xkb_switch(force)
     if g:XkbSwitchEnabled && !a:force
         return
     endif
@@ -902,15 +902,15 @@ fun! <SID>enable_xkb_switch(force)
         augroup XkbSwitch
             au!
             if g:XkbSwitchLoadOnBufRead
-                autocmd BufRead * call <SID>load_all(1)
+                autocmd BufRead * call s:load_all(1)
             endif
             autocmd InsertEnter *
                         \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
-                        \ call <SID>xkb_switch(1)
+                        \ call s:xkb_switch(1)
             if s:XkbSwitchUseCmdlineEnter
                 autocmd CmdlineEnter /,\?
                             \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
-                            \ call <SID>xkb_switch(1)
+                            \ call s:xkb_switch(1)
             endif
             if exists('##CmdwinEnter')
                 autocmd CmdwinEnter /,\? let s:XkbSwitchCmdwinEntered = 1
@@ -918,7 +918,7 @@ fun! <SID>enable_xkb_switch(force)
             if s:XkbSwitchUseModeChanged
                 autocmd ModeChanged [^sS]*:[sS]
                             \ let s:XkbSwitchLastIEnterBufnr = bufnr('%') |
-                            \ call <SID>xkb_switch(1, 1)
+                            \ call s:xkb_switch(1, 1)
             endif
             for item in g:XkbSwitchPostIEnterAuto
                 if exists('item[0]["pat"]')
@@ -932,32 +932,32 @@ fun! <SID>enable_xkb_switch(force)
                         \ " | let b:xkb_ilayout_managed = 1 | endif | endif"
                 endif
             endfor
-            autocmd InsertLeave * call <SID>xkb_switch(0)
+            autocmd InsertLeave * call s:xkb_switch(0)
             if s:XkbSwitchUseCmdlineEnter
                 autocmd CmdlineLeave /,\?
                             \ if s:XkbSwitchCmdwinEntered |
                             \ let s:XkbSwitchCmdwinEntered = 0 |
-                            \ call <SID>xkb_set(g:XkbSwitchNLayout) | else |
-                            \ call <SID>xkb_switch(0) | endif
+                            \ call s:xkb_set(g:XkbSwitchNLayout) | else |
+                            \ call s:xkb_switch(0) | endif
             endif
             if s:XkbSwitchUseModeChanged
-                autocmd ModeChanged [sS]:[^sSi]* call <SID>xkb_switch(0)
+                autocmd ModeChanged [sS]:[^sSi]* call s:xkb_switch(0)
             endif
             autocmd BufEnter * let s:XkbSwitchLastIEnterBufnr = 0 |
-                        \ call <SID>xkb_switch(mode() =~ '^[iR]', 2)
+                        \ call s:xkb_switch(mode() =~ '^[iR]', 2)
             autocmd BufLeave * let s:XkbSwitchLastIEnterBufnr = 0 |
-                        \ call <SID>xkb_save()
-            autocmd VimLeave * call <SID>xkb_set(s:XkbSwitchGlobalLayout)
+                        \ call s:xkb_save()
+            autocmd VimLeave * call s:xkb_set(s:XkbSwitchGlobalLayout)
             if s:XkbSwitchSaveILayout
                 if g:XkbSwitch['local']
                     autocmd TabLeave * if s:XkbSwitchLastIEnterBufnr != 0 &&
                         \ s:XkbSwitchLastIEnterBufnr != bufnr('%') |
-                        \ call <SID>xkb_save(s:XkbSwitchLastIEnterBufnr) |
+                        \ call s:xkb_save(s:XkbSwitchLastIEnterBufnr) |
                         \ endif
                 else
                     autocmd FocusGained * let s:XkbSwitchFocused = 1
                     autocmd FocusLost   * let s:XkbSwitchFocused = 0
-                    autocmd CursorHoldI * call <SID>xkb_save(1)
+                    autocmd CursorHoldI * call s:xkb_save(1)
                 endif
             endif
         augroup END
@@ -966,10 +966,10 @@ fun! <SID>enable_xkb_switch(force)
 endfun
 
 
-command EnableXkbSwitch call <SID>enable_xkb_switch(0)
+command EnableXkbSwitch call s:enable_xkb_switch(0)
 
 if g:XkbSwitchEnabled
-    call <SID>enable_xkb_switch(1)
+    call s:enable_xkb_switch(1)
 endif
 
 if !exists('g:leaderf_loaded')
