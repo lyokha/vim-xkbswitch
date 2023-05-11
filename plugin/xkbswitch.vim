@@ -898,7 +898,7 @@ fun! s:enable_xkb_switch(force)
     if g:XkbSwitchEnabled && !a:force
         return
     endif
-    if filereadable(g:XkbSwitch['backend']) == 1
+    if filereadable(g:XkbSwitch['backend'])
         augroup XkbSwitch
             au!
             if g:XkbSwitchLoadOnBufRead
