@@ -339,8 +339,9 @@ aware that there is no way to disable XkbSwitch after it has been enabled.
 6. Insert enter hook~
 
 You may want to run a custom vim function when entering Insert mode. For
-example, let's flash the cursor for a moment if the keyboard layout switches.
-Plugin Beacon fits very well for this purpose. Just put lines
+example, let's flash the cursor for a moment if the keyboard layout
+effectively switches. Plugin Beacon fits very well this purpose. Just put
+lines
 >
     let g:XkbSwitchIEnterHook = 'XkbSwitchIEnterHook'
 
@@ -362,7 +363,7 @@ Plugin Beacon fits very well for this purpose. Just put lines
     endfun
 <
 into .vimrc file. Arguments 'old' and 'new' are keyboard layouts being
-switched from and to respectively.
+switched from and to while transitioning from Normal to Insert mode.
 
 ==============================================================================
                                             *xkbswitch-custom-rules*
