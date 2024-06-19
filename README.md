@@ -226,8 +226,10 @@ XkbSwitch is unable to guess keyboard layout when using Normal mode commands
 it can assist *keymap* in this by setting
 
 ```vim
-let g:XkbSwitchAssistNKeymap = 1    " for commands r and f
-let g:XkbSwitchAssistSKeymap = 1    " for search lines
+let g:XkbSwitchAssistNKeymap = 1        " for commands r and f
+if !exists('##CmdlineEnter')
+    let g:XkbSwitchAssistSKeymap = 1    " for search lines
+endif
 ```
 
 given that keymap is set to some value, for example
