@@ -934,7 +934,7 @@ fun! s:enable_xkb_switch(force)
             endfor
             autocmd InsertLeave * call s:xkb_switch(0)
             if s:XkbSwitchUseCmdlineEnter
-                autocmd CmdlineLeave /,\?
+                autocmd CmdlineLeave /,\?,:
                             \ if s:XkbSwitchCmdwinEntered |
                             \ let s:XkbSwitchCmdwinEntered = 0 |
                             \ call s:xkb_set(g:XkbSwitchNLayout) | else |
