@@ -372,8 +372,8 @@ Insert enter hook
 
 You may want to run a custom vim function when entering Insert mode. For
 example, let's flash the cursor for a moment if the keyboard layout effectively
-switches. Plugin [Beacon](https://github.com/DanilaMihailov/beacon.nvim) fits
-very well this purpose. Just put lines
+switches. Plugin [Beacon](https://github.com/DanilaMihailov/beacon.nvim) (up to
+revision *a786c9a*) is a good fit for this purpose. Just put lines
 
 ```vim
 let g:XkbSwitchIEnterHook = 'XkbSwitchIEnterHook'

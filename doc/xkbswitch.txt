@@ -1,10 +1,10 @@
-*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2023 April 20
+*xkbswitch.txt*   For Vim version 7.3 and above   Last change: 2026 July 20
 
                             ---------------------
                              Xkb Layout Switcher
                             ---------------------
 
-                                version 0.20
+                                version 0.21
 
 Authors: Alexey Radkov; Dmitry Hrabrov a.k.a. DeXPeriX (softNO@SPAMdexp.in)
 
@@ -342,8 +342,8 @@ aware that there is no way to disable XkbSwitch after it has been enabled.
 
 You may want to run a custom vim function when entering Insert mode. For
 example, let's flash the cursor for a moment if the keyboard layout
-effectively switches. Plugin Beacon fits very well this purpose. Just put
-lines
+effectively switches. Plugin Beacon (up to revision a786c9a) is a good fit
+for this purpose. Just put lines
 >
     let g:XkbSwitchIEnterHook = 'XkbSwitchIEnterHook'
 
@@ -612,6 +612,11 @@ https://github.com/lyokha/vim-xkbswitch/pull/45#issue-493491212 .
 ==============================================================================
                                             *xkbswitch-changes*
 A. Change History~
+
+0.21
+    - Set keyboard layout to g:XkbSwitchNLayout after leaving :(command line)
+    - Re-order paths for searching libg3kbswitch.so (once again)
+    - Use s: prefix in names of script local functions
 
 0.20
     - Support for Sway via libswaykbswitch.so (thanks to Andrey Khorokhorin)
